@@ -81,3 +81,9 @@
     @apply text-gold hover:underline;
   }
 }
+
+@layer components {
+  .auth-input {
+    @apply bg-surface-2 border-border text-foreground placeholder:text-muted-foreground focus:border-copper focus:ring-copper;
+  }
+}
