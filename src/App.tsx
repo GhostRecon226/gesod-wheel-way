@@ -39,6 +39,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/listings" element={<Listings />} />
             <Route path="/track" element={<Track />} />
             <Route path="/quote" element={<Quote />} />
