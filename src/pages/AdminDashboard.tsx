@@ -1,9 +1,11 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { LogOut, Package } from "lucide-react";
+import AdminListings from "@/components/admin/AdminListings";
 
 const AdminDashboard = () => {
-  const { userName, userRole, signOut } = useAuth();
+  const { userName, signOut } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -12,22 +14,29 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
-      <div className="w-full max-w-lg rounded-xl border border-border bg-card p-8 text-center">
-        <h1 className="text-2xl font-bold text-silver">Admin Dashboard</h1>
-        <p className="mt-4 text-foreground">
-          Welcome, <span className="font-semibold text-gold">{userName ?? "Admin"}</span>
-        </p>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Role: <span className="capitalize">{userRole}</span>
-        </p>
-        <Button
-          variant="destructive"
-          onClick={handleLogout}
-          className="mt-8 w-full rounded-lg"
-        >
-          Logout
-        </Button>
+    <div className="min-h-screen bg-background">
+      {/* Top bar */}
+      <header className="flex items-center justify-between border-b border-border bg-card px-6 py-4">
+        <div className="flex items-center gap-3">
+          <h1 className="text-xl font-bold">
+            <span className="text-silver">GESOD</span>{" "}
+            <span className="text-gold">RIDES</span>
+          </h1>
+          <span className="text-sm text-muted-foreground">/ Admin</span>
+        </div>
+        <div className="flex items-center gap-4">
+          <span className="text-sm text-foreground">
+            {userName ?? "Admin"}
+          </span>
+          <Button variant="destructive" size="sm" onClick={handleLogout}>
+            <LogOut size={14} /> Logout
+          </Button>
+        </div>
+      </header>
+
+      {/* Content */}
+      <div className="mx-auto max-w-7xl px-6 py-8">
+        <AdminListings />
       </div>
     </div>
   );
