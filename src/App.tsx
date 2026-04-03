@@ -48,6 +48,7 @@ const App = () => (
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/disclaimer" element={<Disclaimer />} />
+            <Route path="/style-guide" element={<StyleGuide />} />
             <Route
               path="/dashboard/customer"
               element={
