@@ -29,19 +29,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   const fetchUserProfile = async (userId: string) => {
-    const { data } = await supabase
+    // Fetch role from user_roles table
+    const { data: roleData } = await supabase
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    // Fetch name from users table
+    const { data: profileData } = await supabase
       .from("users")
-      .select("role, name")
+      .select("name")
       .eq("id", userId)
       .maybeSingle();
 
-    if (data) {
-      setUserRole(data.role as AppRole);
-      setUserName(data.name);
-    } else {
-      setUserRole("customer");
-      setUserName(null);
-    }
+    setUserRole((roleData?.role as AppRole) ?? "customer");
+    setUserName(profileData?.name ?? null);
   };
 
   useEffect(() => {
