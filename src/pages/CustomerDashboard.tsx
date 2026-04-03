@@ -1,34 +1,136 @@
+import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import {
+  Car, Gavel, FileText, CreditCard, AlertTriangle, Bell, ClipboardList,
+  LogOut, Menu, X, ChevronRight,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import CustomerVehicles from "@/components/customer/CustomerVehicles";
+import CustomerBids from "@/components/customer/CustomerBids";
+import CustomerQuotes from "@/components/customer/CustomerQuotes";
+import CustomerDocuments from "@/components/customer/CustomerDocuments";
+import CustomerPayments from "@/components/customer/CustomerPayments";
+import CustomerDisputes from "@/components/customer/CustomerDisputes";
+import CustomerNotifications from "@/components/customer/CustomerNotifications";
+
+const SECTIONS = [
+  { key: "vehicles", label: "My Vehicles", icon: Car },
+  { key: "bids", label: "Bid Requests", icon: Gavel },
+  { key: "quotes", label: "Quote Requests", icon: ClipboardList },
+  { key: "documents", label: "Documents", icon: FileText },
+  { key: "payments", label: "Payments", icon: CreditCard },
+  { key: "disputes", label: "Disputes", icon: AlertTriangle },
+  { key: "notifications", label: "Notifications", icon: Bell },
+] as const;
+
+type Section = (typeof SECTIONS)[number]["key"];
 
 const CustomerDashboard = () => {
-  const { userName, userRole, signOut } = useAuth();
+  const { userName, user, signOut } = useAuth();
   const navigate = useNavigate();
+  const [active, setActive] = useState<Section>("vehicles");
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("notifications")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id)
+      .eq("read", false)
+      .then(({ count }) => setUnreadCount(count ?? 0));
+  }, [user, active]);
 
   const handleLogout = async () => {
     await signOut();
     navigate("/login", { replace: true });
   };
 
+  const renderContent = () => {
+    switch (active) {
+      case "vehicles": return <CustomerVehicles />;
+      case "bids": return <CustomerBids />;
+      case "quotes": return <CustomerQuotes />;
+      case "documents": return <CustomerDocuments />;
+      case "payments": return <CustomerPayments />;
+      case "disputes": return <CustomerDisputes />;
+      case "notifications": return <CustomerNotifications />;
+    }
+  };
+
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
-      <div className="w-full max-w-lg rounded-xl border border-border bg-card p-8 text-center">
-        <h1 className="text-2xl font-bold text-silver">Customer Dashboard</h1>
-        <p className="mt-4 text-foreground">
-          Welcome, <span className="font-semibold text-gold">{userName ?? "Customer"}</span>
-        </p>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Role: <span className="capitalize">{userRole}</span>
-        </p>
-        <Button
-          variant="destructive"
-          onClick={handleLogout}
-          className="mt-8 w-full rounded-lg"
-        >
-          Logout
-        </Button>
-      </div>
+    <div className="flex min-h-screen bg-background">
+      {/* Mobile overlay */}
+      {mobileOpen && (
+        <div className="fixed inset-0 z-30 bg-black/50 md:hidden" onClick={() => setMobileOpen(false)} />
+      )}
+
+      {/* Sidebar */}
+      <aside
+        className={`fixed z-40 flex h-full w-64 flex-col border-r border-border bg-card transition-transform md:relative md:translate-x-0 ${
+          mobileOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        <div className="flex items-center justify-between border-b border-border px-5 py-4">
+          <span className="text-lg font-bold">
+            <span className="text-silver">GESOD</span>{" "}
+            <span className="text-gold">RIDES</span>
+          </span>
+          <button className="md:hidden text-muted-foreground" onClick={() => setMobileOpen(false)}>
+            <X size={20} />
+          </button>
+        </div>
+
+        <nav className="flex-1 overflow-y-auto py-3">
+          {SECTIONS.map(({ key, label, icon: Icon }) => {
+            const isActive = active === key;
+            return (
+              <button
+                key={key}
+                onClick={() => { setActive(key); setMobileOpen(false); }}
+                className={`flex w-full items-center gap-3 px-5 py-2.5 text-sm transition-colors ${
+                  isActive
+                    ? "border-l-[3px] border-primary bg-surface-2 text-silver font-medium"
+                    : "border-l-[3px] border-transparent text-muted-foreground hover:text-silver"
+                }`}
+              >
+                <Icon size={18} />
+                {label}
+                {key === "notifications" && unreadCount > 0 && (
+                  <span className="ml-auto rounded-full bg-accent px-2 py-0.5 text-[10px] font-bold text-accent-foreground">
+                    {unreadCount}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </nav>
+
+        <div className="border-t border-border p-4">
+          <p className="mb-3 truncate text-sm text-muted-foreground">
+            {userName ?? "Customer"}
+          </p>
+          <Button variant="destructive" size="sm" className="w-full rounded-lg" onClick={handleLogout}>
+            <LogOut size={16} className="mr-2" /> Logout
+          </Button>
+        </div>
+      </aside>
+
+      {/* Main */}
+      <main className="flex-1 overflow-y-auto">
+        <header className="sticky top-0 z-20 flex items-center gap-3 border-b border-border bg-background/80 px-4 py-3 backdrop-blur md:px-8">
+          <button className="md:hidden text-muted-foreground" onClick={() => setMobileOpen(true)}>
+            <Menu size={22} />
+          </button>
+          <h1 className="text-lg font-bold text-silver capitalize">
+            {SECTIONS.find((s) => s.key === active)?.label}
+          </h1>
+        </header>
+        <div className="p-4 md:p-8">{renderContent()}</div>
+      </main>
     </div>
   );
 };
