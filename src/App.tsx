@@ -5,12 +5,23 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
-import Index from "./pages/Index.tsx";
-import Login from "./pages/Login.tsx";
-import Signup from "./pages/Signup.tsx";
-import CustomerDashboard from "./pages/CustomerDashboard.tsx";
-import AdminDashboard from "./pages/AdminDashboard.tsx";
-import NotFound from "./pages/NotFound.tsx";
+import Index from "./pages/Index";
+import Login from "./pages/Login";
+import Signup from "./pages/Signup";
+import CustomerDashboard from "./pages/CustomerDashboard";
+import AdminDashboard from "./pages/AdminDashboard";
+import Listings from "./pages/Listings";
+import Track from "./pages/Track";
+import SailingSchedule from "./pages/SailingSchedule";
+import FAQ from "./pages/FAQ";
+import Contact from "./pages/Contact";
+import BiddingService from "./pages/services/BiddingService";
+import RoroService from "./pages/services/RoroService";
+import TowingService from "./pages/services/TowingService";
+import Terms from "./pages/Terms";
+import Privacy from "./pages/Privacy";
+import Disclaimer from "./pages/Disclaimer";
+import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +36,17 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/listings" element={<Listings />} />
+            <Route path="/track" element={<Track />} />
+            <Route path="/schedule" element={<SailingSchedule />} />
+            <Route path="/faq" element={<FAQ />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/services/bidding" element={<BiddingService />} />
+            <Route path="/services/roro" element={<RoroService />} />
+            <Route path="/services/towing" element={<TowingService />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/disclaimer" element={<Disclaimer />} />
             <Route
               path="/dashboard/customer"
               element={
