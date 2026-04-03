@@ -24,6 +24,7 @@ import Privacy from "./pages/Privacy";
 import Disclaimer from "./pages/Disclaimer";
 import NotFound from "./pages/NotFound";
 import StyleGuide from "./pages/StyleGuide";
+import ResetPassword from "./pages/ResetPassword";
 
 const queryClient = new QueryClient();
 
