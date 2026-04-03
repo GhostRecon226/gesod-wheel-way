@@ -12,6 +12,7 @@ import CustomerDashboard from "./pages/CustomerDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import Listings from "./pages/Listings";
 import Track from "./pages/Track";
+import Quote from "./pages/Quote";
 import SailingSchedule from "./pages/SailingSchedule";
 import FAQ from "./pages/FAQ";
 import Contact from "./pages/Contact";
