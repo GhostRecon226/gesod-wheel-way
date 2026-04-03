@@ -12,6 +12,9 @@ export default {
         "2xl": "1400px",
       },
     },
+    fontFamily: {
+      sans: ['Inter', 'sans-serif'],
+    },
     extend: {
       colors: {
         border: "hsl(var(--border))",
@@ -57,6 +60,14 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        copper: "hsl(var(--color-copper))",
+        gold: "hsl(var(--color-gold))",
+        silver: "hsl(var(--color-silver))",
+        surface: "hsl(var(--color-surface))",
+        "surface-2": "hsl(var(--color-surface-2))",
+        success: "hsl(var(--color-success))",
+        danger: "hsl(var(--color-danger))",
+        warning: "hsl(var(--color-warning))",
       },
       borderRadius: {
         lg: "var(--radius)",
