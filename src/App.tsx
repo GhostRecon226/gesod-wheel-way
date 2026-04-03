@@ -22,6 +22,7 @@ import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Disclaimer from "./pages/Disclaimer";
 import NotFound from "./pages/NotFound";
+import StyleGuide from "./pages/StyleGuide";
 
 const queryClient = new QueryClient();
 
