@@ -23,14 +23,14 @@ const Login = () => {
       return;
     }
 
-    // Fetch role and redirect
-    const { data: profile } = await supabase
-      .from("users")
+    // Fetch role from user_roles table
+    const { data: roleData } = await supabase
+      .from("user_roles")
       .select("role")
-      .eq("id", data.user.id)
+      .eq("user_id", data.user.id)
       .maybeSingle();
 
-    const role = profile?.role ?? "customer";
+    const role = roleData?.role ?? "customer";
     navigate(role === "admin" ? "/dashboard/admin" : "/dashboard/customer", { replace: true });
     setLoading(false);
   };

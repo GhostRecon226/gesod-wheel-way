@@ -16,10 +16,13 @@ const Signup = () => {
     e.preventDefault();
     setLoading(true);
 
-    const { data, error } = await supabase.auth.signUp({
+    const { error } = await supabase.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: window.location.origin },
+      options: {
+        emailRedirectTo: window.location.origin,
+        data: { name },
+      },
     });
 
     if (error) {
@@ -28,22 +31,7 @@ const Signup = () => {
       return;
     }
 
-    if (data.user) {
-      // Insert into users table
-      const { error: profileError } = await supabase.from("users").insert({
-        id: data.user.id,
-        name,
-        email,
-        role: "customer" as const,
-      });
-
-      if (profileError) {
-        toast.error("Account created but profile setup failed. Contact support.");
-      } else {
-        toast.success("Account created! Check your email to verify.");
-      }
-    }
-
+    toast.success("Account created! You can now sign in.");
     navigate("/login", { replace: true });
     setLoading(false);
   };
