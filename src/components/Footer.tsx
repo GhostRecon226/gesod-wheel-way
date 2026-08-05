@@ -48,9 +48,9 @@ const Footer = () => (
           <h4 className="mb-3 text-sm font-semibold text-silver">Services</h4>
           <ul className="space-y-2">
             {[
-              { label: "Auction Bidding", to: "/services/bidding" },
-              { label: "RORO Shipping", to: "/services/roro" },
-              { label: "Inland Towing", to: "/services/towing" },
+              { label: "Vehicle Sourcing", to: "/services/bidding" },
+              { label: "Ocean Freight (RORO/Container)", to: "/services/roro" },
+              { label: "Inland Transportation", to: "/services/towing" },
               { label: "Get a Quote", to: "/quote" },
             ].map((l) => (
               <li key={l.to}>
