@@ -32,10 +32,28 @@ const steps = [
 ];
 
 
+const highlights = [
+  "Vehicle sourcing & auction bidding support — we can source vehicles from trusted partners all over the USA to meet your specifications",
+  "Ocean shipping — ocean freight from U.S. ports to international destinations using container or RORO (Roll-on/Roll-off)",
+  "Inland transportation — vehicle transport from anywhere in the USA to your preferred destination or loading port",
+];
+
 const services = [
-  { icon: Gavel, title: "Auction Bidding", desc: "Professional bid-on-behalf service across Copart, IAAI, and Manheim." },
-  { icon: Ship, title: "RORO Shipping", desc: "Roll-on/Roll-off ocean freight from US ports to Lagos, Onne, and more." },
-  { icon: Truck, title: "Inland Towing", desc: "Auction yard pickup and transport to the nearest US departure port." },
+  {
+    icon: Gavel,
+    title: "Vehicle Sourcing Support",
+    desc: "We can source vehicles from dealerships, auctions, or other sources. We place bids on your behalf at U.S. vehicle auctions — you provide your maximum bid amount and we handle the bidding process.",
+  },
+  {
+    icon: Ship,
+    title: "Ocean Freight (RORO/Container)",
+    desc: "We ship your vehicles via Roll-on/Roll-off or container from U.S. ports to international destinations, coordinating with shipping lines to move your vehicle overseas.",
+  },
+  {
+    icon: Truck,
+    title: "Inland Transportation",
+    desc: "We pick your vehicle up from auction yards, dealerships, or anywhere in the USA and deliver it to the departure port or your preferred drop-off location.",
+  },
 ];
 
 const stats = [
