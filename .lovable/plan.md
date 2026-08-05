@@ -1,66 +1,24 @@
+# Quote Service Selection Step
 
-## What is actually broken
+## What changes
 
-Do I know what the issue is? Yes.
+Today the home page "Get a Quote" button goes to the contact page, and `/quote` opens the full quote form immediately with an Ocean/Inland toggle at the top.
 
-This is not an “email not found” problem.
+New flow, modelled on the reference image but styled in the GESOD RIDES dark theme (copper/gold on dark surfaces — not the light grey mockup):
 
-The auth logs show two different failures for the same account:
-1. `invalid_credentials` when `Pass=1234` was used
-2. `email_not_confirmed` when `Pass=123` was used
-
-That means:
-- the account exists
-- the account is still unconfirmed
-- at least one login attempt also used the wrong password
-
-There is also a backend provisioning problem: the database shows `handle_new_user()` exists, but the current backend metadata says there are no triggers installed. So new signups may still fail to create the matching `users` and `user_roles` records reliably.
-
-## Plan
-
-### 1. Repair the auth configuration that is still blocking login
-- Re-enable temporary auto-confirm for email/password signups in Lovable Cloud while `notify.gesodrides.com` verification is still incomplete.
-- For `chiwhite2001@yahoo.com`, confirm the existing account server-side or recreate it in a confirmed state if needed.
-- Treat this as temporary until auth emails are fully deliverable.
-
-### 2. Repair signup provisioning properly
-- Create an idempotent migration that:
-  - recreates `public.handle_new_user()`
-  - drops and recreates the `on_auth_user_created` trigger on `auth.users`
-  - backfills missing rows in `public.users`
-  - backfills missing rows in `public.user_roles`
-- This keeps profile and role creation on the backend, not in the client.
-
-### 3. Add recovery paths for stuck users
-- Add a “Forgot password?” action on `/login`.
-- Create the required `/reset-password` route and password update form.
-- Add a “Resend confirmation email” action when the auth error is `email_not_confirmed`.
-
-### 4. Improve login error handling
-- Replace raw provider errors with clear app messages:
-  - `invalid_credentials` → “Incorrect email or password”
-  - `email_not_confirmed` → “Your email address is not confirmed yet”
-- For the unconfirmed case, surface the resend-confirmation option instead of only showing a toast.
-
-### 5. Keep the current role-based routing, but validate it after the fix
-- Leave the existing role lookup in `user_roles`.
-- Verify successful login redirects:
-  - customer → `/dashboard/customer`
-  - admin → `/dashboard/admin`
-- Verify unauthenticated users still get redirected to `/login`.
-
-## Validation checklist
-- Test signup for a brand-new user.
-- Confirm that signup creates:
-  - auth account
-  - `users` row
-  - `user_roles` row
-- Test login for `chiwhite2001@yahoo.com` after confirmation/reset.
-- Test wrong password handling.
-- Test resend confirmation flow.
-- Test password reset flow end-to-end.
+1. Home page "Get a Quote" now links to `/quote`.
+2. `/quote` opens on a **Select Service Type** step:
+   - Centered header icon, "Request a Quote" title, and the supporting line about providing an estimate based on vehicle and route details.
+   - Two selectable cards inside a panel titled "Select Service Type" / "Choose the type of freight service you require":
+     - **Ocean Freight (RORO)** — port-to-port vehicle shipping, suitable for cars/SUVs/trucks, typical transit 4–8 weeks.
+     - **Inland Freight (Vehicle Towing)** — door-to-door transport, auction pickup and delivery, typical transit 1–7 days.
+   - Selected card gets a copper border/accent; "Continue to Quote Form →" button is disabled until one is picked.
+3. Continuing reveals the existing quote form, pre-set to the chosen type, with a back link to change the service type. The old top toggle is removed since the choice is now made in step 1.
+4. Below the panel: an "Important Notice" block (estimates subject to final confirmation; final pricing confirmed after review; extra charges for oversized/special handling) and the "Already have an account? Log in" line.
+5. Existing submission behaviour, validation, and success state stay exactly as they are.
 
 ## Technical notes
-- The missing trigger is likely why signup provisioning is still unreliable.
-- The logs confirm the current blocker for the existing account is email confirmation, with some attempts also using the wrong password.
-- Generated backend client/type files should not be edited manually as part of this fix.
+
+- Edit `src/pages/Quote.tsx`: add a `step` state (`"select" | "form"`), extract the service-type chooser into a small component in the same file, keep `type` state driving the existing form fields.
+- Edit `src/pages/Index.tsx`: hero "Get a Quote" `Link to="/quote"`.
+- Use existing semantic tokens (`bg-card`, `border-border`, `text-silver`, `text-copper`, `text-gold`, `variant="copper"`) — no hardcoded colours, no new route needed.
