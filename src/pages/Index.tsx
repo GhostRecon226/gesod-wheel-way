@@ -50,7 +50,7 @@ const Index = () => (
               Browse Listings
             </Button>
           </Link>
-          <Link to="/contact">
+          <Link to="/quote">
             <Button variant="copper-outline" size="lg">
               Get a Quote
             </Button>

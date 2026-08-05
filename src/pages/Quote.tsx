@@ -6,14 +6,39 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import PublicLayout from "@/components/PublicLayout";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, FileQuestion, Ship, Truck, ArrowRight, ArrowLeft, Info } from "lucide-react";
 
 type QuoteType = "ocean" | "inland";
 
 const portOptions = ["Apapa", "Tin Can Island", "Onne"];
 
+const serviceOptions: {
+  id: QuoteType;
+  icon: typeof Ship;
+  title: string;
+  desc: string;
+  bullets: string[];
+}[] = [
+  {
+    id: "ocean",
+    icon: Ship,
+    title: "Ocean Freight (RORO)",
+    desc: "Roll-on/Roll-off shipping for vehicles from international ports. Ideal for importing vehicles from the USA, Europe, Japan, and other regions to destinations in Africa.",
+    bullets: ["Port-to-port vehicle shipping", "Suitable for cars, SUVs, and trucks", "Typical transit: 4–8 weeks"],
+  },
+  {
+    id: "inland",
+    icon: Truck,
+    title: "Inland Freight (Vehicle Towing)",
+    desc: "Domestic vehicle transport and towing services. Move your vehicle from auction yards, ports, or any location to your desired destination.",
+    bullets: ["Door-to-door vehicle transport", "Auction pickup and delivery", "Typical transit: 1–7 days"],
+  },
+];
+
 const Quote = () => {
   const { user } = useAuth();
+  const [step, setStep] = useState<"select" | "form">("select");
+  const [selected, setSelected] = useState<QuoteType | null>(null);
   const [type, setType] = useState<QuoteType>("ocean");
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
