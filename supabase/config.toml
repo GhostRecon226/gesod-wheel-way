@@ -3,5 +3,3 @@ project_id = "ljdhkixhcalrlpjacakf"
 [functions.process-email-queue]
 verify_jwt = true
 
-[functions.seed-test-users]
-verify_jwt = false
