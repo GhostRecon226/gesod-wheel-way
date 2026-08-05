@@ -32,10 +32,10 @@ const serviceOptions: {
   {
     id: "inland",
     icon: Truck,
-    title: "Inland Freight (Vehicle Towing)",
-    formTitle: "Inland Freight (Vehicle Towing) Quote",
-    formSubtitle: "Domestic vehicle transport and towing",
-    desc: "Domestic vehicle transport and towing services. Move your vehicle from auction yards, ports, or any location to your desired destination.",
+    title: "Inland Transportation (Vehicle Towing)",
+    formTitle: "Inland Transportation Quote",
+    formSubtitle: "Vehicle transport from anywhere in the USA",
+    desc: "Vehicle transport from anywhere in the USA to your preferred destination or loading port. Move your vehicle from auction yards, dealerships, ports, or any location.",
     bullets: ["Door-to-door vehicle transport", "Auction pickup and delivery", "Typical transit: 1–7 days"],
   },
 ];
