@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Search, Gavel, Ship, Truck, ShieldCheck, Users, Globe, ArrowRight } from "lucide-react";
+import { Search, Gavel, Ship, Truck, ShieldCheck, Users, Globe, ArrowRight, CheckCircle2, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PublicLayout from "@/components/PublicLayout";
 import heroBg from "@/assets/hero-bg.jpg";
