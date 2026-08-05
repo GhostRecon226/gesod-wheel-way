@@ -99,12 +99,104 @@ const Quote = () => {
     setSubmitted(false);
   };
 
+  if (step === "select") {
+    return (
+      <PublicLayout>
+        <div className="mx-auto max-w-[820px] px-4 py-16">
+          <div className="text-center">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border border-border bg-surface-2">
+              <FileQuestion className="text-copper" size={26} />
+            </div>
+            <h1 className="mt-5 text-3xl text-silver">Request a Quote</h1>
+            <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
+              Select the type of service you need. We will provide an estimated quote based on your
+              vehicle and route details.
+            </p>
+          </div>
+
+          <div className="mt-10 rounded-xl border border-border bg-card p-6">
+            <h2 className="text-lg text-silver">Select Service Type</h2>
+            <p className="mt-1 text-sm text-muted-foreground">Choose the type of freight service you require</p>
+
+            <div className="mt-6 grid gap-5 sm:grid-cols-2">
+              {serviceOptions.map((s) => {
+                const active = selected === s.id;
+                return (
+                  <button
+                    key={s.id}
+                    type="button"
+                    onClick={() => setSelected(s.id)}
+                    className={`rounded-xl border p-5 text-left transition-colors ${
+                      active ? "border-primary bg-surface-2" : "border-border bg-surface-2/40 hover:border-primary/50"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-card">
+                        <s.icon className={active ? "text-gold" : "text-copper"} size={20} />
+                      </span>
+                      <span className="font-semibold text-silver">{s.title}</span>
+                    </div>
+                    <p className="mt-4 text-sm text-muted-foreground">{s.desc}</p>
+                    <ul className="mt-4 space-y-1.5 pl-4 text-sm text-muted-foreground list-disc">
+                      {s.bullets.map((b) => <li key={b}>{b}</li>)}
+                    </ul>
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="mt-6 flex justify-end">
+              <Button
+                variant="copper"
+                size="lg"
+                disabled={!selected}
+                onClick={() => {
+                  if (!selected) return;
+                  setType(selected);
+                  setStep("form");
+                }}
+              >
+                Continue to Quote Form <ArrowRight size={18} className="ml-2" />
+              </Button>
+            </div>
+          </div>
+
+          <div className="mt-8 rounded-xl border border-border bg-surface-2/40 p-6">
+            <div className="flex items-start gap-3">
+              <Info className="mt-0.5 shrink-0 text-gold" size={20} />
+              <div className="space-y-3 text-sm text-muted-foreground">
+                <p>
+                  <span className="font-semibold text-silver">Important Notice:</span> Quotes provided
+                  through this service are estimates and subject to final confirmation based on vehicle
+                  specifications, current shipping schedules, and market conditions.
+                </p>
+                <p>
+                  Final pricing will be confirmed by our team after reviewing your request details.
+                  Additional charges may apply for oversized vehicles or special handling requirements.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {!user && (
+            <p className="mt-8 text-center text-sm text-muted-foreground">
+              Already have an account?{" "}
+              <a href="/login" className="text-gold hover:underline">Log in</a> to access your quotes and track requests.
+            </p>
+          )}
+        </div>
+      </PublicLayout>
+    );
+  }
+
   return (
     <PublicLayout>
       <div className="mx-auto max-w-[680px] px-4 py-16">
-        <h1 className="text-center text-3xl text-silver">Request a Quote</h1>
+        <h1 className="text-center text-3xl text-silver">
+          {type === "ocean" ? "Ocean Freight Quote" : "Inland Towing Quote"}
+        </h1>
         <p className="mt-2 text-center text-muted-foreground">
-          Get a free estimate for ocean freight or inland towing.
+          Tell us about your vehicle and route — we will respond within 24 hours.
         </p>
 
         {submitted ? (
@@ -118,27 +210,16 @@ const Quote = () => {
           </div>
         ) : (
           <>
-            {/* Toggle */}
-            <div className="mt-8 flex rounded-lg overflow-hidden border border-border">
+            <div className="mt-6">
               <button
                 type="button"
-                onClick={() => setType("ocean")}
-                className={`flex-1 py-3 text-sm font-semibold transition-colors ${
-                  type === "ocean" ? "bg-primary text-primary-foreground" : "bg-surface-2 text-muted-foreground hover:text-silver"
-                }`}
+                onClick={() => setStep("select")}
+                className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-silver"
               >
-                Ocean Freight Quote
-              </button>
-              <button
-                type="button"
-                onClick={() => setType("inland")}
-                className={`flex-1 py-3 text-sm font-semibold transition-colors ${
-                  type === "inland" ? "bg-primary text-primary-foreground" : "bg-surface-2 text-muted-foreground hover:text-silver"
-                }`}
-              >
-                Inland Towing Quote
+                <ArrowLeft size={16} /> Change service type
               </button>
             </div>
+
 
             <form onSubmit={handleSubmit} className="mt-6 rounded-xl border border-border bg-card p-6 space-y-5">
               {/* Contact */}
