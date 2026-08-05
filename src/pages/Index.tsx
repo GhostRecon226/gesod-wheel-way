@@ -5,11 +5,32 @@ import PublicLayout from "@/components/PublicLayout";
 import heroBg from "@/assets/hero-bg.jpg";
 
 const steps = [
-  { num: "01", icon: Search, title: "Source", desc: "We find vehicles matching your specs from US auctions." },
-  { num: "02", icon: Gavel, title: "Bid", desc: "Our team places competitive bids on your behalf." },
-  { num: "03", icon: Ship, title: "Ship", desc: "RORO ocean freight from US ports to Nigeria." },
-  { num: "04", icon: Truck, title: "Clear", desc: "Full customs clearance and delivery to your doorstep." },
+  {
+    num: "01",
+    icon: Search,
+    title: "Find Your Vehicle",
+    desc: "Browse auction listings from Copart, IAAI, and other U.S. platforms.",
+  },
+  {
+    num: "02",
+    icon: Gavel,
+    title: "We Bid For You",
+    desc: "Set your maximum bid and we handle the auction process on your behalf.",
+  },
+  {
+    num: "03",
+    icon: Ship,
+    title: "Secure Shipping",
+    desc: "We coordinate inland transport and ocean freight to your destination.",
+  },
+  {
+    num: "04",
+    icon: Truck,
+    title: "Track & Receive",
+    desc: "Monitor your vehicle's journey with VIN tracking until delivery.",
+  },
 ];
+
 
 const services = [
   { icon: Gavel, title: "Auction Bidding", desc: "Professional bid-on-behalf service across Copart, IAAI, and Manheim." },
