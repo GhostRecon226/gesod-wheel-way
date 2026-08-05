@@ -7,9 +7,9 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute = ({ children, requiredRole }: ProtectedRouteProps) => {
-  const { session, userRole, loading } = useAuth();
+  const { session, userRole, loading, roleLoading } = useAuth();
 
-  if (loading) {
+  if (loading || (session && roleLoading)) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
         <div className="text-muted-foreground">Loading...</div>
