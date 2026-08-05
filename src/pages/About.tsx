@@ -26,8 +26,8 @@ const approach = [
 const services = [
   {
     icon: Search,
-    title: "Auction Sourcing Support",
-    desc: "We help you identify vehicles from major U.S. auction platforms like Copart and IAAI. We provide information on available listings to help you make informed decisions.",
+    title: "Vehicle Sourcing Support",
+    desc: "We help you source vehicles from auto dealers and major U.S. auction platforms like Copart and IAAI. We provide information on available listings to help you make informed decisions.",
   },
   {
     icon: Gavel,
