@@ -11,12 +11,12 @@ import { CheckCircle, FileQuestion, Ship, Truck, ArrowRight, ArrowLeft, Info } f
 
 type QuoteType = "ocean" | "inland";
 
-const portOptions = ["Apapa", "Tin Can Island", "Onne"];
-
 const serviceOptions: {
   id: QuoteType;
   icon: typeof Ship;
   title: string;
+  formTitle: string;
+  formSubtitle: string;
   desc: string;
   bullets: string[];
 }[] = [
@@ -24,6 +24,8 @@ const serviceOptions: {
     id: "ocean",
     icon: Ship,
     title: "Ocean Freight (RORO)",
+    formTitle: "Ocean Freight (RORO) Quote",
+    formSubtitle: "Roll-on/Roll-off shipping for your vehicle",
     desc: "Roll-on/Roll-off shipping for vehicles from international ports. Ideal for importing vehicles from the USA, Europe, Japan, and other regions to destinations in Africa.",
     bullets: ["Port-to-port vehicle shipping", "Suitable for cars, SUVs, and trucks", "Typical transit: 4–8 weeks"],
   },
@@ -31,10 +33,28 @@ const serviceOptions: {
     id: "inland",
     icon: Truck,
     title: "Inland Freight (Vehicle Towing)",
+    formTitle: "Inland Freight (Vehicle Towing) Quote",
+    formSubtitle: "Domestic vehicle transport and towing",
     desc: "Domestic vehicle transport and towing services. Move your vehicle from auction yards, ports, or any location to your desired destination.",
     bullets: ["Door-to-door vehicle transport", "Auction pickup and delivery", "Typical transit: 1–7 days"],
   },
 ];
+
+const vehicleTypes = ["Sedan", "SUV", "Truck / Pickup", "Van", "Motorcycle", "Heavy Equipment", "Other"];
+const auctionSources = ["Copart", "IAAI", "Manheim", "Dealer", "Private Seller", "Other"];
+
+const emptyForm = {
+  name: "", email: "", phone: "",
+  vehicleType: "", make: "", model: "", year: "", vin: "",
+  pickup: "", destination: "",
+  auctionSource: "", lotNumber: "",
+  insurance: false, runDrive: false, notes: "",
+};
+
+const Req = () => <span className="text-destructive"> *</span>;
+
+const selectClass =
+  "w-full rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none";
 
 const Quote = () => {
   const { user } = useAuth();
@@ -48,14 +68,11 @@ const Quote = () => {
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  const [form, setForm] = useState({
-    name: "", email: "", phone: "",
-    make: "", model: "", year: "", vin: "",
-    pickup: "", destination: "",
-    insurance: false, runDrive: false, notes: "",
-  });
+  const [form, setForm] = useState({ ...emptyForm });
 
   const f = (k: string, v: string | boolean) => setForm({ ...form, [k]: v });
+
+  const service = serviceOptions.find((s) => s.id === type)!;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -64,15 +81,17 @@ const Quote = () => {
 
     const vehicleDetails = [
       `${form.year} ${form.make} ${form.model}`.trim(),
+      form.vehicleType ? `Type: ${form.vehicleType}` : null,
       form.vin ? `VIN: ${form.vin}` : null,
-      `Pickup: ${form.pickup}`,
-      `Destination: ${form.destination}`,
+      type === "ocean" ? `Origin port: ${form.pickup}` : `Pickup: ${form.pickup}`,
+      type === "ocean" ? `Destination port: ${form.destination}` : `Delivery: ${form.destination}`,
+      form.auctionSource ? `Auction source: ${form.auctionSource}` : null,
+      form.lotNumber ? `Lot #: ${form.lotNumber}` : null,
       type === "ocean" ? `Marine insurance: ${form.insurance ? "Yes" : "No"}` : `Run & drive: ${form.runDrive ? "Yes" : "No"}`,
       `Contact: ${form.name}, ${form.email}, ${form.phone}`,
       form.notes ? `Notes: ${form.notes}` : null,
     ].filter(Boolean).join(" | ");
 
-    // If logged in use their id, otherwise use a placeholder approach
     const customerId = user?.id;
 
     if (customerId) {
@@ -88,8 +107,6 @@ const Quote = () => {
         return;
       }
     } else {
-      // Not logged in — store via anon-accessible edge or just show message
-      // Since RLS requires customer_id, we inform them to log in or proceed
       toast({ title: "Please log in", description: "Create an account to submit a quote request.", variant: "destructive" });
       setSubmitting(false);
       return;
@@ -100,8 +117,14 @@ const Quote = () => {
   };
 
   const resetForm = () => {
-    setForm({ name: "", email: "", phone: "", make: "", model: "", year: "", vin: "", pickup: "", destination: "", insurance: false, runDrive: false, notes: "" });
+    setForm({ ...emptyForm });
     setSubmitted(false);
+  };
+
+  const cancel = () => {
+    setForm({ ...emptyForm });
+    setSubmitted(false);
+    setStep("select");
   };
 
   if (step === "select") {
@@ -196,16 +219,17 @@ const Quote = () => {
 
   return (
     <PublicLayout>
-      <div className="mx-auto max-w-[680px] px-4 py-16">
-        <h1 className="text-center text-3xl text-silver">
-          {type === "ocean" ? "Ocean Freight Quote" : "Inland Towing Quote"}
-        </h1>
-        <p className="mt-2 text-center text-muted-foreground">
-          Tell us about your vehicle and route — we will respond within 24 hours.
-        </p>
+      <div className="mx-auto max-w-[780px] px-4 py-12">
+        <button
+          type="button"
+          onClick={() => setStep("select")}
+          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-silver"
+        >
+          <ArrowLeft size={16} /> Back to Quote Options
+        </button>
 
         {submitted ? (
-          <div className="mt-8 rounded-xl border border-success bg-card p-8 text-center">
+          <div className="mt-6 rounded-xl border border-success bg-card p-8 text-center">
             <CheckCircle className="mx-auto h-12 w-12 text-success" />
             <h2 className="mt-4 text-xl font-bold text-silver">Quote Request Received</h2>
             <p className="mt-2 text-muted-foreground">
@@ -214,99 +238,145 @@ const Quote = () => {
             <Button variant="copper" className="mt-6" onClick={resetForm}>Submit Another</Button>
           </div>
         ) : (
-          <>
-            <div className="mt-6">
-              <button
-                type="button"
-                onClick={() => setStep("select")}
-                className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-silver"
-              >
-                <ArrowLeft size={16} /> Change service type
-              </button>
+          <form onSubmit={handleSubmit} className="mt-6 rounded-xl border border-border bg-card p-6 sm:p-8">
+            {/* Header */}
+            <div className="flex items-center gap-4">
+              <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-border bg-surface-2">
+                <service.icon className="text-copper" size={22} />
+              </span>
+              <div>
+                <h1 className="text-xl font-bold text-silver">{service.formTitle}</h1>
+                <p className="text-sm text-muted-foreground">{service.formSubtitle}</p>
+              </div>
             </div>
 
-
-            <form onSubmit={handleSubmit} className="mt-6 rounded-xl border border-border bg-card p-6 space-y-5">
-              {/* Contact */}
-              <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-silver">Contact Information</h3>
+            {/* Contact Information */}
+            <section className="mt-8">
+              <h2 className="text-base font-semibold text-silver">Contact Information</h2>
+              <p className="mt-1 text-sm text-muted-foreground">How can we reach you regarding this quote?</p>
+              <div className="section-divider my-4" />
+              <div className="grid gap-4 sm:grid-cols-3">
                 <div>
-                  <label className="mb-1 block text-xs text-muted-foreground">Full Name *</label>
-                  <Input value={form.name} onChange={(e) => f("name", e.target.value)} className="auth-input" required maxLength={100} />
+                  <label className="mb-1.5 block text-xs text-muted-foreground">Full Name<Req /></label>
+                  <Input value={form.name} onChange={(e) => f("name", e.target.value)} className="auth-input" placeholder="John Doe" required maxLength={100} />
                 </div>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <div>
-                    <label className="mb-1 block text-xs text-muted-foreground">Email *</label>
-                    <Input type="email" value={form.email} onChange={(e) => f("email", e.target.value)} className="auth-input" required maxLength={255} />
-                  </div>
-                  <div>
-                    <label className="mb-1 block text-xs text-muted-foreground">Phone</label>
-                    <Input value={form.phone} onChange={(e) => f("phone", e.target.value)} className="auth-input" maxLength={20} />
-                  </div>
+                <div>
+                  <label className="mb-1.5 block text-xs text-muted-foreground">Email Address<Req /></label>
+                  <Input type="email" value={form.email} onChange={(e) => f("email", e.target.value)} className="auth-input" placeholder="john@example.com" required maxLength={255} />
+                </div>
+                <div>
+                  <label className="mb-1.5 block text-xs text-muted-foreground">Phone Number<Req /></label>
+                  <Input value={form.phone} onChange={(e) => f("phone", e.target.value)} className="auth-input" placeholder="+1 (555) 123-4567" required maxLength={20} />
+                </div>
+              </div>
+            </section>
+
+            {/* Vehicle Information */}
+            <section className="mt-8">
+              <h2 className="text-base font-semibold text-silver">Vehicle Information</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Details about the vehicle you want to {type === "ocean" ? "ship" : "move"}
+              </p>
+              <div className="section-divider my-4" />
+              <div className="grid gap-4 sm:grid-cols-3">
+                <div>
+                  <label className="mb-1.5 block text-xs text-muted-foreground">Vehicle Type<Req /></label>
+                  <select value={form.vehicleType} onChange={(e) => f("vehicleType", e.target.value)} className={selectClass} required>
+                    <option value="">Select type</option>
+                    {vehicleTypes.map((v) => <option key={v} value={v}>{v}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="mb-1.5 block text-xs text-muted-foreground">Make<Req /></label>
+                  <Input value={form.make} onChange={(e) => f("make", e.target.value)} className="auth-input" placeholder="e.g., Toyota" required maxLength={50} />
+                </div>
+                <div>
+                  <label className="mb-1.5 block text-xs text-muted-foreground">Model<Req /></label>
+                  <Input value={form.model} onChange={(e) => f("model", e.target.value)} className="auth-input" placeholder="e.g., Land Cruiser" required maxLength={50} />
+                </div>
+              </div>
+              <div className="mt-4 grid gap-4 sm:grid-cols-3">
+                <div>
+                  <label className="mb-1.5 block text-xs text-muted-foreground">Year<Req /></label>
+                  <Input type="number" value={form.year} onChange={(e) => f("year", e.target.value)} className="auth-input" placeholder="e.g., 2024" required min={1900} max={2030} />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="mb-1.5 block text-xs text-muted-foreground">VIN</label>
+                  <Input value={form.vin} onChange={(e) => f("vin", e.target.value)} className="auth-input" placeholder="Vehicle Identification Number" maxLength={17} />
+                  <p className="mt-1.5 text-xs text-muted-foreground">Optional - 17 characters</p>
+                </div>
+              </div>
+            </section>
+
+            {/* Shipping / Towing Details */}
+            <section className="mt-8">
+              <h2 className="text-base font-semibold text-silver">
+                {type === "ocean" ? "Shipping Details" : "Towing Details"}
+              </h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {type === "ocean"
+                  ? "Origin and destination ports for your shipment"
+                  : "Pickup and delivery locations for your vehicle"}
+              </p>
+              <div className="section-divider my-4" />
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="mb-1.5 block text-xs text-muted-foreground">
+                    {type === "ocean" ? "Origin Port" : "Pickup Location"}<Req />
+                  </label>
+                  <Input
+                    value={form.pickup}
+                    onChange={(e) => f("pickup", e.target.value)}
+                    className="auth-input"
+                    placeholder={type === "ocean" ? "e.g., Los Angeles, USA" : "e.g., Copart Dallas, TX"}
+                    required
+                    maxLength={200}
+                  />
+                </div>
+                <div>
+                  <label className="mb-1.5 block text-xs text-muted-foreground">
+                    {type === "ocean" ? "Destination Port" : "Delivery Destination"}<Req />
+                  </label>
+                  <Input
+                    value={form.destination}
+                    onChange={(e) => f("destination", e.target.value)}
+                    className="auth-input"
+                    placeholder={type === "ocean" ? "e.g., Lagos, Nigeria" : "e.g., Port of Houston, TX"}
+                    required
+                    maxLength={200}
+                  />
+                </div>
+              </div>
+            </section>
+
+            {/* Additional Information */}
+            <section className="mt-8">
+              <h2 className="text-base font-semibold text-silver">Additional Information</h2>
+              <p className="mt-1 text-sm text-muted-foreground">Optional details about your vehicle source</p>
+              <div className="section-divider my-4" />
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="mb-1.5 block text-xs text-muted-foreground">Auction Source</label>
+                  <select value={form.auctionSource} onChange={(e) => f("auctionSource", e.target.value)} className={selectClass}>
+                    <option value="">Select auction source</option>
+                    {auctionSources.map((a) => <option key={a} value={a}>{a}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="mb-1.5 block text-xs text-muted-foreground">Lot Number</label>
+                  <Input value={form.lotNumber} onChange={(e) => f("lotNumber", e.target.value)} className="auth-input" placeholder="e.g., 12345678" maxLength={30} />
                 </div>
               </div>
 
-              {/* Vehicle */}
-              <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-silver">Vehicle Details</h3>
-                <div className="grid gap-3 sm:grid-cols-3">
-                  <div>
-                    <label className="mb-1 block text-xs text-muted-foreground">Make *</label>
-                    <Input value={form.make} onChange={(e) => f("make", e.target.value)} className="auth-input" required maxLength={50} />
-                  </div>
-                  <div>
-                    <label className="mb-1 block text-xs text-muted-foreground">Model *</label>
-                    <Input value={form.model} onChange={(e) => f("model", e.target.value)} className="auth-input" required maxLength={50} />
-                  </div>
-                  <div>
-                    <label className="mb-1 block text-xs text-muted-foreground">Year *</label>
-                    <Input type="number" value={form.year} onChange={(e) => f("year", e.target.value)} className="auth-input" required min={1900} max={2030} />
-                  </div>
-                </div>
-                <div>
-                  <label className="mb-1 block text-xs text-muted-foreground">VIN (optional)</label>
-                  <Input value={form.vin} onChange={(e) => f("vin", e.target.value)} className="auth-input" maxLength={17} />
-                </div>
-              </div>
-
-              {/* Location */}
-              <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-silver">
-                  {type === "ocean" ? "Shipping Details" : "Towing Details"}
-                </h3>
-                <div>
-                  <label className="mb-1 block text-xs text-muted-foreground">
-                    {type === "ocean" ? "Auction / Pickup Location (US city & state) *" : "Pickup Location (auction yard & city) *"}
-                  </label>
-                  <Input value={form.pickup} onChange={(e) => f("pickup", e.target.value)} className="auth-input" required maxLength={200} />
-                </div>
-                <div>
-                  <label className="mb-1 block text-xs text-muted-foreground">
-                    {type === "ocean" ? "Destination Port *" : "Destination US Port *"}
-                  </label>
-                  {type === "ocean" ? (
-                    <select
-                      value={form.destination}
-                      onChange={(e) => f("destination", e.target.value)}
-                      className="w-full rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none"
-                      required
-                    >
-                      <option value="">— Select port —</option>
-                      {portOptions.map((p) => <option key={p} value={p}>{p}</option>)}
-                    </select>
-                  ) : (
-                    <Input value={form.destination} onChange={(e) => f("destination", e.target.value)} className="auth-input" required maxLength={200} />
-                  )}
-                </div>
-
+              <div className="mt-4">
                 {type === "ocean" ? (
                   <label className="flex items-center gap-3 text-sm text-muted-foreground">
                     <button
                       type="button"
                       onClick={() => f("insurance", !form.insurance)}
-                      className={`relative h-6 w-11 rounded-full transition-colors ${form.insurance ? "bg-primary" : "bg-surface-2 border border-border"}`}
+                      className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${form.insurance ? "bg-primary" : "bg-surface-2 border border-border"}`}
                     >
-                      <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform ${form.insurance ? "left-[22px]" : "left-0.5"}`} />
+                      <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-silver transition-transform ${form.insurance ? "left-[22px]" : "left-0.5"}`} />
                     </button>
                     Marine insurance required?
                   </label>
@@ -315,32 +385,51 @@ const Quote = () => {
                     <button
                       type="button"
                       onClick={() => f("runDrive", !form.runDrive)}
-                      className={`relative h-6 w-11 rounded-full transition-colors ${form.runDrive ? "bg-primary" : "bg-surface-2 border border-border"}`}
+                      className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${form.runDrive ? "bg-primary" : "bg-surface-2 border border-border"}`}
                     >
-                      <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform ${form.runDrive ? "left-[22px]" : "left-0.5"}`} />
+                      <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-silver transition-transform ${form.runDrive ? "left-[22px]" : "left-0.5"}`} />
                     </button>
                     Vehicle runs and drives?
                   </label>
                 )}
               </div>
 
-              <div>
-                <label className="mb-1 block text-xs text-muted-foreground">Additional Notes</label>
-                <Textarea value={form.notes} onChange={(e) => f("notes", e.target.value)} className="auth-input" rows={3} maxLength={1000} />
+              <div className="mt-4">
+                <label className="mb-1.5 block text-xs text-muted-foreground">Additional Notes</label>
+                <Textarea
+                  value={form.notes}
+                  onChange={(e) => f("notes", e.target.value)}
+                  className="auth-input"
+                  rows={4}
+                  maxLength={1000}
+                  placeholder="Any special requirements, questions, or additional information..."
+                />
+                <p className="mt-1.5 text-xs text-muted-foreground">Maximum 1000 characters</p>
               </div>
+            </section>
 
-              <Button variant="copper" type="submit" disabled={submitting} className="w-full">
+            {/* Disclaimer */}
+            <div className="mt-8 rounded-lg border border-border bg-surface-2/40 p-4 text-sm text-muted-foreground">
+              Quotes are estimates and subject to final confirmation. Final pricing may vary based on
+              vehicle condition, shipping schedules, and port fees.
+            </div>
+
+            {/* Actions */}
+            <div className="section-divider my-6" />
+            <div className="flex flex-wrap justify-end gap-3">
+              <Button type="button" variant="outline" onClick={cancel}>Cancel</Button>
+              <Button variant="copper" type="submit" disabled={submitting}>
                 {submitting ? "Submitting…" : "Submit Quote Request"}
               </Button>
+            </div>
 
-              {!user && (
-                <p className="text-center text-xs text-muted-foreground">
-                  <a href="/login" className="text-gold hover:underline">Log in</a> or{" "}
-                  <a href="/signup" className="text-gold hover:underline">sign up</a> to submit a quote request.
-                </p>
-              )}
-            </form>
-          </>
+            {!user && (
+              <p className="mt-4 text-center text-xs text-muted-foreground">
+                <a href="/login" className="text-gold hover:underline">Log in</a> or{" "}
+                <a href="/signup" className="text-gold hover:underline">sign up</a> to submit a quote request.
+              </p>
+            )}
+          </form>
         )}
       </div>
     </PublicLayout>
