@@ -10,9 +10,9 @@ const navLinks = [
   {
     label: "Services",
     children: [
-      { label: "Auction Bidding", to: "/services/bidding" },
-      { label: "RORO Shipping", to: "/services/roro" },
-      { label: "Inland Towing", to: "/services/towing" },
+      { label: "Vehicle Sourcing", to: "/services/bidding" },
+      { label: "Ocean Freight (RORO/Container)", to: "/services/roro" },
+      { label: "Inland Transportation", to: "/services/towing" },
     ],
   },
   { label: "Track", to: "/track" },
