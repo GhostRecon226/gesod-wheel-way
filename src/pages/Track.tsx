@@ -117,29 +117,53 @@ const Track = () => {
 
   return (
     <PublicLayout>
-      <div className="mx-auto max-w-2xl px-4 py-16">
-        <h1 className="text-center text-3xl text-silver">Track Your Vehicle</h1>
-        <p className="mt-2 text-center text-muted-foreground">
-          Enter your VIN to see the latest status and milestones.
+      <div className="mx-auto max-w-3xl px-4 py-16">
+        <h1 className="text-center text-4xl font-bold text-silver">VIN Status Tracking</h1>
+        <p className="mx-auto mt-3 max-w-xl text-center text-muted-foreground">
+          Enter your 17-character VIN to view shipment status milestones as recorded by GESOD RIDES.
         </p>
 
-        <form onSubmit={handleSearch} className="mt-8">
+        {/* Important notice */}
+        <div className="mt-8 flex gap-3 rounded-xl border border-border bg-card/60 p-5">
+          <Info size={18} className="mt-0.5 shrink-0 text-muted-foreground" />
+          <div className="space-y-3 text-sm text-muted-foreground">
+            <p>
+              <span className="font-semibold text-silver">Status-Based Tracking:</span> This service
+              displays milestone updates as recorded by our operations team. It does not provide
+              GPS-based location tracking.
+            </p>
+            <p>
+              Updates are provided by GESOD RIDES based on information received from our logistics
+              partners. Timelines shown are indicative and may be affected by customs, weather, port
+              congestion, or other external factors beyond our control.
+            </p>
+          </div>
+        </div>
+
+        <form onSubmit={handleSearch} className="mt-6">
           <div className="rounded-xl border border-border bg-card p-6">
-            <label className="mb-2 block text-sm text-muted-foreground">
-              Vehicle Identification Number (VIN)
-            </label>
-            <div className="flex gap-3">
-              <Input
-                value={vin}
-                onChange={(e) => setVin(e.target.value)}
-                placeholder="e.g. 1HGBH41JXMN109186"
-                className="auth-input flex-1"
-              />
-              <Button variant="copper" type="submit" disabled={loading}>
+            <div className="flex flex-col gap-3 sm:flex-row">
+              <div className="relative flex-1">
+                <Search
+                  size={18}
+                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+                />
+                <Input
+                  value={vin}
+                  onChange={(e) => setVin(e.target.value.toUpperCase().slice(0, 17))}
+                  maxLength={17}
+                  placeholder="ENTER VIN (E.G., 1HGBH41JXMN109186)"
+                  className="auth-input pl-10 font-mono tracking-wide uppercase"
+                />
+              </div>
+              <Button variant="copper" type="submit" disabled={loading} className="sm:px-8">
                 <Search size={18} />
-                Search
+                Track Vehicle
               </Button>
             </div>
+            <p className="mt-2 text-right text-sm text-muted-foreground">
+              {vin.length}/17 characters
+            </p>
             {rateLimited && (
               <p className="mt-3 text-sm text-destructive">
                 Too many searches. Please try again later.
@@ -147,6 +171,7 @@ const Track = () => {
             )}
           </div>
         </form>
+
 
         {searched && !loading && (
           <div className="mt-8">
