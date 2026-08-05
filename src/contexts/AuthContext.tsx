@@ -10,6 +10,7 @@ interface AuthContextType {
   userRole: AppRole | null;
   userName: string | null;
   loading: boolean;
+  roleLoading: boolean;
   signOut: () => Promise<void>;
 }
 
@@ -27,8 +28,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [userRole, setUserRole] = useState<AppRole | null>(null);
   const [userName, setUserName] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [roleLoading, setRoleLoading] = useState(true);
 
   const fetchUserProfile = async (userId: string) => {
+    setRoleLoading(true);
     // Fetch role from user_roles table
     const { data: roleData } = await supabase
       .from("user_roles")
@@ -45,6 +48,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     setUserRole((roleData?.role as AppRole) ?? "customer");
     setUserName(profileData?.name ?? null);
+    setRoleLoading(false);
   };
 
   useEffect(() => {
