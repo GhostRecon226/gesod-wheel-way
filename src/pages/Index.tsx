@@ -101,7 +101,7 @@ const Index = () => (
           ))}
         </div>
         <div className="mt-14 flex justify-center">
-          <Link to="/faq">
+          <Link to="/how-it-works">
             <Button variant="outline" size="lg">
               Learn More About Our Process
               <ArrowRight size={18} />

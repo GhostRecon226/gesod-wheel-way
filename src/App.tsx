@@ -15,6 +15,7 @@ import Track from "./pages/Track";
 import Quote from "./pages/Quote";
 import SailingSchedule from "./pages/SailingSchedule";
 import FAQ from "./pages/FAQ";
+import HowItWorks from "./pages/HowItWorks";
 import Contact from "./pages/Contact";
 import BiddingService from "./pages/services/BiddingService";
 import RoroService from "./pages/services/RoroService";
@@ -45,6 +46,7 @@ const App = () => (
             <Route path="/quote" element={<Quote />} />
             <Route path="/schedule" element={<SailingSchedule />} />
             <Route path="/faq" element={<FAQ />} />
+            <Route path="/how-it-works" element={<HowItWorks />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/services/bidding" element={<BiddingService />} />
             <Route path="/services/roro" element={<RoroService />} />
