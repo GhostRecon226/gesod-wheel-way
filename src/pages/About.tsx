@@ -41,8 +41,8 @@ const services = [
   },
   {
     icon: MapPin,
-    title: "Inland Vehicle Towing",
-    desc: "We arrange ground transportation from auction yards to ports or designated pickup locations within the United States. Pricing depends on distance and vehicle condition.",
+    title: "Inland Vehicle Transportation",
+    desc: "We arrange inland ground transportation from anywhere in the USA to ports or designated drop-off locations within the United States. Pricing depends on distance and vehicle condition.",
   },
 ];
 
