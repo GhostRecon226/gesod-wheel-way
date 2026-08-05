@@ -1,15 +1,36 @@
 import { Link } from "react-router-dom";
-import { Search, Gavel, Ship, Truck, ShieldCheck, Users, Globe } from "lucide-react";
+import { Search, Gavel, Ship, Truck, ShieldCheck, Users, Globe, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PublicLayout from "@/components/PublicLayout";
 import heroBg from "@/assets/hero-bg.jpg";
 
 const steps = [
-  { num: "01", icon: Search, title: "Source", desc: "We find vehicles matching your specs from US auctions." },
-  { num: "02", icon: Gavel, title: "Bid", desc: "Our team places competitive bids on your behalf." },
-  { num: "03", icon: Ship, title: "Ship", desc: "RORO ocean freight from US ports to Nigeria." },
-  { num: "04", icon: Truck, title: "Clear", desc: "Full customs clearance and delivery to your doorstep." },
+  {
+    num: "01",
+    icon: Search,
+    title: "Find Your Vehicle",
+    desc: "Browse auction listings from Copart, IAAI, and other U.S. platforms.",
+  },
+  {
+    num: "02",
+    icon: Gavel,
+    title: "We Bid For You",
+    desc: "Set your maximum bid and we handle the auction process on your behalf.",
+  },
+  {
+    num: "03",
+    icon: Ship,
+    title: "Secure Shipping",
+    desc: "We coordinate inland transport and ocean freight to your destination.",
+  },
+  {
+    num: "04",
+    icon: Truck,
+    title: "Track & Receive",
+    desc: "Monitor your vehicle's journey with VIN tracking until delivery.",
+  },
 ];
+
 
 const services = [
   { icon: Gavel, title: "Auction Bidding", desc: "Professional bid-on-behalf service across Copart, IAAI, and Manheim." },
@@ -62,19 +83,34 @@ const Index = () => (
     {/* How It Works */}
     <section className="py-20">
       <div className="mx-auto max-w-6xl px-4">
-        <h2 className="mb-12 text-center text-3xl text-silver">How It Works</h2>
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        <h2 className="text-center text-3xl font-bold text-silver">How It Works</h2>
+        <p className="mx-auto mt-3 max-w-2xl text-center text-muted-foreground">
+          A simple, structured process from vehicle selection to delivery.
+        </p>
+        <div className="mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           {steps.map((s) => (
-            <div key={s.num} className="rounded-xl border border-border bg-card p-6 text-center">
-              <span className="text-3xl font-extrabold text-copper">{s.num}</span>
-              <s.icon className="mx-auto mt-4 text-copper" size={36} />
-              <h3 className="mt-3 text-lg text-silver">{s.title}</h3>
-              <p className="mt-2 text-sm text-muted-foreground">{s.desc}</p>
+            <div key={s.num} className="text-center">
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary">
+                <span className="text-xl font-bold text-primary-foreground">{s.num}</span>
+              </div>
+              <h3 className="mt-6 text-lg font-semibold text-silver">{s.title}</h3>
+              <p className="mx-auto mt-3 max-w-xs text-sm leading-relaxed text-muted-foreground">
+                {s.desc}
+              </p>
             </div>
           ))}
         </div>
+        <div className="mt-14 flex justify-center">
+          <Link to="/faq">
+            <Button variant="outline" size="lg">
+              Learn More About Our Process
+              <ArrowRight size={18} />
+            </Button>
+          </Link>
+        </div>
       </div>
     </section>
+
 
     <div className="section-divider mx-auto max-w-6xl" />
 
