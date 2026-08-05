@@ -42,6 +42,7 @@ const Footer = () => (
               { label: "Auction Bidding", to: "/services/bidding" },
               { label: "RORO Shipping", to: "/services/roro" },
               { label: "Inland Towing", to: "/services/towing" },
+              { label: "Get a Quote", to: "/quote" },
             ].map((l) => (
               <li key={l.to}>
                 <Link to={l.to} className="text-sm text-muted-foreground no-underline hover:text-gold">

@@ -16,6 +16,7 @@ const navLinks = [
   },
   { label: "Track", to: "/track" },
   { label: "Schedule", to: "/schedule" },
+  { label: "Get a Quote", to: "/quote" },
   { label: "FAQ", to: "/faq" },
   { label: "Contact", to: "/contact" },
 ];
