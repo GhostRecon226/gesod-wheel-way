@@ -29,6 +29,31 @@ const Contact = () => {
           <Link to="/quote" className="text-gold hover:underline">Request a quote</Link>.
         </p>
 
+        <div className="mt-8 grid gap-4 rounded-xl border border-border bg-card p-6 sm:grid-cols-3">
+          <div>
+            <h2 className="text-sm font-semibold text-silver">Email</h2>
+            <a
+              href="mailto:contact@gesodrides.com"
+              className="mt-1 block text-sm text-muted-foreground no-underline hover:text-gold"
+            >
+              contact@gesodrides.com
+            </a>
+          </div>
+          <div>
+            <h2 className="text-sm font-semibold text-silver">Phone</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              +1 (302) 293-7210
+              <br />
+              +234 809 394 3763
+            </p>
+          </div>
+          <div>
+            <h2 className="text-sm font-semibold text-silver">Office Hours</h2>
+            <p className="mt-1 text-sm text-muted-foreground">Mon–Fri: 9:00 AM – 6:00 PM EST</p>
+          </div>
+        </div>
+
+
         <form onSubmit={handleSubmit} className="mt-8 rounded-xl border border-border bg-card p-6 space-y-4">
           <div>
             <label className="mb-1 block text-sm text-muted-foreground">Full Name</label>
