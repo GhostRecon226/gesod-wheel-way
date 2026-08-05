@@ -42,11 +42,17 @@ const serviceOptions: {
 
 const vehicleTypes = ["Sedan", "SUV", "Truck / Pickup", "Van", "Motorcycle", "Heavy Equipment", "Other"];
 const auctionSources = ["Copart", "IAAI", "Manheim", "Dealer", "Private Seller", "Other"];
+const vehicleConditions = [
+  "Runs and drives",
+  "Starts but does not drive",
+  "Non-running / inoperable",
+  "Wrecked / heavy damage",
+];
 
 const emptyForm = {
   name: "", email: "", phone: "",
-  vehicleType: "", make: "", model: "", year: "", vin: "",
-  pickup: "", destination: "",
+  vehicleType: "", vehicleCondition: "", make: "", model: "", year: "", vin: "",
+  pickup: "", destination: "", pickupDeadline: "",
   auctionSource: "", lotNumber: "",
   insurance: false, runDrive: false, notes: "",
 };
@@ -80,14 +86,16 @@ const Quote = () => {
     setSubmitting(true);
 
     const vehicleDetails = [
-      `${form.year} ${form.make} ${form.model}`.trim(),
+      type === "ocean" ? `${form.year} ${form.make} ${form.model}`.trim() : null,
       form.vehicleType ? `Type: ${form.vehicleType}` : null,
+      form.vehicleCondition ? `Condition: ${form.vehicleCondition}` : null,
       form.vin ? `VIN: ${form.vin}` : null,
       type === "ocean" ? `Origin port: ${form.pickup}` : `Pickup: ${form.pickup}`,
-      type === "ocean" ? `Destination port: ${form.destination}` : `Delivery: ${form.destination}`,
+      type === "ocean" ? `Destination port: ${form.destination}` : `Destination port: ${form.destination}`,
+      form.pickupDeadline ? `Pickup deadline: ${form.pickupDeadline}` : null,
       form.auctionSource ? `Auction source: ${form.auctionSource}` : null,
       form.lotNumber ? `Lot #: ${form.lotNumber}` : null,
-      type === "ocean" ? `Marine insurance: ${form.insurance ? "Yes" : "No"}` : `Run & drive: ${form.runDrive ? "Yes" : "No"}`,
+      type === "ocean" ? `Marine insurance: ${form.insurance ? "Yes" : "No"}` : null,
       `Contact: ${form.name}, ${form.email}, ${form.phone}`,
       form.notes ? `Notes: ${form.notes}` : null,
     ].filter(Boolean).join(" | ");
@@ -271,88 +279,124 @@ const Quote = () => {
               </div>
             </section>
 
+            {/* Location Details (inland first) */}
+            {type === "inland" && (
+              <section className="mt-8">
+                <h2 className="text-base font-semibold text-silver">Location Details</h2>
+                <p className="mt-1 text-sm text-muted-foreground">Pickup and destination information</p>
+                <div className="section-divider my-4" />
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className="mb-1.5 block text-xs text-muted-foreground">Pickup Location<Req /></label>
+                    <Input value={form.pickup} onChange={(e) => f("pickup", e.target.value)} className="auth-input" placeholder="e.g., Copart Dallas, TX" required maxLength={200} />
+                    <p className="mt-1.5 text-xs text-muted-foreground">Full address or auction yard name</p>
+                  </div>
+                  <div>
+                    <label className="mb-1.5 block text-xs text-muted-foreground">Destination Port<Req /></label>
+                    <Input value={form.destination} onChange={(e) => f("destination", e.target.value)} className="auth-input" placeholder="e.g., Houston, TX" required maxLength={200} />
+                  </div>
+                </div>
+              </section>
+            )}
+
             {/* Vehicle Information */}
             <section className="mt-8">
               <h2 className="text-base font-semibold text-silver">Vehicle Information</h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                Details about the vehicle you want to {type === "ocean" ? "ship" : "move"}
+                {type === "ocean"
+                  ? "Details about the vehicle you want to ship"
+                  : "Details about the vehicle to be transported"}
               </p>
               <div className="section-divider my-4" />
-              <div className="grid gap-4 sm:grid-cols-3">
-                <div>
-                  <label className="mb-1.5 block text-xs text-muted-foreground">Vehicle Type<Req /></label>
-                  <select value={form.vehicleType} onChange={(e) => f("vehicleType", e.target.value)} className={selectClass} required>
-                    <option value="">Select type</option>
-                    {vehicleTypes.map((v) => <option key={v} value={v}>{v}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className="mb-1.5 block text-xs text-muted-foreground">Make<Req /></label>
-                  <Input value={form.make} onChange={(e) => f("make", e.target.value)} className="auth-input" placeholder="e.g., Toyota" required maxLength={50} />
-                </div>
-                <div>
-                  <label className="mb-1.5 block text-xs text-muted-foreground">Model<Req /></label>
-                  <Input value={form.model} onChange={(e) => f("model", e.target.value)} className="auth-input" placeholder="e.g., Land Cruiser" required maxLength={50} />
-                </div>
-              </div>
-              <div className="mt-4 grid gap-4 sm:grid-cols-3">
-                <div>
-                  <label className="mb-1.5 block text-xs text-muted-foreground">Year<Req /></label>
-                  <Input type="number" value={form.year} onChange={(e) => f("year", e.target.value)} className="auth-input" placeholder="e.g., 2024" required min={1900} max={2030} />
-                </div>
-                <div className="sm:col-span-2">
-                  <label className="mb-1.5 block text-xs text-muted-foreground">VIN</label>
-                  <Input value={form.vin} onChange={(e) => f("vin", e.target.value)} className="auth-input" placeholder="Vehicle Identification Number" maxLength={17} />
-                  <p className="mt-1.5 text-xs text-muted-foreground">Optional - 17 characters</p>
-                </div>
-              </div>
+
+              {type === "ocean" ? (
+                <>
+                  <div className="grid gap-4 sm:grid-cols-3">
+                    <div>
+                      <label className="mb-1.5 block text-xs text-muted-foreground">Vehicle Type<Req /></label>
+                      <select value={form.vehicleType} onChange={(e) => f("vehicleType", e.target.value)} className={selectClass} required>
+                        <option value="">Select type</option>
+                        {vehicleTypes.map((v) => <option key={v} value={v}>{v}</option>)}
+                      </select>
+                    </div>
+                    <div>
+                      <label className="mb-1.5 block text-xs text-muted-foreground">Make<Req /></label>
+                      <Input value={form.make} onChange={(e) => f("make", e.target.value)} className="auth-input" placeholder="e.g., Toyota" required maxLength={50} />
+                    </div>
+                    <div>
+                      <label className="mb-1.5 block text-xs text-muted-foreground">Model<Req /></label>
+                      <Input value={form.model} onChange={(e) => f("model", e.target.value)} className="auth-input" placeholder="e.g., Land Cruiser" required maxLength={50} />
+                    </div>
+                  </div>
+                  <div className="mt-4 grid gap-4 sm:grid-cols-3">
+                    <div>
+                      <label className="mb-1.5 block text-xs text-muted-foreground">Year<Req /></label>
+                      <Input type="number" value={form.year} onChange={(e) => f("year", e.target.value)} className="auth-input" placeholder="e.g., 2024" required min={1900} max={2030} />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label className="mb-1.5 block text-xs text-muted-foreground">VIN</label>
+                      <Input value={form.vin} onChange={(e) => f("vin", e.target.value)} className="auth-input" placeholder="Vehicle Identification Number" maxLength={17} />
+                      <p className="mt-1.5 text-xs text-muted-foreground">Optional - 17 characters</p>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div>
+                      <label className="mb-1.5 block text-xs text-muted-foreground">Vehicle Condition<Req /></label>
+                      <select value={form.vehicleCondition} onChange={(e) => f("vehicleCondition", e.target.value)} className={selectClass} required>
+                        <option value="">Select condition</option>
+                        {vehicleConditions.map((c) => <option key={c} value={c}>{c}</option>)}
+                      </select>
+                      <p className="mt-1.5 text-xs text-muted-foreground">
+                        Non-drivable vehicles may require special equipment
+                      </p>
+                    </div>
+                    <div>
+                      <label className="mb-1.5 block text-xs text-muted-foreground">Vehicle Type<Req /></label>
+                      <select value={form.vehicleType} onChange={(e) => f("vehicleType", e.target.value)} className={selectClass} required>
+                        <option value="">Select type</option>
+                        {vehicleTypes.map((v) => <option key={v} value={v}>{v}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="mt-4 sm:max-w-xs">
+                    <label className="mb-1.5 block text-xs text-muted-foreground">VIN</label>
+                    <Input value={form.vin} onChange={(e) => f("vin", e.target.value)} className="auth-input" placeholder="Vehicle Identification Number" maxLength={17} />
+                    <p className="mt-1.5 text-xs text-muted-foreground">Optional - 17 characters</p>
+                  </div>
+                </>
+              )}
             </section>
 
-            {/* Shipping / Towing Details */}
-            <section className="mt-8">
-              <h2 className="text-base font-semibold text-silver">
-                {type === "ocean" ? "Shipping Details" : "Towing Details"}
-              </h2>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {type === "ocean"
-                  ? "Origin and destination ports for your shipment"
-                  : "Pickup and delivery locations for your vehicle"}
-              </p>
-              <div className="section-divider my-4" />
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div>
-                  <label className="mb-1.5 block text-xs text-muted-foreground">
-                    {type === "ocean" ? "Origin Port" : "Pickup Location"}<Req />
-                  </label>
-                  <Input
-                    value={form.pickup}
-                    onChange={(e) => f("pickup", e.target.value)}
-                    className="auth-input"
-                    placeholder={type === "ocean" ? "e.g., Los Angeles, USA" : "e.g., Copart Dallas, TX"}
-                    required
-                    maxLength={200}
-                  />
+            {/* Shipping Details (ocean) */}
+            {type === "ocean" && (
+              <section className="mt-8">
+                <h2 className="text-base font-semibold text-silver">Shipping Details</h2>
+                <p className="mt-1 text-sm text-muted-foreground">Origin and destination ports for your shipment</p>
+                <div className="section-divider my-4" />
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <label className="mb-1.5 block text-xs text-muted-foreground">Origin Port<Req /></label>
+                    <Input value={form.pickup} onChange={(e) => f("pickup", e.target.value)} className="auth-input" placeholder="e.g., Los Angeles, USA" required maxLength={200} />
+                  </div>
+                  <div>
+                    <label className="mb-1.5 block text-xs text-muted-foreground">Destination Port<Req /></label>
+                    <Input value={form.destination} onChange={(e) => f("destination", e.target.value)} className="auth-input" placeholder="e.g., Lagos, Nigeria" required maxLength={200} />
+                  </div>
                 </div>
-                <div>
-                  <label className="mb-1.5 block text-xs text-muted-foreground">
-                    {type === "ocean" ? "Destination Port" : "Delivery Destination"}<Req />
-                  </label>
-                  <Input
-                    value={form.destination}
-                    onChange={(e) => f("destination", e.target.value)}
-                    className="auth-input"
-                    placeholder={type === "ocean" ? "e.g., Lagos, Nigeria" : "e.g., Port of Houston, TX"}
-                    required
-                    maxLength={200}
-                  />
-                </div>
-              </div>
-            </section>
+              </section>
+            )}
 
             {/* Additional Information */}
             <section className="mt-8">
               <h2 className="text-base font-semibold text-silver">Additional Information</h2>
-              <p className="mt-1 text-sm text-muted-foreground">Optional details about your vehicle source</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {type === "ocean"
+                  ? "Optional details about your vehicle source"
+                  : "Optional details about your vehicle and pickup requirements"}
+              </p>
               <div className="section-divider my-4" />
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
@@ -368,8 +412,8 @@ const Quote = () => {
                 </div>
               </div>
 
-              <div className="mt-4">
-                {type === "ocean" ? (
+              {type === "ocean" ? (
+                <div className="mt-4">
                   <label className="flex items-center gap-3 text-sm text-muted-foreground">
                     <button
                       type="button"
@@ -380,19 +424,14 @@ const Quote = () => {
                     </button>
                     Marine insurance required?
                   </label>
-                ) : (
-                  <label className="flex items-center gap-3 text-sm text-muted-foreground">
-                    <button
-                      type="button"
-                      onClick={() => f("runDrive", !form.runDrive)}
-                      className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${form.runDrive ? "bg-primary" : "bg-surface-2 border border-border"}`}
-                    >
-                      <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-silver transition-transform ${form.runDrive ? "left-[22px]" : "left-0.5"}`} />
-                    </button>
-                    Vehicle runs and drives?
-                  </label>
-                )}
-              </div>
+                </div>
+              ) : (
+                <div className="mt-4 sm:max-w-xs">
+                  <label className="mb-1.5 block text-xs text-muted-foreground">Pickup Deadline</label>
+                  <Input type="date" value={form.pickupDeadline} onChange={(e) => f("pickupDeadline", e.target.value)} className="auth-input" />
+                  <p className="mt-1.5 text-xs text-muted-foreground">When does the vehicle need to be picked up?</p>
+                </div>
+              )}
 
               <div className="mt-4">
                 <label className="mb-1.5 block text-xs text-muted-foreground">Additional Notes</label>
@@ -402,7 +441,9 @@ const Quote = () => {
                   className="auth-input"
                   rows={4}
                   maxLength={1000}
-                  placeholder="Any special requirements, questions, or additional information..."
+                  placeholder={type === "ocean"
+                    ? "Any special requirements, questions, or additional information..."
+                    : "Any special requirements, access instructions, or additional information..."}
                 />
                 <p className="mt-1.5 text-xs text-muted-foreground">Maximum 1000 characters</p>
               </div>
@@ -410,8 +451,9 @@ const Quote = () => {
 
             {/* Disclaimer */}
             <div className="mt-8 rounded-lg border border-border bg-surface-2/40 p-4 text-sm text-muted-foreground">
-              Quotes are estimates and subject to final confirmation. Final pricing may vary based on
-              vehicle condition, shipping schedules, and port fees.
+              {type === "ocean"
+                ? "Quotes are estimates and subject to final confirmation. Final pricing may vary based on vehicle condition, shipping schedules, and port fees."
+                : "Quotes are estimates and subject to final confirmation. Final pricing may vary based on vehicle condition, distance, and special handling requirements."}
             </div>
 
             {/* Actions */}
