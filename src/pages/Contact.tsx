@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import PublicLayout from "@/components/PublicLayout";
@@ -24,7 +25,8 @@ const Contact = () => {
       <div className="mx-auto max-w-2xl px-4 py-16">
         <h1 className="text-3xl text-silver">Contact Us</h1>
         <p className="mt-2 text-muted-foreground">
-          Have a question or need a quote? Fill out the form and we'll respond within 24 hours.
+          Have a question? Fill out the form and we'll respond within 24 hours. Need pricing?{" "}
+          <Link to="/quote" className="text-gold hover:underline">Request a quote</Link>.
         </p>
 
         <form onSubmit={handleSubmit} className="mt-8 rounded-xl border border-border bg-card p-6 space-y-4">

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -37,9 +38,13 @@ const serviceOptions: {
 
 const Quote = () => {
   const { user } = useAuth();
-  const [step, setStep] = useState<"select" | "form">("select");
-  const [selected, setSelected] = useState<QuoteType | null>(null);
-  const [type, setType] = useState<QuoteType>("ocean");
+  const [searchParams] = useSearchParams();
+  const paramType = searchParams.get("type");
+  const initialType: QuoteType | null =
+    paramType === "ocean" || paramType === "inland" ? paramType : null;
+  const [step, setStep] = useState<"select" | "form">(initialType ? "form" : "select");
+  const [selected, setSelected] = useState<QuoteType | null>(initialType);
+  const [type, setType] = useState<QuoteType>(initialType ?? "ocean");
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 

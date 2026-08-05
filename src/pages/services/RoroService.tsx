@@ -50,7 +50,7 @@ const RoroService = () => (
         <Link to="/schedule">
           <Button variant="copper-outline" size="lg">View Schedule</Button>
         </Link>
-        <Link to="/contact">
+        <Link to="/quote?type=ocean">
           <Button variant="copper" size="lg">Get Shipping Quote</Button>
         </Link>
       </div>

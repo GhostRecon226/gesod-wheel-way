@@ -46,7 +46,7 @@ const TowingService = () => (
       </div>
 
       <div className="mt-10 text-center">
-        <Link to="/contact">
+        <Link to="/quote?type=inland">
           <Button variant="copper" size="lg">Get Towing Quote</Button>
         </Link>
       </div>
