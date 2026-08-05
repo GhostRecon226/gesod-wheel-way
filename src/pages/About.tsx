@@ -112,9 +112,11 @@ const About = () => {
             About GESOD RIDES
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
-            GESOD RIDES is a vehicle sourcing and logistics facilitation company. We connect
-            customers with auction opportunities and coordinate the movement of vehicles from
-            U.S. auctions to destinations worldwide.
+            GESOD RIDES is a vehicle sourcing and logistics facilitation company. We assist
+            customers in purchasing vehicles from trusted USA partners and coordinate the movement
+            of vehicles from across the USA to destinations worldwide. Our focus is efficient,
+            cost-effective solutions that help customers save money and simplify the burden of
+            vehicle importation.
           </p>
         </div>
       </section>
