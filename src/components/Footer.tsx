@@ -21,6 +21,7 @@ const Footer = () => (
           <ul className="space-y-2">
             {[
               { label: "Listings", to: "/listings" },
+              { label: "How It Works", to: "/how-it-works" },
               { label: "Track VIN", to: "/track" },
               { label: "Sailing Schedule", to: "/schedule" },
               { label: "FAQ", to: "/faq" },
