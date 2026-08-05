@@ -10,10 +10,17 @@ const Footer = () => (
             <span className="text-silver">GESOD</span>{" "}
             <span className="text-gold">RIDES</span>
           </Link>
-          <p className="mt-3 text-sm text-muted-foreground">
-            Your trusted vehicle import partner. Sourcing, bidding, shipping, and clearing vehicles from the US to Nigeria.
+          <p className="mt-3 text-left text-sm leading-relaxed text-muted-foreground">
+            Vehicle sourcing and logistics facilitation. We coordinate auction bidding, inland
+            transport, and ocean freight services for clients importing vehicles from the United
+            States.
+          </p>
+          <p className="mt-3 text-left text-sm leading-relaxed text-muted-foreground">
+            GESOD RIDES is a logistics facilitation company. We do not own vehicles or transport
+            equipment. All services are provided in coordination with third-party partners.
           </p>
         </div>
+
 
         {/* Quick Links */}
         <div>
