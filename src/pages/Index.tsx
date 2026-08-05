@@ -98,6 +98,26 @@ const Index = () => (
       </div>
     </section>
 
+    {/* Positioning */}
+    <section className="border-b border-border py-16">
+      <div className="mx-auto max-w-4xl px-4">
+        <h2 className="text-2xl font-bold text-silver md:text-3xl">
+          GESOD RIDES coordinates vehicle imports to Nigeria from all over the USA — from
+          auctions, dealerships, or other sources.
+        </h2>
+        <ul className="mt-8 space-y-4">
+          {highlights.map((h) => (
+            <li key={h} className="flex items-start gap-3">
+              <CheckCircle2 className="mt-1 shrink-0 text-gold" size={18} />
+              <span className="text-muted-foreground">{h}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+
+
     {/* How It Works */}
     <section className="py-20">
       <div className="mx-auto max-w-6xl px-4">
