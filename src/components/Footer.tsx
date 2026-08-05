@@ -82,6 +82,25 @@ const Footer = () => (
         </div>
       </div>
 
+      <div className="section-divider mt-8 grid gap-2 pt-6 text-sm text-muted-foreground sm:grid-cols-3">
+        <p>
+          <span className="text-silver">Email: </span>
+          <a href="mailto:contact@gesodrides.com" className="no-underline hover:text-gold">
+            contact@gesodrides.com
+          </a>
+        </p>
+        <p>
+          <span className="text-silver">Phone: </span>
+          +1 (302) 293-7210 or +234 809 394 3763
+        </p>
+        <p>
+          <span className="text-silver">Hours: </span>
+          Mon–Fri: 9:00 AM – 6:00 PM EST
+        </p>
+      </div>
+
+
+
       <div className="section-divider mt-8 pt-6 text-center text-xs text-muted-foreground">
         © {new Date().getFullYear()} GESOD RIDES. All rights reserved.
       </div>
