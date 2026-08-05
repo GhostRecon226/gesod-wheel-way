@@ -74,6 +74,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setUser(session?.user ?? null);
       if (session?.user) {
         fetchUserProfile(session.user.id);
+      } else {
+        setRoleLoading(false);
       }
       setLoading(false);
     });
@@ -87,10 +89,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(null);
     setUserRole(null);
     setUserName(null);
+    setRoleLoading(false);
   };
 
   return (
-    <AuthContext.Provider value={{ session, user, userRole, userName, loading, signOut }}>
+    <AuthContext.Provider value={{ session, user, userRole, userName, loading, roleLoading, signOut }}>
       {children}
     </AuthContext.Provider>
   );
