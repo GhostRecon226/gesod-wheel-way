@@ -185,6 +185,20 @@ const Index = () => (
       </div>
     </section>
 
+    {/* Facilitation notice */}
+    <section className="border-y border-border bg-card py-14">
+      <div className="mx-auto flex max-w-4xl items-start gap-4 px-4">
+        <Info className="mt-1 shrink-0 text-copper" size={28} />
+        <p className="text-lg leading-relaxed text-silver md:text-xl">
+          GESOD RIDES is a logistics facilitation company. We coordinate services between clients
+          and third-party providers including auction houses, shipping lines, and transport
+          carriers. All quotes are estimates subject to final confirmation. Timelines are
+          indicative and may vary based on external factors.
+        </p>
+      </div>
+    </section>
+
+
     {/* CTA Banner */}
     <section className="bg-primary py-16">
       <div className="mx-auto max-w-3xl px-4 text-center">
