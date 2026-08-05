@@ -6,9 +6,14 @@ import { Button } from "@/components/ui/button";
 const BiddingService = () => (
   <PublicLayout>
     <div className="mx-auto max-w-4xl px-4 py-16">
-      <h1 className="text-3xl text-silver">Auction Bidding Service</h1>
+      <h1 className="text-3xl text-silver">Vehicle Sourcing & Auction Bidding Support</h1>
       <p className="mt-3 text-lg text-muted-foreground">
-        We bid on your behalf at major US auto auctions — Copart, IAAI, and Manheim.
+        We provide access to salvage and clean-title vehicles at major US auto auctions — Copart,
+        IAAI, and Manheim — and bid on your behalf using the maximum bid amount you provide.
+      </p>
+      <p className="mt-3 text-lg text-muted-foreground">
+        GESOD RIDES can also help source and coordinate outright purchase of vehicles from dealers
+        all across the USA.
       </p>
 
       <div className="mt-10 grid gap-6 sm:grid-cols-2">

@@ -10,10 +10,17 @@ const Footer = () => (
             <span className="text-silver">GESOD</span>{" "}
             <span className="text-gold">RIDES</span>
           </Link>
-          <p className="mt-3 text-sm text-muted-foreground">
-            Your trusted vehicle import partner. Sourcing, bidding, shipping, and clearing vehicles from the US to Nigeria.
+          <p className="mt-3 text-left text-sm leading-relaxed text-muted-foreground">
+            Vehicle sourcing and logistics facilitation. We coordinate auction bidding, inland
+            transport, and ocean freight services for clients importing vehicles from the United
+            States.
+          </p>
+          <p className="mt-3 text-left text-sm leading-relaxed text-muted-foreground">
+            GESOD RIDES is a logistics facilitation company. We do not own vehicles or transport
+            equipment. All services are provided in coordination with third-party partners.
           </p>
         </div>
+
 
         {/* Quick Links */}
         <div>
@@ -41,9 +48,9 @@ const Footer = () => (
           <h4 className="mb-3 text-sm font-semibold text-silver">Services</h4>
           <ul className="space-y-2">
             {[
-              { label: "Auction Bidding", to: "/services/bidding" },
-              { label: "RORO Shipping", to: "/services/roro" },
-              { label: "Inland Towing", to: "/services/towing" },
+              { label: "Vehicle Sourcing", to: "/services/bidding" },
+              { label: "Ocean Freight (RORO/Container)", to: "/services/roro" },
+              { label: "Inland Transportation", to: "/services/towing" },
               { label: "Get a Quote", to: "/quote" },
             ].map((l) => (
               <li key={l.to}>
@@ -74,6 +81,25 @@ const Footer = () => (
           </ul>
         </div>
       </div>
+
+      <div className="section-divider mt-8 grid gap-2 pt-6 text-sm text-muted-foreground sm:grid-cols-3">
+        <p>
+          <span className="text-silver">Email: </span>
+          <a href="mailto:contact@gesodrides.com" className="no-underline hover:text-gold">
+            contact@gesodrides.com
+          </a>
+        </p>
+        <p>
+          <span className="text-silver">Phone: </span>
+          +1 (302) 293-7210 or +234 809 394 3763
+        </p>
+        <p>
+          <span className="text-silver">Hours: </span>
+          Mon–Fri: 9:00 AM – 6:00 PM EST
+        </p>
+      </div>
+
+
 
       <div className="section-divider mt-8 pt-6 text-center text-xs text-muted-foreground">
         © {new Date().getFullYear()} GESOD RIDES. All rights reserved.

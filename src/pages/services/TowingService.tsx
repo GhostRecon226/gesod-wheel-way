@@ -6,9 +6,10 @@ import { Button } from "@/components/ui/button";
 const TowingService = () => (
   <PublicLayout>
     <div className="mx-auto max-w-4xl px-4 py-16">
-      <h1 className="text-3xl text-silver">Inland Towing</h1>
+      <h1 className="text-3xl text-silver">Inland Transportation</h1>
       <p className="mt-3 text-lg text-muted-foreground">
-        We transport your purchased vehicle from the auction yard to the nearest US departure port.
+        We transport your vehicle from anywhere in the USA to your preferred destination or the
+        departure port of your choice.
       </p>
 
       <div className="mt-10 grid gap-6 sm:grid-cols-3">
@@ -16,7 +17,8 @@ const TowingService = () => (
           <Truck className="mx-auto text-copper" size={32} />
           <h3 className="mt-3 text-silver">Pickup</h3>
           <p className="mt-2 text-sm text-muted-foreground">
-            We arrange flatbed or drive-away pickup from any Copart or IAAI yard in the US.
+            We arrange flatbed or drive-away pickup from auction yards, dealerships, or any
+            location in the USA.
           </p>
         </div>
         <div className="rounded-xl border border-border bg-card p-6 text-center">

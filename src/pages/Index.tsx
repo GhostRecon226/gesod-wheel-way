@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Search, Gavel, Ship, Truck, ShieldCheck, Users, Globe, ArrowRight } from "lucide-react";
+import { Search, Gavel, Ship, Truck, ShieldCheck, Users, Globe, ArrowRight, CheckCircle2, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PublicLayout from "@/components/PublicLayout";
 import heroBg from "@/assets/hero-bg.jpg";
@@ -32,10 +32,28 @@ const steps = [
 ];
 
 
+const highlights = [
+  "Vehicle sourcing & auction bidding support — we can source vehicles from trusted partners all over the USA to meet your specifications",
+  "Ocean shipping — ocean freight from U.S. ports to international destinations using container or RORO (Roll-on/Roll-off)",
+  "Inland transportation — vehicle transport from anywhere in the USA to your preferred destination or loading port",
+];
+
 const services = [
-  { icon: Gavel, title: "Auction Bidding", desc: "Professional bid-on-behalf service across Copart, IAAI, and Manheim." },
-  { icon: Ship, title: "RORO Shipping", desc: "Roll-on/Roll-off ocean freight from US ports to Lagos, Onne, and more." },
-  { icon: Truck, title: "Inland Towing", desc: "Auction yard pickup and transport to the nearest US departure port." },
+  {
+    icon: Gavel,
+    title: "Vehicle Sourcing Support",
+    desc: "We can source vehicles from dealerships, auctions, or other sources. We place bids on your behalf at U.S. vehicle auctions — you provide your maximum bid amount and we handle the bidding process.",
+  },
+  {
+    icon: Ship,
+    title: "Ocean Freight (RORO/Container)",
+    desc: "We ship your vehicles via Roll-on/Roll-off or container from U.S. ports to international destinations, coordinating with shipping lines to move your vehicle overseas.",
+  },
+  {
+    icon: Truck,
+    title: "Inland Transportation",
+    desc: "We pick your vehicle up from auction yards, dealerships, or anywhere in the USA and deliver it to the departure port or your preferred drop-off location.",
+  },
 ];
 
 const stats = [
@@ -79,6 +97,26 @@ const Index = () => (
         </div>
       </div>
     </section>
+
+    {/* Positioning */}
+    <section className="border-b border-border py-16">
+      <div className="mx-auto max-w-4xl px-4">
+        <h2 className="text-2xl font-bold text-silver md:text-3xl">
+          GESOD RIDES coordinates vehicle imports to Nigeria from all over the USA — from
+          auctions, dealerships, or other sources.
+        </h2>
+        <ul className="mt-8 space-y-4">
+          {highlights.map((h) => (
+            <li key={h} className="flex items-start gap-3">
+              <CheckCircle2 className="mt-1 shrink-0 text-gold" size={18} />
+              <span className="text-muted-foreground">{h}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+
 
     {/* How It Works */}
     <section className="py-20">
@@ -146,6 +184,20 @@ const Index = () => (
         </div>
       </div>
     </section>
+
+    {/* Facilitation notice */}
+    <section className="border-y border-border bg-card py-14">
+      <div className="mx-auto flex max-w-4xl items-start gap-4 px-4">
+        <Info className="mt-1 shrink-0 text-copper" size={28} />
+        <p className="text-lg leading-relaxed text-silver md:text-xl">
+          GESOD RIDES is a logistics facilitation company. We coordinate services between clients
+          and third-party providers including auction houses, shipping lines, and transport
+          carriers. All quotes are estimates subject to final confirmation. Timelines are
+          indicative and may vary based on external factors.
+        </p>
+      </div>
+    </section>
+
 
     {/* CTA Banner */}
     <section className="bg-primary py-16">

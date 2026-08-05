@@ -26,8 +26,8 @@ const approach = [
 const services = [
   {
     icon: Search,
-    title: "Auction Sourcing Support",
-    desc: "We help you identify vehicles from major U.S. auction platforms like Copart and IAAI. We provide information on available listings to help you make informed decisions.",
+    title: "Vehicle Sourcing Support",
+    desc: "We help you source vehicles from auto dealers and major U.S. auction platforms like Copart and IAAI. We provide information on available listings to help you make informed decisions.",
   },
   {
     icon: Gavel,
@@ -41,8 +41,8 @@ const services = [
   },
   {
     icon: MapPin,
-    title: "Inland Vehicle Towing",
-    desc: "We arrange ground transportation from auction yards to ports or designated pickup locations within the United States. Pricing depends on distance and vehicle condition.",
+    title: "Inland Vehicle Transportation",
+    desc: "We arrange inland ground transportation from anywhere in the USA to ports or designated drop-off locations within the United States. Pricing depends on distance and vehicle condition.",
   },
 ];
 
@@ -112,9 +112,11 @@ const About = () => {
             About GESOD RIDES
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
-            GESOD RIDES is a vehicle sourcing and logistics facilitation company. We connect
-            customers with auction opportunities and coordinate the movement of vehicles from
-            U.S. auctions to destinations worldwide.
+            GESOD RIDES is a vehicle sourcing and logistics facilitation company. We assist
+            customers in purchasing vehicles from trusted USA partners and coordinate the movement
+            of vehicles from across the USA to destinations worldwide. Our focus is efficient,
+            cost-effective solutions that help customers save money and simplify the burden of
+            vehicle importation.
           </p>
         </div>
       </section>
