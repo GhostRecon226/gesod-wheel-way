@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import {
-  Car, Gavel, FileText, CreditCard, AlertTriangle, Bell, ClipboardList,
+  Car, Gavel, FileText, CreditCard, AlertTriangle, Bell, ClipboardList, Eye,
   LogOut, Menu, X, ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -15,12 +15,14 @@ import CustomerDocuments from "@/components/customer/CustomerDocuments";
 import CustomerPayments from "@/components/customer/CustomerPayments";
 import CustomerDisputes from "@/components/customer/CustomerDisputes";
 import CustomerNotifications from "@/components/customer/CustomerNotifications";
+import CustomerWatchlist from "@/components/customer/CustomerWatchlist";
 import { can, type Module } from "@/lib/permissions";
 import { useRealtimeAlerts } from "@/hooks/useRealtimeAlerts";
 
 const SECTIONS = [
   { key: "vehicles", label: "My Vehicles", icon: Car },
   { key: "bids", label: "Bid Requests", icon: Gavel },
+  { key: "watchlist", label: "Watchlist", icon: Eye },
   { key: "quotes", label: "Quote Requests", icon: ClipboardList },
   { key: "documents", label: "Documents", icon: FileText },
   { key: "payments", label: "Payments", icon: CreditCard },
@@ -66,6 +68,7 @@ const CustomerDashboard = () => {
     switch (active) {
       case "vehicles": return <CustomerVehicles />;
       case "bids": return <CustomerBids key={refreshKey} />;
+      case "watchlist": return <CustomerWatchlist key={refreshKey} />;
       case "quotes": return <CustomerQuotes />;
       case "documents": return <CustomerDocuments />;
       case "payments": return <CustomerPayments />;

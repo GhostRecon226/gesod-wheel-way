@@ -104,6 +104,44 @@ export type Database = {
         }
         Relationships: []
       }
+      auction_watchlist: {
+        Row: {
+          created_at: string
+          id: string
+          listing_id: string
+          notified_end_at: string | null
+          notified_start_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          listing_id: string
+          notified_end_at?: string | null
+          notified_start_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          listing_id?: string
+          notified_end_at?: string | null
+          notified_start_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "auction_watchlist_listing_id_fkey"
+            columns: ["listing_id"]
+            isOneToOne: false
+            referencedRelation: "auction_listings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bid_requests: {
         Row: {
           admin_notes: string | null

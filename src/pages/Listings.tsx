@@ -9,11 +9,13 @@ import { Loader } from "@/components/Spinner";
 import ListingCard from "@/components/listings/ListingCard";
 import { resolveListingImages } from "@/lib/listingImages";
 import { AuctionListing, listingTitle } from "@/lib/listings";
+import { useWatchlist } from "@/hooks/useWatchlist";
 
 const Listings = () => {
   const [listings, setListings] = useState<AuctionListing[]>([]);
   const [covers, setCovers] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
+  const { isWatching, toggle, busyId } = useWatchlist();
   const [bidModal, setBidModal] = useState<{ open: boolean; id: string; title: string }>({
     open: false,
     id: "",
@@ -102,6 +104,9 @@ const Listings = () => {
                 listing={v}
                 imageUrl={covers[v.id]}
                 onRequestBid={openBid}
+                watching={isWatching(v.id)}
+                watchBusy={busyId === v.id}
+                onToggleWatch={(l) => toggle(l.id, listingTitle(l))}
               />
             ))}
           </div>

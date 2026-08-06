@@ -12,6 +12,7 @@ export type Module =
   | "disputes"
   | "schedules"
   | "notifications"
+  | "watchlist"
   | "reports"
   | "import";
 
@@ -36,6 +37,7 @@ export const PERMISSIONS: Matrix = {
     disputes: ["view", "edit", "delete", "export"],
     schedules: ["view", "create", "edit", "delete", "export"],
     notifications: ["view", "create", "edit"],
+    watchlist: ["view"],
     reports: ["view", "export"],
     import: ["view", "edit", "export"],
   },
@@ -49,6 +51,7 @@ export const PERMISSIONS: Matrix = {
     disputes: ["view", "create"],
     schedules: ["view"],
     notifications: ["view", "edit"],
+    watchlist: ["view", "create", "delete"],
   },
 };
 

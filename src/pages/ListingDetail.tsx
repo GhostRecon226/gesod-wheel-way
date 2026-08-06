@@ -13,6 +13,8 @@ import { resolveListingImages } from "@/lib/listingImages";
 import { AuctionListing, formatMiles, formatUsd, listingTitle } from "@/lib/listings";
 import { maskVin } from "@/lib/vin";
 import NotFound from "@/pages/NotFound";
+import WatchButton from "@/components/listings/WatchButton";
+import { useWatchlist } from "@/hooks/useWatchlist";
 
 
 const Row = ({ label, value }: { label: string; value: string | null | undefined }) => (
@@ -45,6 +47,7 @@ const ListingDetail = () => {
   const [images, setImages] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [bidOpen, setBidOpen] = useState(false);
+  const { isWatching, toggle, busyId } = useWatchlist();
 
   useEffect(() => {
     let active = true;
@@ -109,15 +112,23 @@ const ListingDetail = () => {
               )}
             </div>
           </div>
-          {biddingClosed ? (
-            <span className="rounded-full border border-border bg-surface-2 px-3 py-2 text-sm text-muted-foreground">
-              Bidding closed
-            </span>
-          ) : (
-            <Button variant="copper" onClick={() => setBidOpen(true)}>
-              Request Bid
-            </Button>
-          )}
+          <div className="flex items-center gap-2">
+            <WatchButton
+              size="default"
+              watching={isWatching(listing.id)}
+              busy={busyId === listing.id}
+              onToggle={() => toggle(listing.id, title)}
+            />
+            {biddingClosed ? (
+              <span className="rounded-full border border-border bg-surface-2 px-3 py-2 text-sm text-muted-foreground">
+                Bidding closed
+              </span>
+            ) : (
+              <Button variant="copper" onClick={() => setBidOpen(true)}>
+                Request Bid
+              </Button>
+            )}
+          </div>
         </div>
 
 
