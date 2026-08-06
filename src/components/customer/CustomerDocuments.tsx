@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { Upload } from "lucide-react";
+import { uploadVehicleDocument, openDocument } from "@/lib/documentStorage";
 
 interface DocRow {
   id: string;
