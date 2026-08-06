@@ -34,7 +34,7 @@ test.describe("admin dashboard", () => {
 
     for (const section of ADMIN_SECTIONS) {
       await page.getByRole("button", { name: section, exact: true }).click();
-      await expect(page.getByRole("heading", { name: section })).toBeVisible();
+      await expect(page.getByRole("heading", { name: section }).first()).toBeVisible();
       // No section may be stuck on its loading state.
       await expect(page.getByRole("status")).toHaveCount(0, { timeout: 20_000 });
     }
@@ -64,7 +64,7 @@ for (const customer of CUSTOMERS) {
 
       for (const section of CUSTOMER_SECTIONS) {
         await page.getByRole("button", { name: section, exact: true }).click();
-        await expect(page.getByRole("heading", { name: section })).toBeVisible();
+        await expect(page.getByRole("heading", { name: section }).first()).toBeVisible();
         await expect(page.getByRole("status")).toHaveCount(0, { timeout: 20_000 });
       }
 
@@ -84,7 +84,7 @@ for (const customer of CUSTOMERS) {
 
       for (const section of ["My Vehicles", "Bid Requests", "Quote Requests", "Payments", "Disputes"]) {
         await page.getByRole("button", { name: section, exact: true }).click();
-        await expect(page.getByRole("heading", { name: section })).toBeVisible();
+        await expect(page.getByRole("heading", { name: section }).first()).toBeVisible();
         const body = (await page.locator("main").innerText()).toLowerCase();
         for (const other of others) {
           expect(body, `${section} exposed ${other.email}`).not.toContain(other.email.toLowerCase());
