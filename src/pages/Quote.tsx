@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import PublicLayout from "@/components/PublicLayout";
+import FieldError from "@/components/FieldError";
 import { CheckCircle, FileQuestion, Ship, Truck, ArrowRight, ArrowLeft, Info } from "lucide-react";
 
 type QuoteType = "ocean" | "inland";
@@ -73,16 +74,49 @@ const Quote = () => {
   const [type, setType] = useState<QuoteType>(initialType ?? "ocean");
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const [form, setForm] = useState({ ...emptyForm });
 
-  const f = (k: string, v: string | boolean) => setForm({ ...form, [k]: v });
+  const f = (k: string, v: string | boolean) => {
+    setForm({ ...form, [k]: v });
+    if (errors[k]) setErrors((prev) => ({ ...prev, [k]: "" }));
+  };
 
   const service = serviceOptions.find((s) => s.id === type)!;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.name.trim() || !form.email.trim()) return;
+
+    const requiredFields: { key: string; label: string }[] = [
+      { key: "name", label: "Full name" },
+      { key: "email", label: "Email address" },
+      { key: "phone", label: "Phone number" },
+      { key: "vehicleType", label: "Vehicle type" },
+      ...(type === "ocean"
+        ? [
+            { key: "make", label: "Make" },
+            { key: "model", label: "Model" },
+            { key: "year", label: "Year" },
+            { key: "pickup", label: "Origin port" },
+            { key: "destination", label: "Destination port" },
+          ]
+        : [
+            { key: "vehicleCondition", label: "Vehicle condition" },
+            { key: "pickup", label: "Pickup location" },
+            { key: "destination", label: "Destination port" },
+          ]),
+    ];
+
+    const nextErrors: Record<string, string> = {};
+    requiredFields.forEach(({ key, label }) => {
+      if (!String((form as Record<string, any>)[key] ?? "").trim()) {
+        nextErrors[key] = `${label} is required.`;
+      }
+    });
+    setErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) return;
+
     setSubmitting(true);
 
     const vehicleDetails = [
@@ -246,7 +280,7 @@ const Quote = () => {
             <Button variant="copper" className="mt-6" onClick={resetForm}>Submit Another</Button>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="mt-6 rounded-xl border border-border bg-card p-6 sm:p-8">
+          <form onSubmit={handleSubmit} noValidate className="mt-6 rounded-xl border border-border bg-card p-6 sm:p-8">
             {/* Header */}
             <div className="flex items-center gap-4">
               <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-border bg-surface-2">
@@ -266,15 +300,18 @@ const Quote = () => {
               <div className="grid gap-4 sm:grid-cols-3">
                 <div>
                   <label className="mb-1.5 block text-xs text-muted-foreground">Full Name<Req /></label>
-                  <Input value={form.name} onChange={(e) => f("name", e.target.value)} className="auth-input" placeholder="John Doe" required maxLength={100} />
+                  <Input value={form.name} onChange={(e) => f("name", e.target.value)} className="auth-input" placeholder="John Doe" maxLength={100} />
+                      <FieldError message={errors.name} />
                 </div>
                 <div>
                   <label className="mb-1.5 block text-xs text-muted-foreground">Email Address<Req /></label>
-                  <Input type="email" value={form.email} onChange={(e) => f("email", e.target.value)} className="auth-input" placeholder="john@example.com" required maxLength={255} />
+                  <Input type="email" value={form.email} onChange={(e) => f("email", e.target.value)} className="auth-input" placeholder="john@example.com" maxLength={255} />
+                      <FieldError message={errors.email} />
                 </div>
                 <div>
                   <label className="mb-1.5 block text-xs text-muted-foreground">Phone Number<Req /></label>
-                  <Input value={form.phone} onChange={(e) => f("phone", e.target.value)} className="auth-input" placeholder="+1 (555) 123-4567" required maxLength={20} />
+                  <Input value={form.phone} onChange={(e) => f("phone", e.target.value)} className="auth-input" placeholder="+1 (555) 123-4567" maxLength={20} />
+                      <FieldError message={errors.phone} />
                 </div>
               </div>
             </section>
@@ -288,12 +325,14 @@ const Quote = () => {
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
                     <label className="mb-1.5 block text-xs text-muted-foreground">Pickup Location<Req /></label>
-                    <Input value={form.pickup} onChange={(e) => f("pickup", e.target.value)} className="auth-input" placeholder="e.g., Copart Dallas, TX" required maxLength={200} />
+                    <Input value={form.pickup} onChange={(e) => f("pickup", e.target.value)} className="auth-input" placeholder="e.g., Copart Dallas, TX" maxLength={200} />
+                    <FieldError message={errors.pickup} />
                     <p className="mt-1.5 text-xs text-muted-foreground">Full address or auction yard name</p>
                   </div>
                   <div>
                     <label className="mb-1.5 block text-xs text-muted-foreground">Destination Port<Req /></label>
-                    <Input value={form.destination} onChange={(e) => f("destination", e.target.value)} className="auth-input" placeholder="e.g., Houston, TX" required maxLength={200} />
+                    <Input value={form.destination} onChange={(e) => f("destination", e.target.value)} className="auth-input" placeholder="e.g., Houston, TX" maxLength={200} />
+                    <FieldError message={errors.destination} />
                   </div>
                 </div>
               </section>
@@ -314,24 +353,28 @@ const Quote = () => {
                   <div className="grid gap-4 sm:grid-cols-3">
                     <div>
                       <label className="mb-1.5 block text-xs text-muted-foreground">Vehicle Type<Req /></label>
-                      <select value={form.vehicleType} onChange={(e) => f("vehicleType", e.target.value)} className={selectClass} required>
+                      <select value={form.vehicleType} onChange={(e) => f("vehicleType", e.target.value)} className={selectClass}>
                         <option value="">Select type</option>
                         {vehicleTypes.map((v) => <option key={v} value={v}>{v}</option>)}
                       </select>
+                      <FieldError message={errors.vehicleType} />
                     </div>
                     <div>
                       <label className="mb-1.5 block text-xs text-muted-foreground">Make<Req /></label>
-                      <Input value={form.make} onChange={(e) => f("make", e.target.value)} className="auth-input" placeholder="e.g., Toyota" required maxLength={50} />
+                      <Input value={form.make} onChange={(e) => f("make", e.target.value)} className="auth-input" placeholder="e.g., Toyota" maxLength={50} />
+                      <FieldError message={errors.make} />
                     </div>
                     <div>
                       <label className="mb-1.5 block text-xs text-muted-foreground">Model<Req /></label>
-                      <Input value={form.model} onChange={(e) => f("model", e.target.value)} className="auth-input" placeholder="e.g., Land Cruiser" required maxLength={50} />
+                      <Input value={form.model} onChange={(e) => f("model", e.target.value)} className="auth-input" placeholder="e.g., Land Cruiser" maxLength={50} />
+                      <FieldError message={errors.model} />
                     </div>
                   </div>
                   <div className="mt-4 grid gap-4 sm:grid-cols-3">
                     <div>
                       <label className="mb-1.5 block text-xs text-muted-foreground">Year<Req /></label>
-                      <Input type="number" value={form.year} onChange={(e) => f("year", e.target.value)} className="auth-input" placeholder="e.g., 2024" required min={1900} max={2030} />
+                      <Input type="number" value={form.year} onChange={(e) => f("year", e.target.value)} className="auth-input" placeholder="e.g., 2024" min={1900} max={2030} />
+                      <FieldError message={errors.year} />
                     </div>
                     <div className="sm:col-span-2">
                       <label className="mb-1.5 block text-xs text-muted-foreground">VIN</label>
@@ -345,20 +388,22 @@ const Quote = () => {
                   <div className="grid gap-4 sm:grid-cols-2">
                     <div>
                       <label className="mb-1.5 block text-xs text-muted-foreground">Vehicle Condition<Req /></label>
-                      <select value={form.vehicleCondition} onChange={(e) => f("vehicleCondition", e.target.value)} className={selectClass} required>
+                      <select value={form.vehicleCondition} onChange={(e) => f("vehicleCondition", e.target.value)} className={selectClass}>
                         <option value="">Select condition</option>
                         {vehicleConditions.map((c) => <option key={c} value={c}>{c}</option>)}
                       </select>
                       <p className="mt-1.5 text-xs text-muted-foreground">
                         Non-drivable vehicles may require special equipment
                       </p>
+                      <FieldError message={errors.vehicleCondition} />
                     </div>
                     <div>
                       <label className="mb-1.5 block text-xs text-muted-foreground">Vehicle Type<Req /></label>
-                      <select value={form.vehicleType} onChange={(e) => f("vehicleType", e.target.value)} className={selectClass} required>
+                      <select value={form.vehicleType} onChange={(e) => f("vehicleType", e.target.value)} className={selectClass}>
                         <option value="">Select type</option>
                         {vehicleTypes.map((v) => <option key={v} value={v}>{v}</option>)}
                       </select>
+                      <FieldError message={errors.vehicleType} />
                     </div>
                   </div>
                   <div className="mt-4 sm:max-w-xs">
@@ -379,7 +424,8 @@ const Quote = () => {
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
                     <label className="mb-1.5 block text-xs text-muted-foreground">Origin Port<Req /></label>
-                    <Input value={form.pickup} onChange={(e) => f("pickup", e.target.value)} className="auth-input" placeholder="e.g., Los Angeles, USA" required maxLength={200} />
+                    <Input value={form.pickup} onChange={(e) => f("pickup", e.target.value)} className="auth-input" placeholder="e.g., Los Angeles, USA" maxLength={200} />
+                    <FieldError message={errors.pickup} />
                   </div>
                   <div>
                     <label className="mb-1.5 block text-xs text-muted-foreground">Destination Port<Req /></label>
