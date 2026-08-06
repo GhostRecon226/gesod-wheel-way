@@ -76,6 +76,13 @@ const CustomerDocuments = () => {
     }
   };
 
+
+  const viewDoc = async (fileUrl: string) => {
+    const url = await openDocument(fileUrl);
+    if (!url) { toast({ title: "Unable to open document", description: "The file link could not be verified.", variant: "destructive" }); return; }
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
+
   const vehicleLabel = (id: string) => {
     const v = vehicles.find((x) => x.id === id);
     if (!v) return "-";

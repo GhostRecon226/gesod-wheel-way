@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { openDocument } from "@/lib/documentStorage";
 import { supabase } from "@/integrations/supabase/client";
 import { ChevronRight } from "lucide-react";
 
