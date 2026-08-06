@@ -59,16 +59,20 @@ const CustomerDashboard = () => {
 
 
   const renderContent = () => {
+    if (!can(userRole, active as Module)) {
+      return <p className="text-muted-foreground">You do not have permission to view this module.</p>;
+    }
     switch (active) {
       case "vehicles": return <CustomerVehicles />;
-      case "bids": return <CustomerBids />;
+      case "bids": return <CustomerBids key={refreshKey} />;
       case "quotes": return <CustomerQuotes />;
       case "documents": return <CustomerDocuments />;
       case "payments": return <CustomerPayments />;
       case "disputes": return <CustomerDisputes />;
-      case "notifications": return <CustomerNotifications />;
+      case "notifications": return <CustomerNotifications key={refreshKey} />;
     }
   };
+
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -94,7 +98,7 @@ const CustomerDashboard = () => {
         </div>
 
         <nav className="flex-1 overflow-y-auto py-3">
-          {SECTIONS.map(({ key, label, icon: Icon }) => {
+          {visibleSections.map(({ key, label, icon: Icon }) => {
             const isActive = active === key;
             return (
               <button
