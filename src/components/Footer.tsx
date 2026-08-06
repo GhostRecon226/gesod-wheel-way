@@ -16,8 +16,6 @@ const Footer = () => (
             States.
           </p>
           <p className="mt-3 text-left text-sm leading-relaxed text-muted-foreground">
-            GESOD RIDES is a logistics facilitation company. We do not own vehicles or transport
-            equipment. All services are provided in coordination with third-party partners.
           </p>
         </div>
 
@@ -31,7 +29,7 @@ const Footer = () => (
               { label: "Listings", to: "/listings" },
               { label: "How It Works", to: "/how-it-works" },
               { label: "Track VIN", to: "/track" },
-              { label: "Sailing Schedule", to: "/schedule" },
+              { label: "", to: "/schedule" },
               { label: "FAQ", to: "/faq" },
             ].map((l) => (
               <li key={l.to}>
@@ -84,18 +82,15 @@ const Footer = () => (
 
       <div className="section-divider mt-8 grid gap-2 pt-6 text-sm text-muted-foreground sm:grid-cols-3">
         <p>
-          <span className="text-silver">Email: </span>
+          <span className="text-silver"></span>
           <a href="mailto:contact@gesodrides.com" className="no-underline hover:text-gold">
-            contact@gesodrides.com
           </a>
         </p>
         <p>
-          <span className="text-silver">Phone: </span>
-          +1 (302) 293-7210 or +234 809 394 3763
+          <span className="text-silver"></span>
         </p>
         <p>
-          <span className="text-silver">Hours: </span>
-          Mon–Fri: 9:00 AM – 6:00 PM EST
+          <span className="text-silver"></span>
         </p>
       </div>
 
