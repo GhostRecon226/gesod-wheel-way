@@ -109,10 +109,16 @@ const ListingDetail = () => {
               )}
             </div>
           </div>
-          <Button variant="copper" onClick={() => setBidOpen(true)}>
-            Request Bid
-          </Button>
-        </div>
+          {biddingClosed ? (
+            <span className="rounded-full border border-border bg-surface-2 px-3 py-2 text-sm text-muted-foreground">
+              Bidding closed
+            </span>
+          ) : (
+            <Button variant="copper" onClick={() => setBidOpen(true)}>
+              Request Bid
+            </Button>
+          )}
+
 
         <div className="mt-6 grid gap-8 lg:grid-cols-[1.4fr_1fr]">
           <div>
