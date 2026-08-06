@@ -7,10 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Loader } from "@/components/Spinner";
 import BidRequestModal from "@/components/BidRequestModal";
 import ImageGallery from "@/components/listings/ImageGallery";
+import AuctionCountdown from "@/components/listings/AuctionCountdown";
+import { getAuctionTiming } from "@/lib/auctionTime";
 import { resolveListingImages } from "@/lib/listingImages";
 import { AuctionListing, formatMiles, formatUsd, listingTitle } from "@/lib/listings";
 import { maskVin } from "@/lib/vin";
 import NotFound from "@/pages/NotFound";
+
 
 const Row = ({ label, value }: { label: string; value: string | null | undefined }) => (
   <div className="flex items-start justify-between gap-4 border-b border-border py-2 last:border-0">
@@ -77,6 +80,9 @@ const ListingDetail = () => {
   if (!listing) return <NotFound />;
 
   const title = listingTitle(listing);
+  const timing = getAuctionTiming(listing.auction_date);
+  const biddingClosed = timing.phase === "closed" || listing.status !== "active";
+
 
   return (
     <PublicLayout>
@@ -103,10 +109,19 @@ const ListingDetail = () => {
               )}
             </div>
           </div>
-          <Button variant="copper" onClick={() => setBidOpen(true)}>
-            Request Bid
-          </Button>
+          {biddingClosed ? (
+            <span className="rounded-full border border-border bg-surface-2 px-3 py-2 text-sm text-muted-foreground">
+              Bidding closed
+            </span>
+          ) : (
+            <Button variant="copper" onClick={() => setBidOpen(true)}>
+              Request Bid
+            </Button>
+          )}
         </div>
+
+
+
 
         <div className="mt-6 grid gap-8 lg:grid-cols-[1.4fr_1fr]">
           <div>
@@ -125,7 +140,10 @@ const ListingDetail = () => {
           </div>
 
           <div className="space-y-6">
+            <AuctionCountdown auctionDate={listing.auction_date} variant="panel" />
+
             <Panel title="Condition & Damage">
+
               <Row label="Primary damage" value={listing.primary_damage} />
               <Row label="Secondary damage" value={listing.secondary_damage} />
               <BoolRow label="Run and drive" value={listing.run_and_drive} />
@@ -155,9 +173,20 @@ const ListingDetail = () => {
               <Row label="Interior colour" value={listing.interior_color} />
             </Panel>
 
-            <Button variant="copper" className="w-full" onClick={() => setBidOpen(true)}>
-              Request Bid on This Vehicle
-            </Button>
+            {biddingClosed ? (
+              <p className="rounded-lg border border-border bg-surface-2 p-4 text-center text-sm text-muted-foreground">
+                This auction has closed, bid requests are no longer accepted. See the{" "}
+                <Link to="/listings/archive" className="text-copper hover:underline">
+                  auction archive
+                </Link>{" "}
+                for past listings.
+              </p>
+            ) : (
+              <Button variant="copper" className="w-full" onClick={() => setBidOpen(true)}>
+                Request Bid on This Vehicle
+              </Button>
+            )}
+
           </div>
         </div>
       </div>
