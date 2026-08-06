@@ -80,6 +80,9 @@ const ListingDetail = () => {
   if (!listing) return <NotFound />;
 
   const title = listingTitle(listing);
+  const timing = getAuctionTiming(listing.auction_date);
+  const biddingClosed = timing.phase === "closed" || listing.status !== "active";
+
 
   return (
     <PublicLayout>
