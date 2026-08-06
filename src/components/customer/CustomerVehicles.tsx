@@ -58,6 +58,11 @@ const CustomerVehicles = () => {
   const [docs, setDocs] = useState<Doc[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const viewDoc = async (fileUrl: string) => {
+    const url = await openDocument(fileUrl);
+    if (url) window.open(url, "_blank", "noopener,noreferrer");
+  };
+
   useEffect(() => {
     if (!user) return;
     supabase
