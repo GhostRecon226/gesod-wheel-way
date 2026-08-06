@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import PublicLayout from "@/components/PublicLayout";
+
 import { supabase } from "@/integrations/supabase/client";
 import { AlertTriangle } from "lucide-react";
 import BidRequestModal from "@/components/BidRequestModal";
