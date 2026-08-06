@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard, Users, Car, Gavel, ClipboardList, FileText,
   CreditCard, AlertTriangle, Ship, Bell, LogOut, Menu, X, Package,
+  Download, Workflow,
 } from "lucide-react";
 import AdminOverview from "@/components/admin/AdminOverview";
 import AdminCustomers from "@/components/admin/AdminCustomers";
@@ -18,9 +19,14 @@ import AdminDisputesSection from "@/components/admin/AdminDisputesSection";
 import AdminSchedules from "@/components/admin/AdminSchedules";
 import AdminNotifications from "@/components/admin/AdminNotifications";
 import AdminListings from "@/components/admin/AdminListings";
+import AdminReports from "@/components/admin/AdminReports";
+import AdminImportPipeline from "@/components/admin/AdminImportPipeline";
+import { can, type Module } from "@/lib/permissions";
+import { useRealtimeAlerts } from "@/hooks/useRealtimeAlerts";
 
 const SECTIONS = [
   { key: "overview", label: "Overview", icon: LayoutDashboard },
+  { key: "import", label: "Import Pipeline", icon: Workflow },
   { key: "customers", label: "Customers", icon: Users },
   { key: "vehicles", label: "Vehicles", icon: Car },
   { key: "listings", label: "Auction Listings", icon: Package },
@@ -31,20 +37,26 @@ const SECTIONS = [
   { key: "disputes", label: "Disputes", icon: AlertTriangle },
   { key: "schedules", label: "Sailing Schedules", icon: Ship },
   { key: "notifications", label: "Notifications", icon: Bell },
+  { key: "reports", label: "Reports & Exports", icon: Download },
 ] as const;
 
 type Section = (typeof SECTIONS)[number]["key"];
 
 const AdminDashboard = () => {
-  const { userName, signOut } = useAuth();
+  const { userName, userRole, user, signOut } = useAuth();
   const navigate = useNavigate();
   const [active, setActive] = useState<Section>("overview");
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  useRealtimeAlerts(user?.id, userRole);
+
+  const visibleSections = SECTIONS.filter((s) => can(userRole, s.key as Module));
 
   const handleLogout = async () => {
     await signOut();
     navigate("/login", { replace: true });
   };
+
 
   const renderContent = () => {
     switch (active) {
