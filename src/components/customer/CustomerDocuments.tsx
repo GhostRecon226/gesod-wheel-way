@@ -151,9 +151,9 @@ const CustomerDocuments = () => {
                   <td className="max-w-[200px] px-4 py-3 text-muted-foreground">{d.review_notes ?? "-"}</td>
                   <td className="px-4 py-3">
                     {d.file_url ? (
-                      <a href={d.file_url} target="_blank" rel="noopener noreferrer" className="rounded-md border border-primary px-3 py-1 text-xs font-medium text-primary hover:bg-primary/10">
+                      <button type="button" onClick={() => viewDoc(d.file_url!)} className="rounded-md border border-primary px-3 py-1 text-xs font-medium text-primary hover:bg-primary/10">
                         View / Download
-                      </a>
+                      </button>
                     ) : "-"}
                   </td>
                 </tr>

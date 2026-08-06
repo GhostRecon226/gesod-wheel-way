@@ -134,11 +134,9 @@ const AdminVehicles = () => {
     e.preventDefault();
     if (!docVehicle || !docFile || !user) return;
     setSubmitting(true);
-    const path = `docs/${docVehicle.id}/${Date.now()}_${docFile.name}`;
-    const { error: uploadErr } = await supabase.storage.from("vehicle-documents").upload(path, docFile);
+    const { path, error: uploadErr } = await uploadVehicleDocument(user.id, docVehicle.id, docFile);
     if (uploadErr) { toast({ title: "Upload error", description: uploadErr.message, variant: "destructive" }); setSubmitting(false); return; }
-    const fileUrl = supabase.storage.from("vehicle-documents").getPublicUrl(path).data.publicUrl;
-    const { error } = await supabase.from("documents").insert({ vehicle_id: docVehicle.id, type: docType || null, file_url: fileUrl, uploaded_by: user.id });
+    const { error } = await supabase.from("documents").insert({ vehicle_id: docVehicle.id, type: docType || null, file_url: path, uploaded_by: user.id });
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
     else { toast({ title: "Document uploaded" }); setDocVehicle(null); setDocType(""); setDocFile(null); }
     setSubmitting(false);
