@@ -80,19 +80,6 @@ const Footer = () => (
         </div>
       </div>
 
-      <div className="section-divider mt-8 grid gap-2 pt-6 text-sm text-muted-foreground sm:grid-cols-3">
-        <p>
-          <span className="text-silver"></span>
-          <a href="mailto:contact@gesodrides.com" className="no-underline hover:text-gold">
-          </a>
-        </p>
-        <p>
-          <span className="text-silver"></span>
-        </p>
-        <p>
-          <span className="text-silver"></span>
-        </p>
-      </div>
 
 
 
