@@ -97,7 +97,7 @@ const Index = () => (
 
 
     {/* How It Works */}
-    <section className="py-20">
+    <section className="pt-8 pb-20">
       <div className="mx-auto max-w-6xl px-4">
         <h2 className="text-center text-3xl font-bold text-silver">How It Works</h2>
         <p className="mx-auto mt-3 max-w-2xl text-center text-muted-foreground">
