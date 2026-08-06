@@ -56,10 +56,10 @@ const AdminReports = () => {
   const run = async (key: ReportKey, format: "csv" | "json") => {
     const report = REPORTS.find((r) => r.key === key)!;
     setBusy(`${key}-${format}`);
-    const { data, error } = await supabase
-      .from(report.table as any)
+    const { data, error } = await (supabase as any)
+      .from(report.table)
       .select(report.select)
-      .order("created_at" in report.select ? "created_at" : "id", { ascending: false });
+      .order(report.table === "payments" ? "payment_date" : "created_at", { ascending: false });
     setBusy(null);
 
     if (error) {
@@ -67,6 +67,7 @@ const AdminReports = () => {
       return;
     }
     const rows = (data ?? []) as Record<string, unknown>[];
+
     if (rows.length === 0) {
       toast({ title: "Nothing to export", description: `No ${report.label.toLowerCase()} records found.` });
       return;
