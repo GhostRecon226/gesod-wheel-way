@@ -27,7 +27,7 @@ const serviceOptions: {
     formTitle: "Ocean Freight (RORO) Quote",
     formSubtitle: "Roll-on/Roll-off shipping for your vehicle",
     desc: "Roll-on/Roll-off shipping for vehicles from international ports. Ideal for importing vehicles from the USA, Europe, Japan, and other regions to destinations in Africa.",
-    bullets: ["Port-to-port vehicle shipping", "Suitable for cars, SUVs, and trucks", "Typical transit: 4–8 weeks"],
+    bullets: ["Port-to-port vehicle shipping", "Suitable for cars, SUVs, and trucks", "Typical transit: 4-8 weeks"],
   },
   {
     id: "inland",
@@ -36,7 +36,7 @@ const serviceOptions: {
     formTitle: "Inland Transportation Quote",
     formSubtitle: "Vehicle transport from anywhere in the USA",
     desc: "Vehicle transport from anywhere in the USA to your preferred destination or loading port. Move your vehicle from auction yards, dealerships, ports, or any location.",
-    bullets: ["Door-to-door vehicle transport", "Auction pickup and delivery", "Typical transit: 1–7 days"],
+    bullets: ["Door-to-door vehicle transport", "Auction pickup and delivery", "Typical transit: 1-7 days"],
   },
 ];
 

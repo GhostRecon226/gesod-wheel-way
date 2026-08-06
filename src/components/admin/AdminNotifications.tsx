@@ -55,7 +55,7 @@ const AdminNotifications = () => {
 
         {!sendAll && (
           <select value={recipientId} onChange={(e) => setRecipientId(e.target.value)} className="w-full rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm text-foreground" required={!sendAll}>
-            <option value="">— Select customer —</option>
+            <option value="">Select customer</option>
             {customers.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
           </select>
         )}

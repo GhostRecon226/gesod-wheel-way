@@ -44,13 +44,13 @@ const CustomerPayments = () => {
         <tbody>
           {payments.map((p, i) => (
             <tr key={p.id} className={i % 2 === 0 ? "bg-card" : "bg-surface-2"}>
-              <td className="px-4 py-3 text-silver">{p.stage ?? "—"}</td>
+              <td className="px-4 py-3 text-silver">{p.stage ?? "-"}</td>
               <td className="px-4 py-3 text-silver">{p.currency === "NGN" ? "₦" : "$"}{p.amount.toLocaleString()}</td>
               <td className="px-4 py-3 text-muted-foreground">{p.currency}</td>
               <td className="px-4 py-3">
                 <span className={p.status === "confirmed" ? "badge-arrived" : "badge-copper"}>{p.status}</span>
               </td>
-              <td className="px-4 py-3 text-muted-foreground">{p.payment_date ? new Date(p.payment_date).toLocaleDateString() : "—"}</td>
+              <td className="px-4 py-3 text-muted-foreground">{p.payment_date ? new Date(p.payment_date).toLocaleDateString() : "-"}</td>
             </tr>
           ))}
         </tbody>

@@ -22,7 +22,7 @@ interface Bid { id: string; vehicle_id: string | null; status: string; max_bid: 
 interface Payment { id: string; vehicle_id: string | null; amount: number; currency: string; status: string; stage: string | null; }
 
 const maskVin = (vin: string | null) =>
-  !vin ? "—" : vin.length <= 8 ? vin : `${vin.slice(0, 4)}••••••${vin.slice(-4)}`;
+  !vin ? "-" : vin.length <= 8 ? vin : `${vin.slice(0, 4)}••••••${vin.slice(-4)}`;
 
 const AdminImportPipeline = () => {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
@@ -187,17 +187,17 @@ const AdminImportPipeline = () => {
                     <div>
                       <h4 className="mb-2 text-sm font-semibold text-silver">Auction</h4>
                       <dl className="space-y-1 text-xs text-muted-foreground">
-                        <div>Source: <span className="text-silver">{r.vehicle.auction_source ?? "—"}</span></div>
-                        <div>Lot: <span className="text-silver">{r.vehicle.lot_number ?? "—"}</span></div>
-                        <div>Auction date: <span className="text-silver">{r.vehicle.auction_date ? new Date(r.vehicle.auction_date).toLocaleDateString() : "—"}</span></div>
-                        <div>Status: <span className="text-silver">{r.vehicle.status ?? "—"}</span></div>
+                        <div>Source: <span className="text-silver">{r.vehicle.auction_source ?? "-"}</span></div>
+                        <div>Lot: <span className="text-silver">{r.vehicle.lot_number ?? "-"}</span></div>
+                        <div>Auction date: <span className="text-silver">{r.vehicle.auction_date ? new Date(r.vehicle.auction_date).toLocaleDateString() : "-"}</span></div>
+                        <div>Status: <span className="text-silver">{r.vehicle.status ?? "-"}</span></div>
                       </dl>
                       <h4 className="mb-2 mt-4 text-sm font-semibold text-silver">Bids</h4>
                       {r.bids.length === 0 ? <p className="text-xs text-muted-foreground">No bid requests.</p> : (
                         <ul className="space-y-1 text-xs text-muted-foreground">
                           {r.bids.map((b) => (
                             <li key={b.id}>
-                              {b.max_bid != null ? `$${Number(b.max_bid).toLocaleString()}` : "—"} · <span className="text-silver">{b.status}</span>
+                              {b.max_bid != null ? `$${Number(b.max_bid).toLocaleString()}` : "-"} · <span className="text-silver">{b.status}</span>
                             </li>
                           ))}
                         </ul>

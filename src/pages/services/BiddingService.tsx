@@ -32,7 +32,7 @@ const BiddingService = () => (
           <h3 className="mt-3 text-lg text-silver">Fees</h3>
           <ul className="mt-3 space-y-2 text-sm text-muted-foreground list-disc pl-4">
             <li>Bidding deposit: $200–$500 (refundable if not won)</li>
-            <li>Buyer premium: varies by auction (8–15%)</li>
+            <li>Buyer premium: varies by auction (8-15%)</li>
             <li>GESOD RIDES service fee: flat $300 per bid</li>
             <li>Gate/lot fees: passed through at cost</li>
           </ul>

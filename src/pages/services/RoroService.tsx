@@ -30,7 +30,7 @@ const RoroService = () => (
           <Clock className="mx-auto text-copper" size={32} />
           <h3 className="mt-3 text-silver">Transit Time</h3>
           <p className="mt-2 text-sm text-muted-foreground">
-            Average transit is 4–6 weeks depending on the route and vessel schedule.
+            Average transit is 4-6 weeks depending on the route and vessel schedule.
           </p>
         </div>
       </div>

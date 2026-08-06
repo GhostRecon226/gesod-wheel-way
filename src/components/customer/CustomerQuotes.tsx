@@ -55,11 +55,11 @@ const CustomerQuotes = () => {
           {quotes.map((q, i) => (
             <tr key={q.id} className={i % 2 === 0 ? "bg-card" : "bg-surface-2"}>
               <td className="px-4 py-3 text-silver capitalize">{q.type}</td>
-              <td className="px-4 py-3 text-muted-foreground">{q.vehicle_details ?? "—"}</td>
+              <td className="px-4 py-3 text-muted-foreground">{q.vehicle_details ?? "-"}</td>
               <td className="px-4 py-3"><span className={statusCls[q.status] ?? "badge-copper"}>{q.status}</span></td>
-              <td className="px-4 py-3 text-silver">{q.amount_usd != null ? `$${q.amount_usd.toLocaleString()}` : "—"}</td>
-              <td className="px-4 py-3 text-silver">{q.amount_ngn != null ? `₦${q.amount_ngn.toLocaleString()}` : "—"}</td>
-              <td className="px-4 py-3 text-muted-foreground">{q.valid_until ?? "—"}</td>
+              <td className="px-4 py-3 text-silver">{q.amount_usd != null ? `$${q.amount_usd.toLocaleString()}` : "-"}</td>
+              <td className="px-4 py-3 text-silver">{q.amount_ngn != null ? `₦${q.amount_ngn.toLocaleString()}` : "-"}</td>
+              <td className="px-4 py-3 text-muted-foreground">{q.valid_until ?? "-"}</td>
             </tr>
           ))}
         </tbody>

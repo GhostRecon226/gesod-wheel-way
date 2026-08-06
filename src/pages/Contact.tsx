@@ -49,7 +49,7 @@ const Contact = () => {
           </div>
           <div>
             <h2 className="text-sm font-semibold text-silver">Office Hours</h2>
-            <p className="mt-1 text-sm text-muted-foreground">Mon–Fri: 9:00 AM – 6:00 PM EST</p>
+            <p className="mt-1 text-sm text-muted-foreground">Mon-Fri: 9:00 AM - 6:00 PM EST</p>
           </div>
         </div>
 

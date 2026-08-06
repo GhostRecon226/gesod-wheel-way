@@ -221,12 +221,12 @@ const AdminListings = () => {
                       </div>
                     )}
                   </td>
-                  <td className="px-3 py-2 text-foreground">{row.make ?? "—"}</td>
-                  <td className="px-3 py-2 text-foreground">{row.model ?? "—"}</td>
-                  <td className="px-3 py-2 text-muted-foreground">{row.year ?? "—"}</td>
-                  <td className="px-3 py-2 text-muted-foreground">{row.lot_number ?? "—"}</td>
-                  <td className="px-3 py-2 text-muted-foreground">{row.auction_source ?? "—"}</td>
-                  <td className="px-3 py-2 text-muted-foreground">{row.auction_date ?? "—"}</td>
+                  <td className="px-3 py-2 text-foreground">{row.make ?? "-"}</td>
+                  <td className="px-3 py-2 text-foreground">{row.model ?? "-"}</td>
+                  <td className="px-3 py-2 text-muted-foreground">{row.year ?? "-"}</td>
+                  <td className="px-3 py-2 text-muted-foreground">{row.lot_number ?? "-"}</td>
+                  <td className="px-3 py-2 text-muted-foreground">{row.auction_source ?? "-"}</td>
+                  <td className="px-3 py-2 text-muted-foreground">{row.auction_date ?? "-"}</td>
                   <td className="px-3 py-2">
                     <span
                       className={`inline-block rounded-full px-3 py-1 text-xs font-semibold text-primary-foreground ${

@@ -72,11 +72,11 @@ const AdminPayments = () => {
         <form onSubmit={handleCreate} className="mb-6 rounded-xl border border-border bg-card p-6 space-y-4">
           <div className="grid gap-3 sm:grid-cols-2">
             <select value={form.customer_id} onChange={(e) => setForm({ ...form, customer_id: e.target.value })} className="rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm text-foreground" required>
-              <option value="">— Customer —</option>
+              <option value="">Customer</option>
               {customers.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
             <select value={form.vehicle_id} onChange={(e) => setForm({ ...form, vehicle_id: e.target.value })} className="rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm text-foreground">
-              <option value="">— Vehicle (optional) —</option>
+              <option value="">Vehicle (optional)</option>
               {vehicles.map((v) => <option key={v.id} value={v.id}>{v.label}</option>)}
             </select>
             <Input placeholder="Stage" value={form.stage} onChange={(e) => setForm({ ...form, stage: e.target.value })} className="auth-input" />
@@ -107,11 +107,11 @@ const AdminPayments = () => {
               const cust = customers.find((c) => c.id === p.customer_id);
               return (
                 <tr key={p.id} className={i % 2 === 0 ? "bg-card" : "bg-surface-2"}>
-                  <td className="px-4 py-3 text-silver">{cust?.name ?? "—"}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{p.stage ?? "—"}</td>
+                  <td className="px-4 py-3 text-silver">{cust?.name ?? "-"}</td>
+                  <td className="px-4 py-3 text-muted-foreground">{p.stage ?? "-"}</td>
                   <td className="px-4 py-3 text-silver">{p.currency === "NGN" ? "₦" : "$"}{p.amount.toLocaleString()}</td>
                   <td className="px-4 py-3"><span className={p.status === "confirmed" ? "badge-arrived" : "badge-copper"}>{p.status}</span></td>
-                  <td className="px-4 py-3 text-muted-foreground">{p.payment_date ? new Date(p.payment_date).toLocaleDateString() : "—"}</td>
+                  <td className="px-4 py-3 text-muted-foreground">{p.payment_date ? new Date(p.payment_date).toLocaleDateString() : "-"}</td>
                   <td className="px-4 py-3">
                     {p.status === "pending" && <Button variant="copper" size="sm" onClick={() => confirmPayment(p.id)}>Confirm</Button>}
                   </td>

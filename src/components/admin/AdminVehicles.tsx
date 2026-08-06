@@ -181,7 +181,7 @@ const AdminVehicles = () => {
             <Input placeholder="Yard location" value={form.yard_location} onChange={(e) => f("yard_location", e.target.value)} className="auth-input" />
             <Input placeholder="Auction date" type="date" value={form.auction_date} onChange={(e) => f("auction_date", e.target.value)} className="auth-input" />
             <select value={form.customer_id} onChange={(e) => f("customer_id", e.target.value)} className="rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm text-foreground">
-              <option value="">— Assign customer —</option>
+              <option value="">Assign customer</option>
               {customers.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </div>
@@ -243,9 +243,9 @@ const AdminVehicles = () => {
               return (
                 <tr key={v.id} className={i % 2 === 0 ? "bg-card" : "bg-surface-2"}>
                   <td className="px-4 py-3 text-silver">{v.year} {v.make} {v.model}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{v.vin ?? "—"}</td>
+                  <td className="px-4 py-3 text-muted-foreground">{v.vin ?? "-"}</td>
                   <td className="px-4 py-3 text-muted-foreground">{cust?.name ?? "Unassigned"}</td>
-                  <td className="px-4 py-3"><span className="badge-copper">{v.status ?? "—"}</span></td>
+                  <td className="px-4 py-3"><span className="badge-copper">{v.status ?? "-"}</span></td>
                   <td className="px-4 py-3">
                     <div className="flex flex-wrap gap-2">
                       <Button variant="copper-outline" size="sm" onClick={() => openEdit(v)}>Edit</Button>

@@ -88,7 +88,7 @@ const AdminSchedules = () => {
             <Input type="date" placeholder="ETD" value={form.etd} onChange={(e) => setForm({ ...form, etd: e.target.value })} className="auth-input" />
             <Input type="date" placeholder="ETA Nigeria" value={form.eta_nigeria} onChange={(e) => setForm({ ...form, eta_nigeria: e.target.value })} className="auth-input" />
             <select value={form.destination_port} onChange={(e) => setForm({ ...form, destination_port: e.target.value })} className="rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm text-foreground">
-              <option value="">— Destination port —</option>
+              <option value="">Destination port</option>
               {portOptions.map((p) => <option key={p} value={p}>{p}</option>)}
             </select>
             <select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })} className="rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm text-foreground">
@@ -119,10 +119,10 @@ const AdminSchedules = () => {
             {schedules.map((s, i) => (
               <tr key={s.id} className={i % 2 === 0 ? "bg-card" : "bg-surface-2"}>
                 <td className="px-4 py-3 text-silver">{s.vessel_name}</td>
-                <td className="px-4 py-3 text-muted-foreground">{s.departure_port ?? "—"}</td>
-                <td className="px-4 py-3 text-muted-foreground">{s.etd ?? "—"}</td>
-                <td className="px-4 py-3 text-muted-foreground">{s.eta_nigeria ?? "—"}</td>
-                <td className="px-4 py-3 text-muted-foreground">{s.destination_port ?? "—"}</td>
+                <td className="px-4 py-3 text-muted-foreground">{s.departure_port ?? "-"}</td>
+                <td className="px-4 py-3 text-muted-foreground">{s.etd ?? "-"}</td>
+                <td className="px-4 py-3 text-muted-foreground">{s.eta_nigeria ?? "-"}</td>
+                <td className="px-4 py-3 text-muted-foreground">{s.destination_port ?? "-"}</td>
                 <td className="px-4 py-3"><span className={statusCls[s.status] ?? "badge-copper"}>{s.status}</span></td>
                 <td className="px-4 py-3">
                   <div className="flex gap-2">

@@ -41,7 +41,7 @@ const TowingService = () => (
         <h3 className="text-lg text-silver">Important Notes</h3>
         <ul className="mt-3 space-y-2 text-sm text-muted-foreground list-disc pl-4">
           <li>Non-running vehicles require flatbed transport (additional fees may apply)</li>
-          <li>Pickup is scheduled within 3–5 business days of payment</li>
+          <li>Pickup is scheduled within 3-5 business days of payment</li>
           <li>Storage fees at the auction yard are the customer's responsibility until pickup</li>
           <li>We provide tracking updates during inland transit</li>
         </ul>
