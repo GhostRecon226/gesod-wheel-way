@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { ChevronRight } from "lucide-react";
+import { Loader } from "@/components/Spinner";
 
 interface Customer {
   id: string;
@@ -80,7 +81,7 @@ const AdminCustomers = () => {
     setSubmitting(false);
   };
 
-  if (loading) return <p className="text-muted-foreground">Loading…</p>;
+  if (loading) return <Loader />;
 
   if (viewVehicles) {
     return (

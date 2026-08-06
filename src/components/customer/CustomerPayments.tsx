@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { Loader } from "@/components/Spinner";
 
 interface Payment {
   id: string;
@@ -26,7 +27,7 @@ const CustomerPayments = () => {
       .then(({ data }) => { setPayments(data ?? []); setLoading(false); });
   }, [user]);
 
-  if (loading) return <p className="text-muted-foreground">Loading…</p>;
+  if (loading) return <Loader />;
   if (payments.length === 0) return <p className="text-muted-foreground">No payments recorded yet.</p>;
 
   return (

@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { Upload } from "lucide-react";
 import { uploadVehicleDocument, openDocument } from "@/lib/documentStorage";
+import { Loader } from "@/components/Spinner";
 
 interface DocRow {
   id: string;
@@ -89,7 +90,7 @@ const CustomerDocuments = () => {
     return `${[v.year, v.make, v.model].filter(Boolean).join(" ") || "Vehicle"} · ${maskVin(v.vin)}`;
   };
 
-  if (loading) return <p className="text-muted-foreground">Loading…</p>;
+  if (loading) return <Loader />;
 
   return (
     <div className="space-y-6">

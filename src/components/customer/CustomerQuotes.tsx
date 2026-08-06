@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { Loader } from "@/components/Spinner";
 
 interface Quote {
   id: string;
@@ -35,7 +36,7 @@ const CustomerQuotes = () => {
       .then(({ data }) => { setQuotes(data ?? []); setLoading(false); });
   }, [user]);
 
-  if (loading) return <p className="text-muted-foreground">Loading…</p>;
+  if (loading) return <Loader />;
   if (quotes.length === 0) return <p className="text-muted-foreground">No quote requests yet.</p>;
 
   return (

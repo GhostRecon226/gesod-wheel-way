@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
+import { Loader } from "@/components/Spinner";
 
 interface Quote {
   id: string; customer_id: string; type: string; vehicle_details: string | null;
@@ -60,7 +61,7 @@ const AdminQuotes = () => {
     else { toast({ title: "Quote updated" }); setEditId(null); fetchData(); }
   };
 
-  if (loading) return <p className="text-muted-foreground">Loading…</p>;
+  if (loading) return <Loader />;
 
   return (
     <div>

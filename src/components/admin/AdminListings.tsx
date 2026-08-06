@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
+import { Loader } from "@/components/Spinner";
   Dialog,
   DialogContent,
   DialogHeader,
@@ -186,7 +187,7 @@ const AdminListings = () => {
       </div>
 
       {loading ? (
-        <p className="text-muted-foreground">Loading...</p>
+        <Loader />
       ) : listings.length === 0 ? (
         <p className="text-muted-foreground">No listings yet.</p>
       ) : (

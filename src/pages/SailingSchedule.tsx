@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import PublicLayout from "@/components/PublicLayout";
 import { supabase } from "@/integrations/supabase/client";
+import { Loader } from "@/components/Spinner";
 
 interface Schedule {
   id: string;
@@ -46,7 +47,7 @@ const SailingSchedule = () => {
         </p>
 
         {loading ? (
-          <p className="mt-12 text-center text-muted-foreground">Loading...</p>
+          <Loader />
         ) : schedules.length === 0 ? (
           <p className="mt-12 text-center text-muted-foreground">No schedules available yet.</p>
         ) : (

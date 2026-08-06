@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Car, Gavel, ClipboardList, AlertTriangle, Ship } from "lucide-react";
+import { Loader } from "@/components/Spinner";
 
 interface Stat {
   label: string;
@@ -33,7 +34,7 @@ const AdminOverview = () => {
     load();
   }, []);
 
-  if (loading) return <p className="text-muted-foreground">Loading…</p>;
+  if (loading) return <Loader />;
 
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

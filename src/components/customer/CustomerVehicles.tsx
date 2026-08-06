@@ -3,6 +3,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { openDocument } from "@/lib/documentStorage";
 import { supabase } from "@/integrations/supabase/client";
 import { ChevronRight } from "lucide-react";
+import { Loader } from "@/components/Spinner";
 
 interface Vehicle {
   id: string;
@@ -83,7 +84,7 @@ const CustomerVehicles = () => {
     setDocs((d as Doc[]) ?? []);
   };
 
-  if (loading) return <p className="text-muted-foreground">Loading…</p>;
+  if (loading) return <Loader />;
 
   if (selected) {
     const completedStages = new Set(milestones.map((m) => m.stage));
