@@ -140,7 +140,10 @@ const ListingDetail = () => {
           </div>
 
           <div className="space-y-6">
+            <AuctionCountdown auctionDate={listing.auction_date} variant="panel" />
+
             <Panel title="Condition & Damage">
+
               <Row label="Primary damage" value={listing.primary_damage} />
               <Row label="Secondary damage" value={listing.secondary_damage} />
               <BoolRow label="Run and drive" value={listing.run_and_drive} />
