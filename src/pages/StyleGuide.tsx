@@ -37,12 +37,12 @@ const StyleGuide = () => (
       <section>
         <h2 className="mb-4 text-xl text-silver">Typography</h2>
         <div className="space-y-2 rounded-xl border border-border bg-card p-6">
-          <h1 className="text-3xl">Heading 1 — Silver</h1>
-          <h2 className="text-2xl">Heading 2 — Silver</h2>
-          <h3 className="text-xl">Heading 3 — Silver</h3>
-          <p className="text-foreground">Body text — Foreground</p>
-          <p className="text-muted-foreground">Muted text — Secondary</p>
-          <a href="#" onClick={(e) => e.preventDefault()}>Link — Gold</a>
+          <h1 className="text-3xl">Heading 1 - Silver</h1>
+          <h2 className="text-2xl">Heading 2 - Silver</h2>
+          <h3 className="text-xl">Heading 3 - Silver</h3>
+          <p className="text-foreground">Body text - Foreground</p>
+          <p className="text-muted-foreground">Muted text - Secondary</p>
+          <a href="#" onClick={(e) => e.preventDefault()}>Link - Gold</a>
         </div>
       </section>
 

@@ -199,7 +199,7 @@ const AdminVehicles = () => {
       {/* Milestone modal */}
       {milestoneVehicle && (
         <form onSubmit={handleMilestone} className="mb-6 rounded-xl border border-border bg-card p-6 space-y-4">
-          <h3 className="font-bold text-silver">Add Milestone — {milestoneVehicle.year} {milestoneVehicle.make} {milestoneVehicle.model}</h3>
+          <h3 className="font-bold text-silver">Add Milestone: {milestoneVehicle.year} {milestoneVehicle.make} {milestoneVehicle.model}</h3>
           <select value={milestoneStage} onChange={(e) => setMilestoneStage(e.target.value)} className="w-full rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm text-foreground">
             {MILESTONE_STAGES.map((s) => <option key={s} value={s}>{s}</option>)}
           </select>
@@ -215,7 +215,7 @@ const AdminVehicles = () => {
       {/* Doc upload */}
       {docVehicle && (
         <form onSubmit={handleDocUpload} className="mb-6 rounded-xl border border-border bg-card p-6 space-y-4">
-          <h3 className="font-bold text-silver">Upload Document — {docVehicle.year} {docVehicle.make} {docVehicle.model}</h3>
+          <h3 className="font-bold text-silver">Upload Document: {docVehicle.year} {docVehicle.make} {docVehicle.model}</h3>
           <Input placeholder="Document type" value={docType} onChange={(e) => setDocType(e.target.value)} className="auth-input" />
           <Input type="file" onChange={(e) => setDocFile(e.target.files?.[0] ?? null)} className="auth-input" required />
           <div className="flex gap-3">

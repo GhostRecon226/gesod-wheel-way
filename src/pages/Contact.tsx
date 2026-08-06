@@ -12,7 +12,7 @@ const Contact = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // Placeholder — no backend action yet
+    // Placeholder: no backend action yet
     setTimeout(() => {
       toast.success("Message sent! We'll get back to you shortly.");
       setForm({ name: "", email: "", phone: "", message: "" });
