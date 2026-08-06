@@ -413,6 +413,16 @@ const AdminListings = () => {
               {editingId ? "Edit Listing" : "Create Listing"}
             </DialogTitle>
           </DialogHeader>
+          {importMissing.length > 0 && (
+            <div className="rounded-md border border-copper/40 bg-surface-2 p-3 text-xs text-muted-foreground">
+              <span className="font-semibold text-silver">
+                Imported. {importMissing.length} field(s) could not be read:
+              </span>{" "}
+              {importMissing.map((k) => k.replace(/_/g, " ")).join(", ")}. Fill in what you need,
+              then save.
+            </div>
+          )}
+
           <form onSubmit={handleSave} className="mt-4 space-y-6">
             <div>
               <h3 className="mb-3 text-sm font-semibold text-silver">Vehicle</h3>
