@@ -57,16 +57,14 @@ const CustomerDocuments = () => {
     e.preventDefault();
     if (!user || !file || !vehicleId) return;
     setUploading(true);
-    const path = `docs/${vehicleId}/${Date.now()}_${file.name}`;
-    const { error: upErr } = await supabase.storage.from("vehicle-documents").upload(path, file);
+    const { path, error: upErr } = await uploadVehicleDocument(user.id, vehicleId, file);
     if (upErr) {
       toast({ title: "Upload failed", description: upErr.message, variant: "destructive" });
       setUploading(false);
       return;
     }
-    const fileUrl = supabase.storage.from("vehicle-documents").getPublicUrl(path).data.publicUrl;
     const { error } = await (supabase as any).from("documents").insert({
-      vehicle_id: vehicleId, type: docType, file_url: fileUrl,
+      vehicle_id: vehicleId, type: docType, file_url: path,
       uploaded_by: user.id, review_status: "pending",
     });
     setUploading(false);
