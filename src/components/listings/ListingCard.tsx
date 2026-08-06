@@ -2,16 +2,20 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Image as ImageIcon, Camera } from "lucide-react";
 import { AuctionListing, formatMiles, formatUsd, listingTitle } from "@/lib/listings";
+import AuctionCountdown from "@/components/listings/AuctionCountdown";
 
 interface ListingCardProps {
   listing: AuctionListing;
   imageUrl?: string;
   onRequestBid: (listing: AuctionListing) => void;
+  /** Archived listings show no bid action. */
+  archived?: boolean;
 }
 
-const ListingCard = ({ listing, imageUrl, onRequestBid }: ListingCardProps) => {
+const ListingCard = ({ listing, imageUrl, onRequestBid, archived = false }: ListingCardProps) => {
   const title = listingTitle(listing);
   const photoCount = listing.images?.length ?? 0;
+
 
   const chips = [
     listing.title_type,
