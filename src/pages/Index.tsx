@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Search, Gavel, Ship, Truck, ShieldCheck, Users, Globe, ArrowRight, CheckCircle2, Info } from "lucide-react";
+import { Search, Gavel, Ship, Truck, ShieldCheck, Users, Globe, ArrowRight, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PublicLayout from "@/components/PublicLayout";
 import heroBg from "@/assets/hero-bg.jpg";
@@ -32,11 +32,6 @@ const steps = [
 ];
 
 
-const highlights = [
-  "Vehicle sourcing & auction bidding support — we can source vehicles from trusted partners all over the USA to meet your specifications",
-  "Ocean shipping — ocean freight from U.S. ports to international destinations using container or RORO (Roll-on/Roll-off)",
-  "Inland transportation — vehicle transport from anywhere in the USA to your preferred destination or loading port",
-];
 
 const services = [
   {
@@ -98,23 +93,6 @@ const Index = () => (
       </div>
     </section>
 
-    {/* Positioning */}
-    <section className="border-b border-border py-16">
-      <div className="mx-auto max-w-4xl px-4">
-        <h2 className="text-2xl font-bold text-silver md:text-3xl">
-          GESOD RIDES coordinates vehicle imports to Nigeria from all over the USA — from
-          auctions, dealerships, or other sources.
-        </h2>
-        <ul className="mt-8 space-y-4">
-          {highlights.map((h) => (
-            <li key={h} className="flex items-start gap-3">
-              <CheckCircle2 className="mt-1 shrink-0 text-gold" size={18} />
-              <span className="text-muted-foreground">{h}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </section>
 
 
 
