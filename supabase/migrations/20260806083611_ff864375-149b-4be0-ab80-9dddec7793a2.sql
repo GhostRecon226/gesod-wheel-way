@@ -1,0 +1,17 @@
+ALTER TABLE public.auction_listings
+  ADD COLUMN IF NOT EXISTS vin text,
+  ADD COLUMN IF NOT EXISTS title_type text,
+  ADD COLUMN IF NOT EXISTS odometer integer,
+  ADD COLUMN IF NOT EXISTS primary_damage text,
+  ADD COLUMN IF NOT EXISTS secondary_damage text,
+  ADD COLUMN IF NOT EXISTS damage_description text,
+  ADD COLUMN IF NOT EXISTS run_and_drive boolean DEFAULT false,
+  ADD COLUMN IF NOT EXISTS has_keys boolean DEFAULT false,
+  ADD COLUMN IF NOT EXISTS estimated_value numeric,
+  ADD COLUMN IF NOT EXISTS body_style text,
+  ADD COLUMN IF NOT EXISTS engine text,
+  ADD COLUMN IF NOT EXISTS transmission text,
+  ADD COLUMN IF NOT EXISTS drivetrain text,
+  ADD COLUMN IF NOT EXISTS fuel_type text,
+  ADD COLUMN IF NOT EXISTS exterior_color text,
+  ADD COLUMN IF NOT EXISTS interior_color text;
