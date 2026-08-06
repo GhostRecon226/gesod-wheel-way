@@ -429,7 +429,8 @@ const Quote = () => {
                   </div>
                   <div>
                     <label className="mb-1.5 block text-xs text-muted-foreground">Destination Port<Req /></label>
-                    <Input value={form.destination} onChange={(e) => f("destination", e.target.value)} className="auth-input" placeholder="e.g., Lagos, Nigeria" required maxLength={200} />
+                    <Input value={form.destination} onChange={(e) => f("destination", e.target.value)} className="auth-input" placeholder="e.g., Lagos, Nigeria" maxLength={200} />
+                    <FieldError message={errors.destination} />
                   </div>
                 </div>
               </section>
