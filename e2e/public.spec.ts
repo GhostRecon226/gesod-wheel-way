@@ -9,7 +9,7 @@ const PUBLIC_PAGES: { path: string; heading: RegExp }[] = [
   { path: "/listings", heading: /Listings|Auction/i },
   { path: "/schedule", heading: /Sailing/i },
   { path: "/contact", heading: /Contact/i },
-  { path: "/login", heading: /Sign in|Welcome/i },
+  { path: "/login", heading: /GESOD RIDES/i },
 ];
 
 for (const { path, heading } of PUBLIC_PAGES) {
@@ -24,7 +24,7 @@ for (const { path, heading } of PUBLIC_PAGES) {
 test("unknown routes render the branded 404 page", async ({ page }) => {
   await page.goto("/this-page-does-not-exist");
   await expect(page.getByText("Page not found.")).toBeVisible();
-  await page.getByRole("button", { name: /Return Home/i }).click();
+  await page.getByRole("link", { name: /Return Home/i }).click();
   await expect(page).toHaveURL(/\/$/);
 });
 
