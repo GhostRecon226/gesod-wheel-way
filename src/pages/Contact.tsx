@@ -4,13 +4,23 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import PublicLayout from "@/components/PublicLayout";
 import { toast } from "sonner";
+import FieldError from "@/components/FieldError";
 
 const Contact = () => {
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<{ name?: string; email?: string; message?: string }>({});
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    const nextErrors: { name?: string; email?: string; message?: string } = {};
+    if (!form.name.trim()) nextErrors.name = "Full name is required.";
+    if (!form.email.trim()) nextErrors.email = "Email address is required.";
+    if (!form.message.trim()) nextErrors.message = "Please tell us how we can help.";
+    setErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) return;
+
     setLoading(true);
     // Placeholder: no backend action yet
     setTimeout(() => {
@@ -54,27 +64,29 @@ const Contact = () => {
         </div>
 
 
-        <form onSubmit={handleSubmit} className="mt-8 rounded-xl border border-border bg-card p-6 space-y-4">
+        <form onSubmit={handleSubmit} noValidate className="mt-8 rounded-xl border border-border bg-card p-6 space-y-4">
           <div>
             <label className="mb-1 block text-sm text-muted-foreground">Full Name</label>
             <Input
-              required
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               placeholder="John Doe"
               className="auth-input"
+              aria-invalid={!!errors.name}
             />
+            <FieldError message={errors.name} />
           </div>
           <div>
             <label className="mb-1 block text-sm text-muted-foreground">Email</label>
             <Input
               type="email"
-              required
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
               placeholder="you@example.com"
               className="auth-input"
+              aria-invalid={!!errors.email}
             />
+            <FieldError message={errors.email} />
           </div>
           <div>
             <label className="mb-1 block text-sm text-muted-foreground">Phone</label>
@@ -88,13 +100,14 @@ const Contact = () => {
           <div>
             <label className="mb-1 block text-sm text-muted-foreground">Message</label>
             <textarea
-              required
               value={form.message}
               onChange={(e) => setForm({ ...form, message: e.target.value })}
               placeholder="Tell us what you need..."
               rows={5}
               className="auth-input w-full rounded-md border px-3 py-2 text-sm"
+              aria-invalid={!!errors.message}
             />
+            <FieldError message={errors.message} />
           </div>
           <Button variant="copper" type="submit" disabled={loading} className="w-full">
             {loading ? "Sending..." : "Send Message"}
