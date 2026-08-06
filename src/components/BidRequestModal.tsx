@@ -6,6 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import FieldError from "@/components/FieldError";
 import {
   Dialog,
   DialogContent,
@@ -30,25 +31,20 @@ const BidRequestModal = ({ open, onClose, listingId, listingTitle }: BidRequestM
     agreed: false,
   });
   const [saving, setSaving] = useState(false);
+  const [errors, setErrors] = useState<{ name?: string; email?: string; max_bid?: string; agreed?: string }>({});
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!form.agreed) {
-      toast.error("You must agree to the auction terms.");
-      return;
-    }
-
-    if (!form.name.trim() || !form.email.trim() || !form.max_bid.trim()) {
-      toast.error("Please fill in all required fields.");
-      return;
-    }
-
     const maxBid = parseFloat(form.max_bid);
-    if (isNaN(maxBid) || maxBid <= 0) {
-      toast.error("Please enter a valid bid amount.");
-      return;
-    }
+    const nextErrors: { name?: string; email?: string; max_bid?: string; agreed?: string } = {};
+    if (!form.name.trim()) nextErrors.name = "Full name is required.";
+    if (!form.email.trim()) nextErrors.email = "Email address is required.";
+    if (!form.max_bid.trim()) nextErrors.max_bid = "Maximum bid is required.";
+    else if (isNaN(maxBid) || maxBid <= 0) nextErrors.max_bid = "Enter a valid bid amount.";
+    if (!form.agreed) nextErrors.agreed = "You must agree to the auction terms.";
+    setErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) return;
 
     setSaving(true);
 
@@ -87,29 +83,31 @@ const BidRequestModal = ({ open, onClose, listingId, listingTitle }: BidRequestM
           {listingTitle}
         </p>
 
-        <form onSubmit={handleSubmit} className="mt-4 space-y-4">
+        <form onSubmit={handleSubmit} noValidate className="mt-4 space-y-4">
           <div>
             <label className="mb-1 block text-xs text-muted-foreground">Full Name *</label>
             <Input
-              required
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               placeholder="John Doe"
               className="auth-input"
               maxLength={100}
+              aria-invalid={!!errors.name}
             />
+            <FieldError message={errors.name} />
           </div>
           <div>
             <label className="mb-1 block text-xs text-muted-foreground">Email *</label>
             <Input
               type="email"
-              required
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
               placeholder="you@example.com"
               className="auth-input"
               maxLength={255}
+              aria-invalid={!!errors.email}
             />
+            <FieldError message={errors.email} />
           </div>
           <div>
             <label className="mb-1 block text-xs text-muted-foreground">Phone</label>
@@ -125,14 +123,15 @@ const BidRequestModal = ({ open, onClose, listingId, listingTitle }: BidRequestM
             <label className="mb-1 block text-xs text-muted-foreground">Maximum Bid (USD) *</label>
             <Input
               type="number"
-              required
               min={1}
               step="0.01"
               value={form.max_bid}
               onChange={(e) => setForm({ ...form, max_bid: e.target.value })}
               placeholder="5000"
               className="auth-input"
+              aria-invalid={!!errors.max_bid}
             />
+            <FieldError message={errors.max_bid} />
           </div>
           <div className="flex items-start gap-2">
             <Checkbox
@@ -146,6 +145,7 @@ const BidRequestModal = ({ open, onClose, listingId, listingTitle }: BidRequestM
               Vehicles are sold as-is with no warranty.
             </label>
           </div>
+          <FieldError message={errors.agreed} />
 
           <Button variant="copper" type="submit" disabled={saving} className="w-full">
             {saving ? "Submitting..." : "Submit Bid Request"}

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { Loader } from "@/components/Spinner";
 
 interface Notification {
   id: string;
@@ -36,7 +37,7 @@ const CustomerNotifications = () => {
     setNotifs((prev) => prev.map((n) => ({ ...n, read: true })));
   };
 
-  if (loading) return <p className="text-muted-foreground">Loading…</p>;
+  if (loading) return <Loader />;
 
   const hasUnread = notifs.some((n) => !n.read);
 
@@ -50,7 +51,7 @@ const CustomerNotifications = () => {
       </div>
 
       {notifs.length === 0 ? (
-        <p className="text-muted-foreground">No notifications.</p>
+        <p className="text-muted-foreground">You have no notifications at this time.</p>
       ) : (
         <div className="space-y-2">
           {notifs.map((n) => (

@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { downloadCsv, downloadJson } from "@/lib/exportData";
 import { ChevronDown, ChevronRight } from "lucide-react";
+import { Loader } from "@/components/Spinner";
 
 const MILESTONE_STAGES = [
   "Bid Requested", "Bid Placed", "Bid Won", "Awaiting Payment", "Payment Confirmed",
@@ -106,7 +107,7 @@ const AdminImportPipeline = () => {
       milestone_count: r.milestones.length,
     }));
 
-  if (loading) return <p className="text-muted-foreground">Loading…</p>;
+  if (loading) return <Loader />;
 
   return (
     <div>

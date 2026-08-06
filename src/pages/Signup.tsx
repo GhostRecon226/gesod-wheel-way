@@ -4,6 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import FieldError from "@/components/FieldError";
+import Logo from "@/components/Logo";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -11,9 +13,19 @@ const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<{ name?: string; email?: string; password?: string }>({});
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const nextErrors: { name?: string; email?: string; password?: string } = {};
+    if (!name.trim()) nextErrors.name = "Full name is required.";
+    if (!email.trim()) nextErrors.email = "Email address is required.";
+    if (!password) nextErrors.password = "Password is required.";
+    else if (password.length < 6) nextErrors.password = "Password must be at least 6 characters.";
+    setErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) return;
+
     setLoading(true);
 
     const { error } = await supabase.auth.signUp({
@@ -41,26 +53,24 @@ const Signup = () => {
       <div className="w-full max-w-md rounded-xl border border-border bg-card p-8">
         {/* Logo */}
         <div className="mb-2 text-center">
-          <h1 className="text-3xl font-bold">
-            <span className="text-silver">GESOD</span>{" "}
-            <span className="text-gold">RIDES</span>
-          </h1>
+          <Logo to="/" className="text-3xl" />
           <p className="mt-1 text-sm text-muted-foreground">
             Your trusted vehicle import partner
           </p>
         </div>
 
-        <form onSubmit={handleSignup} className="mt-8 space-y-4">
+        <form onSubmit={handleSignup} noValidate className="mt-8 space-y-4">
           <div>
             <label className="mb-1 block text-sm text-muted-foreground">Full Name</label>
             <Input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              required
               placeholder="John Doe"
               className="auth-input"
+              aria-invalid={!!errors.name}
             />
+            <FieldError message={errors.name} />
           </div>
           <div>
             <label className="mb-1 block text-sm text-muted-foreground">Email</label>
@@ -68,10 +78,11 @@ const Signup = () => {
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              required
               placeholder="you@example.com"
               className="auth-input"
+              aria-invalid={!!errors.email}
             />
+            <FieldError message={errors.email} />
           </div>
           <div>
             <label className="mb-1 block text-sm text-muted-foreground">Password</label>
@@ -79,11 +90,12 @@ const Signup = () => {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required
               minLength={6}
               placeholder="••••••••"
               className="auth-input"
+              aria-invalid={!!errors.password}
             />
+            <FieldError message={errors.password} />
           </div>
           <Button type="submit" disabled={loading} className="w-full rounded-lg">
             {loading ? "Creating account..." : "Create Account"}

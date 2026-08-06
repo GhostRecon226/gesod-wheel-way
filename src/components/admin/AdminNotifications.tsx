@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
+import { Loader } from "@/components/Spinner";
 
 interface CustomerOption { id: string; name: string; }
 
@@ -43,7 +44,7 @@ const AdminNotifications = () => {
     setSubmitting(false);
   };
 
-  if (loading) return <p className="text-muted-foreground">Loading…</p>;
+  if (loading) return <Loader />;
 
   return (
     <div>

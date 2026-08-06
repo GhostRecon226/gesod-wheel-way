@@ -3,6 +3,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { openDocument } from "@/lib/documentStorage";
 import { supabase } from "@/integrations/supabase/client";
 import { ChevronRight } from "lucide-react";
+import { Loader } from "@/components/Spinner";
 
 interface Vehicle {
   id: string;
@@ -83,7 +84,7 @@ const CustomerVehicles = () => {
     setDocs((d as Doc[]) ?? []);
   };
 
-  if (loading) return <p className="text-muted-foreground">Loading…</p>;
+  if (loading) return <Loader />;
 
   if (selected) {
     const completedStages = new Set(milestones.map((m) => m.stage));
@@ -157,7 +158,7 @@ const CustomerVehicles = () => {
   }
 
   if (vehicles.length === 0)
-    return <p className="text-muted-foreground">No vehicles linked to your account yet.</p>;
+    return <p className="text-muted-foreground">No vehicles linked to your account yet. Contact GESOD RIDES to get started.</p>;
 
   return (
     <div className="space-y-3">

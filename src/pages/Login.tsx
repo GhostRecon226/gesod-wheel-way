@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import FieldError from "@/components/FieldError";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -12,9 +13,17 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [showUnconfirmed, setShowUnconfirmed] = useState(false);
   const [resending, setResending] = useState(false);
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const nextErrors: { email?: string; password?: string } = {};
+    if (!email.trim()) nextErrors.email = "Email address is required.";
+    if (!password) nextErrors.password = "Password is required.";
+    setErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) return;
+
     setLoading(true);
     setShowUnconfirmed(false);
 
@@ -83,17 +92,18 @@ const Login = () => {
           </p>
         </div>
 
-        <form onSubmit={handleLogin} className="mt-8 space-y-4">
+        <form onSubmit={handleLogin} noValidate className="mt-8 space-y-4">
           <div>
             <label className="mb-1 block text-sm text-muted-foreground">Email</label>
             <Input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              required
               placeholder="you@example.com"
               className="auth-input"
+              aria-invalid={!!errors.email}
             />
+            <FieldError message={errors.email} />
           </div>
           <div>
             <label className="mb-1 block text-sm text-muted-foreground">Password</label>
@@ -101,10 +111,11 @@ const Login = () => {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required
               placeholder="••••••••"
               className="auth-input"
+              aria-invalid={!!errors.password}
             />
+            <FieldError message={errors.password} />
           </div>
 
           {showUnconfirmed && (

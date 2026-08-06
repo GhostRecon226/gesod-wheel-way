@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
+import { Loader } from "@/components/Spinner";
 
 interface Payment {
   id: string; customer_id: string; vehicle_id: string | null;
@@ -59,7 +60,7 @@ const AdminPayments = () => {
     else { toast({ title: "Payment confirmed" }); fetchData(); }
   };
 
-  if (loading) return <p className="text-muted-foreground">Loading…</p>;
+  if (loading) return <Loader />;
 
   return (
     <div>
@@ -103,6 +104,9 @@ const AdminPayments = () => {
             </tr>
           </thead>
           <tbody>
+            {payments.length === 0 && (
+              <tr><td colSpan={9} className="px-4 py-8 text-center text-muted-foreground">No payments recorded yet.</td></tr>
+            )}
             {payments.map((p, i) => {
               const cust = customers.find((c) => c.id === p.customer_id);
               return (

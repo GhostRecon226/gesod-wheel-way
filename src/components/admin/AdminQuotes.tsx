@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
+import { Loader } from "@/components/Spinner";
 
 interface Quote {
   id: string; customer_id: string; type: string; vehicle_details: string | null;
@@ -60,7 +61,7 @@ const AdminQuotes = () => {
     else { toast({ title: "Quote updated" }); setEditId(null); fetchData(); }
   };
 
-  if (loading) return <p className="text-muted-foreground">Loading…</p>;
+  if (loading) return <Loader />;
 
   return (
     <div>
@@ -79,6 +80,9 @@ const AdminQuotes = () => {
             </tr>
           </thead>
           <tbody>
+            {quotes.length === 0 && (
+              <tr><td colSpan={9} className="px-4 py-8 text-center text-muted-foreground">No quote requests submitted yet.</td></tr>
+            )}
             {quotes.map((q, i) => {
               const cust = customers.find((c) => c.id === q.customer_id);
               const isEditing = editId === q.id;

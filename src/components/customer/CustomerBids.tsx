@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { Loader } from "@/components/Spinner";
 
 interface Bid {
   id: string;
@@ -34,8 +35,8 @@ const CustomerBids = () => {
       .then(({ data }) => { setBids(data ?? []); setLoading(false); });
   }, [user]);
 
-  if (loading) return <p className="text-muted-foreground">Loading…</p>;
-  if (bids.length === 0) return <p className="text-muted-foreground">No bid requests yet.</p>;
+  if (loading) return <Loader />;
+  if (bids.length === 0) return <p className="text-muted-foreground">No bid requests submitted yet.</p>;
 
   return (
     <div className="overflow-x-auto rounded-xl border border-border">

@@ -4,6 +4,7 @@ import PublicLayout from "@/components/PublicLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { AlertTriangle } from "lucide-react";
 import BidRequestModal from "@/components/BidRequestModal";
+import { Loader } from "@/components/Spinner";
 
 interface Listing {
   id: string;
@@ -72,10 +73,10 @@ const Listings = () => {
         </div>
 
         {loading ? (
-          <p className="mt-12 text-center text-muted-foreground">Loading listings...</p>
+          <Loader />
         ) : listings.length === 0 ? (
           <p className="mt-12 text-center text-muted-foreground">
-            No active listings right now. Check back soon!
+            No active listings at the moment. Check back soon.
           </p>
         ) : (
           <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

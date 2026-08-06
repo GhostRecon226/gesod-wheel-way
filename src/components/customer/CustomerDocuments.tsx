@@ -6,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { Upload } from "lucide-react";
 import { uploadVehicleDocument, openDocument } from "@/lib/documentStorage";
+import { Loader } from "@/components/Spinner";
+import FieldError from "@/components/FieldError";
 
 interface DocRow {
   id: string;
@@ -39,6 +41,7 @@ const CustomerDocuments = () => {
   const [docType, setDocType] = useState(DOC_TYPES[0]);
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [uploadErrors, setUploadErrors] = useState<{ vehicle?: string; file?: string }>({});
 
   const fetchData = async () => {
     // RLS restricts both queries to the signed-in customer's own records
@@ -55,7 +58,12 @@ const CustomerDocuments = () => {
 
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || !file || !vehicleId) return;
+    const nextErrors: { vehicle?: string; file?: string } = {};
+    if (!vehicleId) nextErrors.vehicle = "Please select a vehicle.";
+    if (!file) nextErrors.file = "Please choose a file to upload.";
+    setUploadErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) return;
+    if (!user || !file) return;
     setUploading(true);
     const { path, error: upErr } = await uploadVehicleDocument(user.id, vehicleId, file);
     if (upErr) {
@@ -89,11 +97,11 @@ const CustomerDocuments = () => {
     return `${[v.year, v.make, v.model].filter(Boolean).join(" ") || "Vehicle"} · ${maskVin(v.vin)}`;
   };
 
-  if (loading) return <p className="text-muted-foreground">Loading…</p>;
+  if (loading) return <Loader />;
 
   return (
     <div className="space-y-6">
-      <form onSubmit={handleUpload} className="rounded-xl border border-border bg-card p-5">
+      <form onSubmit={handleUpload} noValidate className="rounded-xl border border-border bg-card p-5">
         <h3 className="mb-1 flex items-center gap-2 font-semibold text-silver">
           <Upload size={16} className="text-primary" /> Upload a Document
         </h3>
@@ -102,28 +110,33 @@ const CustomerDocuments = () => {
         </p>
 
         {vehicles.length === 0 ? (
-          <p className="text-sm text-muted-foreground">No vehicles assigned to your account yet.</p>
+          <p className="text-sm text-muted-foreground">No vehicles linked to your account yet. Contact GESOD RIDES to get started.</p>
         ) : (
           <div className="grid gap-3 sm:grid-cols-3">
-            <select
-              value={vehicleId}
-              onChange={(e) => setVehicleId(e.target.value)}
-              required
-              className="rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm text-foreground"
-            >
-              <option value="">Select vehicle…</option>
-              {vehicles.map((v) => <option key={v.id} value={v.id}>{vehicleLabel(v.id)}</option>)}
-            </select>
+            <div>
+              <select
+                value={vehicleId}
+                onChange={(e) => { setVehicleId(e.target.value); setUploadErrors((p) => ({ ...p, vehicle: "" })); }}
+                className="w-full rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm text-foreground"
+              >
+                <option value="">Select vehicle…</option>
+                {vehicles.map((v) => <option key={v.id} value={v.id}>{vehicleLabel(v.id)}</option>)}
+              </select>
+              <FieldError message={uploadErrors.vehicle} />
+            </div>
             <select
               value={docType}
               onChange={(e) => setDocType(e.target.value)}
-              className="rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm text-foreground"
+              className="h-10 rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm text-foreground"
             >
               {DOC_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
             </select>
-            <Input type="file" onChange={(e) => setFile(e.target.files?.[0] ?? null)} required className="auth-input" />
+            <div>
+              <Input type="file" onChange={(e) => { setFile(e.target.files?.[0] ?? null); setUploadErrors((p) => ({ ...p, file: "" })); }} className="auth-input" />
+              <FieldError message={uploadErrors.file} />
+            </div>
             <div className="sm:col-span-3">
-              <Button type="submit" variant="copper" disabled={uploading || !file || !vehicleId}>
+              <Button type="submit" variant="copper" disabled={uploading}>
                 {uploading ? "Uploading…" : "Submit for Review"}
               </Button>
             </div>
@@ -132,7 +145,7 @@ const CustomerDocuments = () => {
       </form>
 
       {docs.length === 0 ? (
-        <p className="text-muted-foreground">No documents yet.</p>
+        <p className="text-muted-foreground">No documents uploaded yet.</p>
       ) : (
         <div className="overflow-x-auto rounded-xl border border-border">
           <table className="w-full text-sm">

@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
+import { Loader } from "@/components/Spinner";
 
 interface Bid {
   id: string;
@@ -52,7 +53,7 @@ const AdminBids = () => {
     else { toast({ title: "Bid updated" }); setEditId(null); fetchData(); }
   };
 
-  if (loading) return <p className="text-muted-foreground">Loading…</p>;
+  if (loading) return <Loader />;
 
   return (
     <div>
@@ -70,6 +71,9 @@ const AdminBids = () => {
             </tr>
           </thead>
           <tbody>
+            {bids.length === 0 && (
+              <tr><td colSpan={9} className="px-4 py-8 text-center text-muted-foreground">No bid requests submitted yet.</td></tr>
+            )}
             {bids.map((b, i) => {
               const cust = customers.find((c) => c.id === b.customer_id);
               const isEditing = editId === b.id;

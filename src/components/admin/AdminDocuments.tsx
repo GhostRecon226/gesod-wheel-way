@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import { downloadCsv, downloadJson } from "@/lib/exportData";
+import { Loader } from "@/components/Spinner";
 
 interface DocRow {
   id: string; type: string | null; file_url: string | null;
@@ -93,7 +94,7 @@ const AdminDocuments = () => {
       file_url: d.file_url ?? "",
     }));
 
-  if (loading) return <p className="text-muted-foreground">Loading…</p>;
+  if (loading) return <Loader />;
 
   return (
     <div>
@@ -112,7 +113,7 @@ const AdminDocuments = () => {
       </div>
 
       {filtered.length === 0 ? (
-        <p className="text-muted-foreground">No documents in this view.</p>
+        <p className="text-muted-foreground">No documents uploaded yet.</p>
       ) : (
         <div className="overflow-x-auto rounded-xl border border-border">
           <table className="w-full text-sm">

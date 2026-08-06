@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
+import { Loader } from "@/components/Spinner";
 
 const MILESTONE_STAGES = [
   "Bid Requested","Bid Placed","Bid Won","Awaiting Payment","Payment Confirmed",
@@ -149,7 +150,7 @@ const AdminVehicles = () => {
     return true;
   });
 
-  if (loading) return <p className="text-muted-foreground">Loading…</p>;
+  if (loading) return <Loader />;
 
   return (
     <div>
@@ -241,6 +242,9 @@ const AdminVehicles = () => {
             </tr>
           </thead>
           <tbody>
+            {filtered.length === 0 && (
+              <tr><td colSpan={9} className="px-4 py-8 text-center text-muted-foreground">No vehicles found.</td></tr>
+            )}
             {filtered.map((v, i) => {
               const cust = customers.find((c) => c.id === v.customer_id);
               return (
