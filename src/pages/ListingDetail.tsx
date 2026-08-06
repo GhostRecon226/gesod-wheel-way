@@ -173,9 +173,20 @@ const ListingDetail = () => {
               <Row label="Interior colour" value={listing.interior_color} />
             </Panel>
 
-            <Button variant="copper" className="w-full" onClick={() => setBidOpen(true)}>
-              Request Bid on This Vehicle
-            </Button>
+            {biddingClosed ? (
+              <p className="rounded-lg border border-border bg-surface-2 p-4 text-center text-sm text-muted-foreground">
+                This auction has closed, bid requests are no longer accepted. See the{" "}
+                <Link to="/listings/archive" className="text-copper hover:underline">
+                  auction archive
+                </Link>{" "}
+                for past listings.
+              </p>
+            ) : (
+              <Button variant="copper" className="w-full" onClick={() => setBidOpen(true)}>
+                Request Bid on This Vehicle
+              </Button>
+            )}
+
           </div>
         </div>
       </div>
