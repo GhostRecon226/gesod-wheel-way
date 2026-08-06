@@ -30,11 +30,12 @@ const Listings = () => {
         .eq("status", "active")
         .order("created_at", { ascending: false });
 
-      // Filter client-side to exclude past auctions (in case auto-expire hasn't run)
-      const active = ((data as AuctionListing[]) ?? []).filter(
-        (l) => !l.auction_date || l.auction_date >= today
-      );
+      // Exclude auctions whose date has passed, soonest auction first
+      const active = ((data as AuctionListing[]) ?? [])
+        .filter((l) => !l.auction_date || l.auction_date >= today)
+        .sort((a, b) => (a.auction_date ?? "9999").localeCompare(b.auction_date ?? "9999"));
       setListings(active);
+
 
       // Resolve one cover photo per listing in a single signed-URL request
       const coverRefs = active
