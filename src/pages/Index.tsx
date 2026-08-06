@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Search, Gavel, Ship, Truck, ShieldCheck, Users, Globe, ArrowRight, CheckCircle2, Info } from "lucide-react";
+import { Search, Gavel, Ship, Truck, ShieldCheck, Users, Globe, ArrowRight, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PublicLayout from "@/components/PublicLayout";
 import heroBg from "@/assets/hero-bg.jpg";
@@ -32,11 +32,6 @@ const steps = [
 ];
 
 
-const highlights = [
-  "Vehicle sourcing & auction bidding support — we can source vehicles from trusted partners all over the USA to meet your specifications",
-  "Ocean shipping — ocean freight from U.S. ports to international destinations using container or RORO (Roll-on/Roll-off)",
-  "Inland transportation — vehicle transport from anywhere in the USA to your preferred destination or loading port",
-];
 
 const services = [
   {
