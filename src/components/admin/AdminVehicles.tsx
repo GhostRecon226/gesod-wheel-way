@@ -242,6 +242,9 @@ const AdminVehicles = () => {
             </tr>
           </thead>
           <tbody>
+            {filtered.length === 0 && (
+              <tr><td colSpan={9} className="px-4 py-8 text-center text-muted-foreground">No vehicles found.</td></tr>
+            )}
             {filtered.map((v, i) => {
               const cust = customers.find((c) => c.id === v.customer_id);
               return (

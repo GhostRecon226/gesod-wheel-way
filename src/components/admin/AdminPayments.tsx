@@ -104,6 +104,9 @@ const AdminPayments = () => {
             </tr>
           </thead>
           <tbody>
+            {payments.length === 0 && (
+              <tr><td colSpan={9} className="px-4 py-8 text-center text-muted-foreground">No payments recorded yet.</td></tr>
+            )}
             {payments.map((p, i) => {
               const cust = customers.find((c) => c.id === p.customer_id);
               return (

@@ -80,6 +80,9 @@ const AdminQuotes = () => {
             </tr>
           </thead>
           <tbody>
+            {quotes.length === 0 && (
+              <tr><td colSpan={9} className="px-4 py-8 text-center text-muted-foreground">No quote requests submitted yet.</td></tr>
+            )}
             {quotes.map((q, i) => {
               const cust = customers.find((c) => c.id === q.customer_id);
               const isEditing = editId === q.id;

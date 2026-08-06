@@ -117,6 +117,9 @@ const AdminSchedules = () => {
             </tr>
           </thead>
           <tbody>
+            {schedules.length === 0 && (
+              <tr><td colSpan={9} className="px-4 py-8 text-center text-muted-foreground">No sailing schedules added yet.</td></tr>
+            )}
             {schedules.map((s, i) => (
               <tr key={s.id} className={i % 2 === 0 ? "bg-card" : "bg-surface-2"}>
                 <td className="px-4 py-3 text-silver">{s.vessel_name}</td>

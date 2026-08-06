@@ -71,6 +71,9 @@ const AdminBids = () => {
             </tr>
           </thead>
           <tbody>
+            {bids.length === 0 && (
+              <tr><td colSpan={9} className="px-4 py-8 text-center text-muted-foreground">No bid requests submitted yet.</td></tr>
+            )}
             {bids.map((b, i) => {
               const cust = customers.find((c) => c.id === b.customer_id);
               const isEditing = editId === b.id;
