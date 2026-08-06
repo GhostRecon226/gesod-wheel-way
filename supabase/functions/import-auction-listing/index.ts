@@ -328,12 +328,31 @@ Deno.serve(async (req) => {
     const fields = await extractFields(pageText, sourceHint);
     if (!fields.auction_source && sourceHint) fields.auction_source = sourceHint;
 
+    // If nothing identifying came back, the page was almost certainly blocked or
+    // rendered behind a bot wall. Do not store junk images for that case.
+    const identifying = ["make", "model", "year", "vin", "lot_number"];
+    const gotSomething = identifying.some((k) => {
+      const v = fields[k];
+      return v !== null && v !== undefined && v !== "";
+    });
+    if (!gotSomething) {
+      return json(
+        {
+          error:
+            "The auction page did not return any vehicle details (it is likely blocking automated access). Paste the page details instead.",
+          fallback: "paste",
+        },
+        422,
+      );
+    }
+
     const { stored, failed } = await storeImages(admin, candidateImages);
 
     const missing = FIELD_KEYS.filter((k) => {
       const v = fields[k];
       return v === null || v === undefined || v === "";
     });
+
 
     return json({
       fields,
