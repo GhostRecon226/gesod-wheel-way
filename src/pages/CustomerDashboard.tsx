@@ -6,6 +6,7 @@ import {
   LogOut, Menu, X, ChevronRight,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Logo from "@/components/Logo";
 import { useNavigate } from "react-router-dom";
 import CustomerVehicles from "@/components/customer/CustomerVehicles";
 import CustomerBids from "@/components/customer/CustomerBids";
@@ -88,10 +89,7 @@ const CustomerDashboard = () => {
         }`}
       >
         <div className="flex items-center justify-between border-b border-border px-5 py-4">
-          <span className="text-lg font-bold">
-            <span className="text-silver">GESOD</span>{" "}
-            <span className="text-gold">RIDES</span>
-          </span>
+          <Logo to="/" />
           <button className="md:hidden text-muted-foreground" onClick={() => setMobileOpen(false)}>
             <X size={20} />
           </button>
@@ -113,8 +111,8 @@ const CustomerDashboard = () => {
                 <Icon size={18} />
                 {label}
                 {key === "notifications" && unreadCount > 0 && (
-                  <span className="ml-auto rounded-full bg-accent px-2 py-0.5 text-[10px] font-bold text-accent-foreground">
-                    {unreadCount}
+                  <span aria-label={`${unreadCount} unread notifications`} className="ml-auto min-w-[20px] rounded-full bg-primary px-1.5 py-0.5 text-center text-[10px] font-bold text-primary-foreground">
+                    {unreadCount > 9 ? "9+" : unreadCount}
                   </span>
                 )}
               </button>

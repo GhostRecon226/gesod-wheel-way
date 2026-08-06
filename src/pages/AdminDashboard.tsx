@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import Logo from "@/components/Logo";
 import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard, Users, Car, Gavel, ClipboardList, FileText,
@@ -88,10 +89,7 @@ const AdminDashboard = () => {
 
       <aside className={`fixed z-40 flex h-full w-64 flex-col border-r border-border bg-card transition-transform md:relative md:translate-x-0 ${mobileOpen ? "translate-x-0" : "-translate-x-full"}`}>
         <div className="flex items-center justify-between border-b border-border px-5 py-4">
-          <span className="text-lg font-bold">
-            <span className="text-silver">GESOD</span>{" "}
-            <span className="text-gold">RIDES</span>
-          </span>
+          <Logo to="/" />
           <button className="md:hidden text-muted-foreground" onClick={() => setMobileOpen(false)}>
             <X size={20} />
           </button>

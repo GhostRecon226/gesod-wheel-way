@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Logo from "@/components/Logo";
 
 type NavChild = { label: string; to: string };
 type NavItem = { label: string; to?: string; groupLabel?: string; children?: NavChild[] };
@@ -85,10 +86,7 @@ const Navbar = () => {
     <nav className="sticky top-0 z-50 border-b border-border bg-card">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
         {/* Logo */}
-        <Link to="/" className="text-lg font-bold no-underline tracking-tight">
-          <span className="text-silver">GESOD</span>{" "}
-          <span className="text-gold">RIDES</span>
-        </Link>
+        <Logo to="/" />
 
         {/* Desktop nav */}
         <div ref={desktopRef} className="hidden items-center gap-1 md:flex">
