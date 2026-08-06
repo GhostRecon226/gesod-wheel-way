@@ -21,7 +21,7 @@ const statusCls: Record<string, string> = {
 };
 
 const maskVin = (vin: string | null) =>
-  !vin ? "—" : vin.length <= 8 ? vin : `${vin.slice(0, 4)}••••••${vin.slice(-4)}`;
+  !vin ? "-" : vin.length <= 8 ? vin : `${vin.slice(0, 4)}••••••${vin.slice(-4)}`;
 
 const AdminDocuments = () => {
   const { user } = useAuth();
@@ -68,7 +68,7 @@ const AdminDocuments = () => {
 
   const vehicleLabel = (id: string) => {
     const v = vehicles.find((x) => x.id === id);
-    if (!v) return "—";
+    if (!v) return "-";
     return `${[v.year, v.make, v.model].filter(Boolean).join(" ") || "Vehicle"} · ${maskVin(v.vin)}`;
   };
 
@@ -133,7 +133,7 @@ const AdminDocuments = () => {
                     <td className="max-w-[220px] px-4 py-3 text-muted-foreground">
                       {isReviewing ? (
                         <Textarea value={reviewNotes} onChange={(e) => setReviewNotes(e.target.value)} rows={2} className="auth-input text-xs" placeholder="Review notes (optional)" />
-                      ) : (d.review_notes ?? "—")}
+                      ) : (d.review_notes ?? "-")}
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex flex-wrap gap-2">

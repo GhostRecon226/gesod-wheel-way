@@ -12,7 +12,7 @@ const Contact = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // Placeholder — no backend action yet
+    // Placeholder: no backend action yet
     setTimeout(() => {
       toast.success("Message sent! We'll get back to you shortly.");
       setForm({ name: "", email: "", phone: "", message: "" });
@@ -49,7 +49,7 @@ const Contact = () => {
           </div>
           <div>
             <h2 className="text-sm font-semibold text-silver">Office Hours</h2>
-            <p className="mt-1 text-sm text-muted-foreground">Mon–Fri: 9:00 AM – 6:00 PM EST</p>
+            <p className="mt-1 text-sm text-muted-foreground">Mon-Fri: 9:00 AM - 6:00 PM EST</p>
           </div>
         </div>
 

@@ -37,7 +37,7 @@ const services = [
   {
     icon: Gavel,
     title: "Vehicle Sourcing Support",
-    desc: "We can source vehicles from dealerships, auctions, or other sources. We place bids on your behalf at U.S. vehicle auctions — you provide your maximum bid amount and we handle the bidding process.",
+    desc: "We can source vehicles from dealerships, auctions, or other sources. We place bids on your behalf at U.S. vehicle auctions, and you provide your maximum bid amount and we handle the bidding process.",
   },
   {
     icon: Ship,

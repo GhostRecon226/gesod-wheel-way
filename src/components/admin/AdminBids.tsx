@@ -75,8 +75,8 @@ const AdminBids = () => {
               const isEditing = editId === b.id;
               return (
                 <tr key={b.id} className={i % 2 === 0 ? "bg-card" : "bg-surface-2"}>
-                  <td className="px-4 py-3 text-silver">{cust?.name ?? "—"}</td>
-                  <td className="px-4 py-3 text-silver">{b.max_bid != null ? `$${b.max_bid.toLocaleString()}` : "—"}</td>
+                  <td className="px-4 py-3 text-silver">{cust?.name ?? "-"}</td>
+                  <td className="px-4 py-3 text-silver">{b.max_bid != null ? `$${b.max_bid.toLocaleString()}` : "-"}</td>
                   <td className="px-4 py-3">
                     {isEditing ? (
                       <select value={editStatus} onChange={(e) => setEditStatus(e.target.value)} className="rounded border border-border bg-surface-2 px-2 py-1 text-xs text-foreground">
@@ -89,7 +89,7 @@ const AdminBids = () => {
                   <td className="px-4 py-3 text-muted-foreground max-w-[200px]">
                     {isEditing ? (
                       <Textarea value={editNotes} onChange={(e) => setEditNotes(e.target.value)} className="auth-input text-xs" rows={2} />
-                    ) : (b.admin_notes ?? "—")}
+                    ) : (b.admin_notes ?? "-")}
                   </td>
                   <td className="px-4 py-3 text-muted-foreground">{new Date(b.created_at).toLocaleDateString()}</td>
                   <td className="px-4 py-3">

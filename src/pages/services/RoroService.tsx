@@ -8,7 +8,7 @@ const RoroService = () => (
     <div className="mx-auto max-w-4xl px-4 py-16">
       <h1 className="text-3xl text-silver">RORO Ocean Shipping</h1>
       <p className="mt-3 text-lg text-muted-foreground">
-        Roll-On/Roll-Off ocean freight from US ports to Nigeria — the safest and most affordable way to ship vehicles.
+        Roll-On/Roll-Off ocean freight from US ports to Nigeria, the safest and most affordable way to ship vehicles.
       </p>
 
       <div className="mt-10 grid gap-6 sm:grid-cols-3">
@@ -30,7 +30,7 @@ const RoroService = () => (
           <Clock className="mx-auto text-copper" size={32} />
           <h3 className="mt-3 text-silver">Transit Time</h3>
           <p className="mt-2 text-sm text-muted-foreground">
-            Average transit is 4–6 weeks depending on the route and vessel schedule.
+            Average transit is 4-6 weeks depending on the route and vessel schedule.
           </p>
         </div>
       </div>

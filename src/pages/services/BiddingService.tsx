@@ -8,8 +8,8 @@ const BiddingService = () => (
     <div className="mx-auto max-w-4xl px-4 py-16">
       <h1 className="text-3xl text-silver">Vehicle Sourcing & Auction Bidding Support</h1>
       <p className="mt-3 text-lg text-muted-foreground">
-        We provide access to salvage and clean-title vehicles at major US auto auctions — Copart,
-        IAAI, and Manheim — and bid on your behalf using the maximum bid amount you provide.
+        We provide access to salvage and clean-title vehicles at major US auto auctions including Copart,
+        IAAI, and Manheim, and bid on your behalf using the maximum bid amount you provide.
       </p>
       <p className="mt-3 text-lg text-muted-foreground">
         GESOD RIDES can also help source and coordinate outright purchase of vehicles from dealers
@@ -31,8 +31,8 @@ const BiddingService = () => (
           <DollarSign className="text-copper" size={28} />
           <h3 className="mt-3 text-lg text-silver">Fees</h3>
           <ul className="mt-3 space-y-2 text-sm text-muted-foreground list-disc pl-4">
-            <li>Bidding deposit: $200–$500 (refundable if not won)</li>
-            <li>Buyer premium: varies by auction (8–15%)</li>
+            <li>Bidding deposit: $200-$500 (refundable if not won)</li>
+            <li>Buyer premium: varies by auction (8-15%)</li>
             <li>GESOD RIDES service fee: flat $300 per bid</li>
             <li>Gate/lot fees: passed through at cost</li>
           </ul>
@@ -48,7 +48,7 @@ const BiddingService = () => (
               <li>Auction vehicles are sold as-is with no warranty</li>
               <li>Title types vary: clean, salvage, rebuilt, parts-only</li>
               <li>Condition reports are provided but not guaranteed</li>
-              <li>Winning bids are binding — no cancellations</li>
+              <li>Winning bids are binding, no cancellations</li>
             </ul>
           </div>
         </div>

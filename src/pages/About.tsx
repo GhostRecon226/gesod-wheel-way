@@ -129,7 +129,7 @@ const About = () => {
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
               GESOD RIDES operates as a facilitation and logistics coordination company. We do
               not manufacture or sell vehicles directly. Instead, we assist customers in
-              navigating the vehicle importation process — from auction sourcing to final
+              navigating the vehicle importation process, from auction sourcing to final
               delivery.
             </p>
             <p className="mt-4 text-sm leading-relaxed text-muted-foreground">

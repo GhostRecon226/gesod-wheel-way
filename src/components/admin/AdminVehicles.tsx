@@ -181,7 +181,7 @@ const AdminVehicles = () => {
             <Input placeholder="Yard location" value={form.yard_location} onChange={(e) => f("yard_location", e.target.value)} className="auth-input" />
             <Input placeholder="Auction date" type="date" value={form.auction_date} onChange={(e) => f("auction_date", e.target.value)} className="auth-input" />
             <select value={form.customer_id} onChange={(e) => f("customer_id", e.target.value)} className="rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm text-foreground">
-              <option value="">— Assign customer —</option>
+              <option value="">Assign customer</option>
               {customers.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </div>
@@ -199,7 +199,7 @@ const AdminVehicles = () => {
       {/* Milestone modal */}
       {milestoneVehicle && (
         <form onSubmit={handleMilestone} className="mb-6 rounded-xl border border-border bg-card p-6 space-y-4">
-          <h3 className="font-bold text-silver">Add Milestone — {milestoneVehicle.year} {milestoneVehicle.make} {milestoneVehicle.model}</h3>
+          <h3 className="font-bold text-silver">Add Milestone: {milestoneVehicle.year} {milestoneVehicle.make} {milestoneVehicle.model}</h3>
           <select value={milestoneStage} onChange={(e) => setMilestoneStage(e.target.value)} className="w-full rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm text-foreground">
             {MILESTONE_STAGES.map((s) => <option key={s} value={s}>{s}</option>)}
           </select>
@@ -215,7 +215,7 @@ const AdminVehicles = () => {
       {/* Doc upload */}
       {docVehicle && (
         <form onSubmit={handleDocUpload} className="mb-6 rounded-xl border border-border bg-card p-6 space-y-4">
-          <h3 className="font-bold text-silver">Upload Document — {docVehicle.year} {docVehicle.make} {docVehicle.model}</h3>
+          <h3 className="font-bold text-silver">Upload Document: {docVehicle.year} {docVehicle.make} {docVehicle.model}</h3>
           <Input placeholder="Document type" value={docType} onChange={(e) => setDocType(e.target.value)} className="auth-input" />
           <Input type="file" onChange={(e) => setDocFile(e.target.files?.[0] ?? null)} className="auth-input" required />
           <div className="flex gap-3">
@@ -243,9 +243,9 @@ const AdminVehicles = () => {
               return (
                 <tr key={v.id} className={i % 2 === 0 ? "bg-card" : "bg-surface-2"}>
                   <td className="px-4 py-3 text-silver">{v.year} {v.make} {v.model}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{v.vin ?? "—"}</td>
+                  <td className="px-4 py-3 text-muted-foreground">{v.vin ?? "-"}</td>
                   <td className="px-4 py-3 text-muted-foreground">{cust?.name ?? "Unassigned"}</td>
-                  <td className="px-4 py-3"><span className="badge-copper">{v.status ?? "—"}</span></td>
+                  <td className="px-4 py-3"><span className="badge-copper">{v.status ?? "-"}</span></td>
                   <td className="px-4 py-3">
                     <div className="flex flex-wrap gap-2">
                       <Button variant="copper-outline" size="sm" onClick={() => openEdit(v)}>Edit</Button>

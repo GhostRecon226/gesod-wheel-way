@@ -105,7 +105,7 @@ const CustomerDisputes = () => {
               onChange={(e) => setVehicleId(e.target.value)}
               className="w-full rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm text-foreground"
             >
-              <option value="">— Select vehicle —</option>
+              <option value="">Select vehicle</option>
               {vehicles.map((v) => <option key={v.id} value={v.id}>{v.label}</option>)}
             </select>
           </div>

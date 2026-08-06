@@ -142,7 +142,7 @@ const AdminCustomers = () => {
               <tr key={c.id} className={i % 2 === 0 ? "bg-card" : "bg-surface-2"}>
                 <td className="px-4 py-3 text-silver">{c.name}</td>
                 <td className="px-4 py-3 text-muted-foreground">{c.email}</td>
-                <td className="px-4 py-3 text-muted-foreground">{c.phone ?? "—"}</td>
+                <td className="px-4 py-3 text-muted-foreground">{c.phone ?? "-"}</td>
                 <td className="px-4 py-3">
                   <button onClick={() => openVehicles(c)} className="text-gold hover:underline">{c.vehicle_count}</button>
                 </td>

@@ -84,7 +84,7 @@ const AdminQuotes = () => {
               const isEditing = editId === q.id;
               return (
                 <tr key={q.id} className={i % 2 === 0 ? "bg-card" : "bg-surface-2"}>
-                  <td className="px-4 py-3 text-silver">{cust?.name ?? "—"}</td>
+                  <td className="px-4 py-3 text-silver">{cust?.name ?? "-"}</td>
                   <td className="px-4 py-3 text-muted-foreground capitalize">{q.type}</td>
                   <td className="px-4 py-3">
                     {isEditing ? (
@@ -94,13 +94,13 @@ const AdminQuotes = () => {
                     ) : <span className={statusCls[q.status] ?? "badge-copper"}>{q.status}</span>}
                   </td>
                   <td className="px-4 py-3">
-                    {isEditing ? <Input value={editForm.amount_usd} onChange={(e) => setEditForm({ ...editForm, amount_usd: e.target.value })} className="auth-input w-24 text-xs" type="number" /> : <span className="text-silver">{q.amount_usd != null ? `$${q.amount_usd.toLocaleString()}` : "—"}</span>}
+                    {isEditing ? <Input value={editForm.amount_usd} onChange={(e) => setEditForm({ ...editForm, amount_usd: e.target.value })} className="auth-input w-24 text-xs" type="number" /> : <span className="text-silver">{q.amount_usd != null ? `$${q.amount_usd.toLocaleString()}` : "-"}</span>}
                   </td>
                   <td className="px-4 py-3">
-                    {isEditing ? <Input value={editForm.amount_ngn} onChange={(e) => setEditForm({ ...editForm, amount_ngn: e.target.value })} className="auth-input w-28 text-xs" type="number" /> : <span className="text-silver">{q.amount_ngn != null ? `₦${q.amount_ngn.toLocaleString()}` : "—"}</span>}
+                    {isEditing ? <Input value={editForm.amount_ngn} onChange={(e) => setEditForm({ ...editForm, amount_ngn: e.target.value })} className="auth-input w-28 text-xs" type="number" /> : <span className="text-silver">{q.amount_ngn != null ? `₦${q.amount_ngn.toLocaleString()}` : "-"}</span>}
                   </td>
                   <td className="px-4 py-3">
-                    {isEditing ? <Input type="date" value={editForm.valid_until} onChange={(e) => setEditForm({ ...editForm, valid_until: e.target.value })} className="auth-input w-36 text-xs" /> : <span className="text-muted-foreground">{q.valid_until ?? "—"}</span>}
+                    {isEditing ? <Input type="date" value={editForm.valid_until} onChange={(e) => setEditForm({ ...editForm, valid_until: e.target.value })} className="auth-input w-36 text-xs" /> : <span className="text-muted-foreground">{q.valid_until ?? "-"}</span>}
                   </td>
                   <td className="px-4 py-3">
                     {isEditing ? (

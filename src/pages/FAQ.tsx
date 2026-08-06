@@ -18,7 +18,7 @@ const faqs = [
   },
   {
     q: "How much is customs duty on imported vehicles in Nigeria?",
-    a: "Customs duty varies by vehicle type and age. Typically, the total landing cost (duty, surcharge, VAT, CISS, etc.) ranges between 30–70% of the vehicle's assessed value. We provide detailed duty estimates before shipment.",
+    a: "Customs duty varies by vehicle type and age. Typically, the total landing cost (duty, surcharge, VAT, CISS, etc.) ranges between 30-70% of the vehicle's assessed value. We provide detailed duty estimates before shipment.",
   },
   {
     q: "What documents are required for vehicle importation?",
@@ -26,7 +26,7 @@ const faqs = [
   },
   {
     q: "How long does the entire import process take?",
-    a: "From auction win to delivery in Nigeria, the process typically takes 6–10 weeks depending on the shipping route, vessel availability, and customs clearance timeline.",
+    a: "From auction win to delivery in Nigeria, the process typically takes 6-10 weeks depending on the shipping route, vessel availability, and customs clearance timeline.",
   },
   {
     q: "What are the payment stages?",

@@ -52,9 +52,9 @@ const CustomerBids = () => {
           {bids.map((b, i) => (
             <tr key={b.id} className={i % 2 === 0 ? "bg-card" : "bg-surface-2"}>
               <td className="px-4 py-3 text-silver">{new Date(b.created_at).toLocaleDateString()}</td>
-              <td className="px-4 py-3 text-silver">{b.max_bid != null ? `$${b.max_bid.toLocaleString()}` : "—"}</td>
+              <td className="px-4 py-3 text-silver">{b.max_bid != null ? `$${b.max_bid.toLocaleString()}` : "-"}</td>
               <td className="px-4 py-3"><span className={statusCls[b.status] ?? "badge-copper"}>{b.status}</span></td>
-              <td className="px-4 py-3 text-muted-foreground">{b.admin_notes ?? "—"}</td>
+              <td className="px-4 py-3 text-muted-foreground">{b.admin_notes ?? "-"}</td>
             </tr>
           ))}
         </tbody>

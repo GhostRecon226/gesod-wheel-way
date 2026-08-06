@@ -69,10 +69,10 @@ const SailingSchedule = () => {
                     className={i % 2 === 0 ? "bg-card" : "bg-surface-2"}
                   >
                     <td className="px-4 py-3 text-foreground">{s.vessel_name}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{s.departure_port ?? "—"}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{s.etd ?? "—"}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{s.eta_nigeria ?? "—"}</td>
-                    <td className="px-4 py-3 text-muted-foreground">{s.destination_port ?? "—"}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{s.departure_port ?? "-"}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{s.etd ?? "-"}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{s.eta_nigeria ?? "-"}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{s.destination_port ?? "-"}</td>
                     <td className="px-4 py-3">
                       <span className={statusBadge(s.status)}>{s.status}</span>
                     </td>
