@@ -330,7 +330,7 @@ Deno.serve(async (req) => {
 
     // If nothing identifying came back, the page was almost certainly blocked or
     // rendered behind a bot wall. Do not store junk images for that case.
-    const identifying = ["make", "model", "year", "vin", "lot_number"];
+    const identifying = ["make", "model", "year", "vin"];
     const gotSomething = identifying.some((k) => {
       const v = fields[k];
       return v !== null && v !== undefined && v !== "";
