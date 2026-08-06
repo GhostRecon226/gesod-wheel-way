@@ -7,10 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Loader } from "@/components/Spinner";
 import BidRequestModal from "@/components/BidRequestModal";
 import ImageGallery from "@/components/listings/ImageGallery";
+import AuctionCountdown from "@/components/listings/AuctionCountdown";
+import { getAuctionTiming } from "@/lib/auctionTime";
 import { resolveListingImages } from "@/lib/listingImages";
 import { AuctionListing, formatMiles, formatUsd, listingTitle } from "@/lib/listings";
 import { maskVin } from "@/lib/vin";
 import NotFound from "@/pages/NotFound";
+
 
 const Row = ({ label, value }: { label: string; value: string | null | undefined }) => (
   <div className="flex items-start justify-between gap-4 border-b border-border py-2 last:border-0">
