@@ -32,7 +32,7 @@ const TowingService = () => (
           <DollarSign className="mx-auto text-copper" size={32} />
           <h3 className="mt-3 text-silver">Pricing</h3>
           <p className="mt-2 text-sm text-muted-foreground">
-            Rates vary by distance. Typical range: $150–$600 depending on yard-to-port distance.
+            Rates vary by distance. Typical range: $150-$600 depending on yard-to-port distance.
           </p>
         </div>
       </div>
