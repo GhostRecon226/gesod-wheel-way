@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import { Loader } from "@/components/Spinner";
+import FieldError from "@/components/FieldError";
 
 interface Dispute {
   id: string;
@@ -37,6 +38,7 @@ const CustomerDisputes = () => {
   const [description, setDescription] = useState("");
   const [evidence, setEvidence] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [descError, setDescError] = useState("");
 
   const fetchData = async () => {
     if (!user) return;
@@ -53,7 +55,12 @@ const CustomerDisputes = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || !description.trim()) return;
+    if (!description.trim()) {
+      setDescError("Please describe the issue you are reporting.");
+      return;
+    }
+    setDescError("");
+    if (!user) return;
     setSubmitting(true);
 
     let evidenceUrl: string | null = null;
@@ -98,7 +105,7 @@ const CustomerDisputes = () => {
       </div>
 
       {showForm && (
-        <form onSubmit={handleSubmit} className="mb-6 rounded-xl border border-border bg-card p-6 space-y-4">
+        <form onSubmit={handleSubmit} noValidate className="mb-6 rounded-xl border border-border bg-card p-6 space-y-4">
           <div>
             <label className="mb-1 block text-sm text-muted-foreground">Vehicle (optional)</label>
             <select
@@ -112,7 +119,8 @@ const CustomerDisputes = () => {
           </div>
           <div>
             <label className="mb-1 block text-sm text-muted-foreground">Description</label>
-            <Textarea value={description} onChange={(e) => setDescription(e.target.value)} className="auth-input" rows={4} required />
+            <Textarea value={description} onChange={(e) => setDescription(e.target.value)} className="auth-input" rows={4} aria-invalid={!!descError} />
+            <FieldError message={descError} />
           </div>
           <div>
             <label className="mb-1 block text-sm text-muted-foreground">Evidence (optional)</label>

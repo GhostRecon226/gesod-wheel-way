@@ -3,6 +3,8 @@ import { Search, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import PublicLayout from "@/components/PublicLayout";
+import { Loader, Spinner } from "@/components/Spinner";
+import FieldError from "@/components/FieldError";
 import { supabase } from "@/integrations/supabase/client";
 
 const MILESTONE_ORDER = [
@@ -67,10 +69,20 @@ const Track = () => {
   const [searched, setSearched] = useState(false);
   const [loading, setLoading] = useState(false);
   const [rateLimited, setRateLimited] = useState(false);
+  const [vinError, setVinError] = useState("");
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!vin.trim()) return;
+
+    if (!vin.trim()) {
+      setVinError("VIN is required.");
+      return;
+    }
+    if (vin.trim().length !== 17) {
+      setVinError("Please enter the full 17-character VIN.");
+      return;
+    }
+    setVinError("");
 
     if (!checkRateLimit()) {
       setRateLimited(true);
@@ -143,7 +155,7 @@ const Track = () => {
           </div>
         </div>
 
-        <form onSubmit={handleSearch} className="mt-6">
+        <form onSubmit={handleSearch} noValidate className="mt-6">
           <div className="rounded-xl border border-border bg-card p-6">
             <div className="flex flex-col gap-3 sm:flex-row">
               <div className="relative flex-1">
@@ -153,17 +165,19 @@ const Track = () => {
                 />
                 <Input
                   value={vin}
-                  onChange={(e) => setVin(e.target.value.toUpperCase().slice(0, 17))}
+                  onChange={(e) => { setVin(e.target.value.toUpperCase().slice(0, 17)); if (vinError) setVinError(""); }}
                   maxLength={17}
                   placeholder="ENTER VIN (E.G., 1HGBH41JXMN109186)"
                   className="auth-input pl-10 font-mono tracking-wide uppercase"
+                  aria-invalid={!!vinError}
                 />
               </div>
               <Button variant="copper" type="submit" disabled={loading} className="sm:px-8">
-                <Search size={18} />
-                Track Vehicle
+                {loading ? <Spinner size={18} className="border-primary-foreground/30 border-t-primary-foreground" /> : <Search size={18} />}
+                {loading ? "Searching..." : "Track Vehicle"}
               </Button>
             </div>
+            <FieldError message={vinError} />
             <p className="mt-2 text-right text-sm text-muted-foreground">
               {vin.length}/17 characters
             </p>
@@ -175,6 +189,8 @@ const Track = () => {
           </div>
         </form>
 
+
+        {loading && <Loader label="Looking up VIN..." />}
 
         {searched && !loading && (
           <div className="mt-8">
