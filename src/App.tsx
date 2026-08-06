@@ -11,6 +11,7 @@ import Signup from "./pages/Signup";
 import CustomerDashboard from "./pages/CustomerDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import Listings from "./pages/Listings";
+import ListingDetail from "./pages/ListingDetail";
 import Track from "./pages/Track";
 import Quote from "./pages/Quote";
 import SailingSchedule from "./pages/SailingSchedule";
@@ -43,6 +44,7 @@ const App = () => (
             <Route path="/signup" element={<Signup />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/listings" element={<Listings />} />
+            <Route path="/listings/:id" element={<ListingDetail />} />
             <Route path="/track" element={<Track />} />
             <Route path="/quote" element={<Quote />} />
             <Route path="/schedule" element={<SailingSchedule />} />

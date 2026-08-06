@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Plus, Pencil, Trash2, Upload, Image as ImageIcon } from "lucide-react";
+import { Plus, Pencil, Trash2, Upload, Image as ImageIcon, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,18 +11,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { AuctionListing } from "@/lib/listings";
+import { resolveListingImages, uploadListingImage } from "@/lib/listingImages";
 
-
-interface ListingRow {
-  id: string;
-  make: string | null;
-  model: string | null;
-  year: number | null;
-  images: string[] | null;
-  lot_number: string | null;
-  auction_source: string | null;
-  auction_date: string | null;
-  yard_location: string | null;
+interface ListingRow extends AuctionListing {
   status: "active" | "expired";
   created_at: string;
 }
@@ -36,17 +28,49 @@ const emptyForm = {
   auction_date: "",
   yard_location: "",
   status: "active" as "active" | "expired",
+  vin: "",
+  title_type: "",
+  odometer: "",
+  primary_damage: "",
+  secondary_damage: "",
+  damage_description: "",
+  run_and_drive: false,
+  has_keys: false,
+  estimated_value: "",
+  body_style: "",
+  engine: "",
+  transmission: "",
+  drivetrain: "",
+  fuel_type: "",
+  exterior_color: "",
+  interior_color: "",
 };
 
 const AdminListings = () => {
   const [listings, setListings] = useState<ListingRow[]>([]);
+  const [thumbs, setThumbs] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [newFiles, setNewFiles] = useState<File[]>([]);
   const [existingImages, setExistingImages] = useState<string[]>([]);
+  const [existingPreviews, setExistingPreviews] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
+
+  const loadThumbs = useCallback(async (rows: ListingRow[]) => {
+    const refs = rows.map((r) => r.images?.[0]).filter((r): r is string => Boolean(r));
+    const urls = await resolveListingImages(refs);
+    const map: Record<string, string> = {};
+    let cursor = 0;
+    rows.forEach((r) => {
+      if (r.images?.[0]) {
+        const url = urls[cursor++];
+        if (url) map[r.id] = url;
+      }
+    });
+    setThumbs(map);
+  }, []);
 
   const fetchListings = useCallback(async () => {
     const { data } = await supabase
@@ -66,17 +90,19 @@ const AdminListings = () => {
           supabase.from("auction_listings").update({ status: "expired" as const }).eq("id", r.id)
         )
       );
-      // Re-fetch after expiry
       const { data: refreshed } = await supabase
         .from("auction_listings")
         .select("*")
         .order("created_at", { ascending: false });
-      setListings((refreshed as ListingRow[]) ?? []);
+      const next = (refreshed as ListingRow[]) ?? [];
+      setListings(next);
+      await loadThumbs(next);
     } else {
       setListings(rows);
+      await loadThumbs(rows);
     }
     setLoading(false);
-  }, []);
+  }, [loadThumbs]);
 
   useEffect(() => {
     fetchListings();
@@ -86,11 +112,12 @@ const AdminListings = () => {
     setEditingId(null);
     setForm(emptyForm);
     setExistingImages([]);
-    setImageFile(null);
+    setExistingPreviews([]);
+    setNewFiles([]);
     setDialogOpen(true);
   };
 
-  const openEdit = (row: ListingRow) => {
+  const openEdit = async (row: ListingRow) => {
     setEditingId(row.id);
     setForm({
       make: row.make ?? "",
@@ -101,9 +128,27 @@ const AdminListings = () => {
       auction_date: row.auction_date ?? "",
       yard_location: row.yard_location ?? "",
       status: row.status,
+      vin: row.vin ?? "",
+      title_type: row.title_type ?? "",
+      odometer: row.odometer?.toString() ?? "",
+      primary_damage: row.primary_damage ?? "",
+      secondary_damage: row.secondary_damage ?? "",
+      damage_description: row.damage_description ?? "",
+      run_and_drive: row.run_and_drive ?? false,
+      has_keys: row.has_keys ?? false,
+      estimated_value: row.estimated_value?.toString() ?? "",
+      body_style: row.body_style ?? "",
+      engine: row.engine ?? "",
+      transmission: row.transmission ?? "",
+      drivetrain: row.drivetrain ?? "",
+      fuel_type: row.fuel_type ?? "",
+      exterior_color: row.exterior_color ?? "",
+      interior_color: row.interior_color ?? "",
     });
-    setExistingImages(row.images ?? []);
-    setImageFile(null);
+    const refs = row.images ?? [];
+    setExistingImages(refs);
+    setExistingPreviews(await resolveListingImages(refs));
+    setNewFiles([]);
     setDialogOpen(true);
   };
 
@@ -118,28 +163,37 @@ const AdminListings = () => {
     }
   };
 
+  const removeExisting = (index: number) => {
+    setExistingImages((refs) => refs.filter((_, i) => i !== index));
+    setExistingPreviews((urls) => urls.filter((_, i) => i !== index));
+  };
+
+  const moveExisting = (index: number, delta: number) => {
+    const target = index + delta;
+    if (target < 0 || target >= existingImages.length) return;
+    const swap = <T,>(arr: T[]) => {
+      const next = [...arr];
+      [next[index], next[target]] = [next[target], next[index]];
+      return next;
+    };
+    setExistingImages(swap);
+    setExistingPreviews(swap);
+  };
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
 
-    let images = existingImages;
+    let images = [...existingImages];
 
-    // Upload image if provided
-    if (imageFile) {
-      const ext = imageFile.name.split(".").pop();
-      const path = `listings/${Date.now()}.${ext}`;
-      const { error: uploadErr } = await supabase.storage
-        .from("vehicle-documents")
-        .upload(path, imageFile);
+    for (const file of newFiles) {
+      const { path, error: uploadErr } = await uploadListingImage(file);
       if (uploadErr) {
         toast.error("Image upload failed: " + uploadErr.message);
         setSaving(false);
         return;
       }
-      const { data: urlData } = supabase.storage
-        .from("vehicle-documents")
-        .getPublicUrl(path);
-      images = [urlData.publicUrl, ...existingImages];
+      images = [...images, path];
     }
 
     const payload = {
@@ -152,6 +206,22 @@ const AdminListings = () => {
       yard_location: form.yard_location || null,
       status: form.status as "active" | "expired",
       images,
+      vin: form.vin ? form.vin.trim().toUpperCase() : null,
+      title_type: form.title_type || null,
+      odometer: form.odometer ? parseInt(form.odometer) : null,
+      primary_damage: form.primary_damage || null,
+      secondary_damage: form.secondary_damage || null,
+      damage_description: form.damage_description || null,
+      run_and_drive: form.run_and_drive,
+      has_keys: form.has_keys,
+      estimated_value: form.estimated_value ? parseFloat(form.estimated_value) : null,
+      body_style: form.body_style || null,
+      engine: form.engine || null,
+      transmission: form.transmission || null,
+      drivetrain: form.drivetrain || null,
+      fuel_type: form.fuel_type || null,
+      exterior_color: form.exterior_color || null,
+      interior_color: form.interior_color || null,
     };
 
     if (editingId) {
@@ -177,6 +247,24 @@ const AdminListings = () => {
     setDialogOpen(false);
     fetchListings();
   };
+
+  const text = (
+    key: keyof typeof emptyForm,
+    label: string,
+    placeholder = "",
+    type = "text"
+  ) => (
+    <div>
+      <label className="mb-1 block text-xs text-muted-foreground">{label}</label>
+      <Input
+        type={type}
+        value={String(form[key] ?? "")}
+        onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+        className="auth-input"
+        placeholder={placeholder}
+      />
+    </div>
+  );
 
   return (
     <div>
@@ -211,17 +299,22 @@ const AdminListings = () => {
               {listings.map((row, i) => (
                 <tr key={row.id} className={i % 2 === 0 ? "bg-card" : "bg-surface-2"}>
                   <td className="px-3 py-2">
-                    {row.images && row.images[0] ? (
-                      <img
-                        src={row.images[0]}
-                        alt=""
-                        className="h-10 w-14 rounded object-cover"
-                      />
-                    ) : (
-                      <div className="flex h-10 w-14 items-center justify-center rounded bg-surface-2">
-                        <ImageIcon size={16} className="text-muted-foreground" />
-                      </div>
-                    )}
+                    <div className="flex items-center gap-2">
+                      {thumbs[row.id] ? (
+                        <img
+                          src={thumbs[row.id]}
+                          alt=""
+                          className="h-10 w-14 rounded object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-10 w-14 items-center justify-center rounded bg-surface-2">
+                          <ImageIcon size={16} className="text-muted-foreground" />
+                        </div>
+                      )}
+                      <span className="text-xs text-muted-foreground">
+                        {row.images?.length ?? 0}
+                      </span>
+                    </div>
                   </td>
                   <td className="px-3 py-2 text-foreground">{row.make ?? "-"}</td>
                   <td className="px-3 py-2 text-foreground">{row.model ?? "-"}</td>
@@ -240,11 +333,7 @@ const AdminListings = () => {
                   </td>
                   <td className="px-3 py-2">
                     <div className="flex gap-2">
-                      <Button
-                        variant="copper"
-                        size="sm"
-                        onClick={() => openEdit(row)}
-                      >
+                      <Button variant="copper" size="sm" onClick={() => openEdit(row)}>
                         <Pencil size={14} />
                       </Button>
                       <Button
@@ -265,111 +354,175 @@ const AdminListings = () => {
 
       {/* Create/Edit Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="border-border bg-card sm:max-w-lg">
+        <DialogContent className="max-h-[90vh] overflow-y-auto border-border bg-card sm:max-w-2xl">
           <DialogHeader>
             <DialogTitle className="text-silver">
               {editingId ? "Edit Listing" : "Create Listing"}
             </DialogTitle>
           </DialogHeader>
-          <form onSubmit={handleSave} className="mt-4 space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="mb-1 block text-xs text-muted-foreground">Make</label>
-                <Input
-                  value={form.make}
-                  onChange={(e) => setForm({ ...form, make: e.target.value })}
-                  className="auth-input"
-                  placeholder="Toyota"
-                />
-              </div>
-              <div>
-                <label className="mb-1 block text-xs text-muted-foreground">Model</label>
-                <Input
-                  value={form.model}
-                  onChange={(e) => setForm({ ...form, model: e.target.value })}
-                  className="auth-input"
-                  placeholder="Camry"
-                />
-              </div>
-              <div>
-                <label className="mb-1 block text-xs text-muted-foreground">Year</label>
-                <Input
-                  type="number"
-                  value={form.year}
-                  onChange={(e) => setForm({ ...form, year: e.target.value })}
-                  className="auth-input"
-                  placeholder="2022"
-                />
-              </div>
-              <div>
-                <label className="mb-1 block text-xs text-muted-foreground">Lot Number</label>
-                <Input
-                  value={form.lot_number}
-                  onChange={(e) => setForm({ ...form, lot_number: e.target.value })}
-                  className="auth-input"
-                  placeholder="12345678"
-                />
-              </div>
-              <div>
-                <label className="mb-1 block text-xs text-muted-foreground">Auction Source</label>
-                <Input
-                  value={form.auction_source}
-                  onChange={(e) => setForm({ ...form, auction_source: e.target.value })}
-                  className="auth-input"
-                  placeholder="Copart"
-                />
-              </div>
-              <div>
-                <label className="mb-1 block text-xs text-muted-foreground">Auction Date</label>
-                <Input
-                  type="date"
-                  value={form.auction_date}
-                  onChange={(e) => setForm({ ...form, auction_date: e.target.value })}
-                  className="auth-input"
-                />
-              </div>
-              <div>
-                <label className="mb-1 block text-xs text-muted-foreground">Yard Location</label>
-                <Input
-                  value={form.yard_location}
-                  onChange={(e) => setForm({ ...form, yard_location: e.target.value })}
-                  className="auth-input"
-                  placeholder="Dallas, TX"
-                />
-              </div>
-              <div>
-                <label className="mb-1 block text-xs text-muted-foreground">Status</label>
-                <select
-                  value={form.status}
-                  onChange={(e) =>
-                    setForm({ ...form, status: e.target.value as "active" | "expired" })
-                  }
-                  className="auth-input w-full rounded-md border px-3 py-2 text-sm"
-                >
-                  <option value="active">Active</option>
-                  <option value="expired">Expired</option>
-                </select>
+          <form onSubmit={handleSave} className="mt-4 space-y-6">
+            <div>
+              <h3 className="mb-3 text-sm font-semibold text-silver">Vehicle</h3>
+              <div className="grid grid-cols-2 gap-4">
+                {text("make", "Make", "Toyota")}
+                {text("model", "Model", "Camry")}
+                {text("year", "Year", "2022", "number")}
+                {text("vin", "VIN", "1HGCM82633A004352")}
+                {text("body_style", "Body Style", "Sedan")}
+                {text("engine", "Engine", "2.5L 4 Cyl")}
+                {text("transmission", "Transmission", "Automatic")}
+                {text("drivetrain", "Drivetrain", "FWD")}
+                {text("fuel_type", "Fuel Type", "Gasoline")}
+                {text("exterior_color", "Exterior Colour", "Silver")}
+                {text("interior_color", "Interior Colour", "Black")}
+                {text("odometer", "Odometer (mi)", "68000", "number")}
               </div>
             </div>
 
             <div>
-              <label className="mb-1 block text-xs text-muted-foreground">
-                Vehicle Image
-              </label>
+              <h3 className="mb-3 text-sm font-semibold text-silver">Condition & Value</h3>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="mb-1 block text-xs text-muted-foreground">Title Type</label>
+                  <select
+                    value={form.title_type}
+                    onChange={(e) => setForm({ ...form, title_type: e.target.value })}
+                    className="auth-input w-full rounded-md border px-3 py-2 text-sm"
+                  >
+                    <option value="">Not specified</option>
+                    <option value="Clean">Clean</option>
+                    <option value="Salvage">Salvage</option>
+                    <option value="Rebuilt">Rebuilt</option>
+                    <option value="Certificate of Destruction">Certificate of Destruction</option>
+                  </select>
+                </div>
+                {text("estimated_value", "Estimated Retail Value (USD)", "14500", "number")}
+                {text("primary_damage", "Primary Damage", "Front End")}
+                {text("secondary_damage", "Secondary Damage", "Side")}
+              </div>
+              <div className="mt-4">
+                <label className="mb-1 block text-xs text-muted-foreground">
+                  Damage Description
+                </label>
+                <textarea
+                  value={form.damage_description}
+                  onChange={(e) => setForm({ ...form, damage_description: e.target.value })}
+                  rows={3}
+                  className="auth-input w-full rounded-md border px-3 py-2 text-sm"
+                  placeholder="Front bumper and hood damage, airbags intact, drives under own power."
+                />
+              </div>
+              <div className="mt-4 flex gap-6">
+                <label className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <input
+                    type="checkbox"
+                    checked={form.run_and_drive}
+                    onChange={(e) => setForm({ ...form, run_and_drive: e.target.checked })}
+                  />
+                  Run and drive
+                </label>
+                <label className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <input
+                    type="checkbox"
+                    checked={form.has_keys}
+                    onChange={(e) => setForm({ ...form, has_keys: e.target.checked })}
+                  />
+                  Keys available
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="mb-3 text-sm font-semibold text-silver">Auction</h3>
+              <div className="grid grid-cols-2 gap-4">
+                {text("lot_number", "Lot Number", "12345678")}
+                {text("auction_source", "Auction Source", "Copart")}
+                {text("auction_date", "Auction Date", "", "date")}
+                {text("yard_location", "Yard Location", "Dallas, TX")}
+                <div>
+                  <label className="mb-1 block text-xs text-muted-foreground">Status</label>
+                  <select
+                    value={form.status}
+                    onChange={(e) =>
+                      setForm({ ...form, status: e.target.value as "active" | "expired" })
+                    }
+                    className="auth-input w-full rounded-md border px-3 py-2 text-sm"
+                  >
+                    <option value="active">Active</option>
+                    <option value="expired">Expired</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="mb-3 text-sm font-semibold text-silver">Photos</h3>
               <label className="flex cursor-pointer items-center gap-2 rounded-md border border-border bg-surface-2 px-3 py-2 text-sm text-muted-foreground hover:border-copper">
                 <Upload size={16} />
-                {imageFile ? imageFile.name : "Choose file..."}
+                {newFiles.length > 0 ? `${newFiles.length} new file(s) selected` : "Choose files..."}
                 <input
                   type="file"
                   accept="image/*"
+                  multiple
                   className="hidden"
-                  onChange={(e) => setImageFile(e.target.files?.[0] ?? null)}
+                  onChange={(e) => setNewFiles(Array.from(e.target.files ?? []))}
                 />
               </label>
-              {existingImages.length > 0 && (
-                <p className="mt-1 text-xs text-muted-foreground">
-                  {existingImages.length} existing image(s)
-                </p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                The first photo is used as the cover image.
+              </p>
+
+              {existingPreviews.length > 0 && (
+                <div className="mt-3 flex flex-wrap gap-3">
+                  {existingPreviews.map((url, i) => (
+                    <div key={url} className="relative">
+                      <img
+                        src={url}
+                        alt=""
+                        className="h-20 w-28 rounded-md border border-border object-cover"
+                      />
+                      <button
+                        type="button"
+                        aria-label="Remove photo"
+                        onClick={() => removeExisting(i)}
+                        className="absolute -right-2 -top-2 rounded-full bg-danger p-1 text-primary-foreground"
+                      >
+                        <X size={12} />
+                      </button>
+                      <div className="mt-1 flex justify-center gap-1">
+                        <button
+                          type="button"
+                          aria-label="Move photo left"
+                          onClick={() => moveExisting(i, -1)}
+                          className="rounded border border-border px-2 text-xs text-muted-foreground"
+                        >
+                          {"<"}
+                        </button>
+                        <button
+                          type="button"
+                          aria-label="Move photo right"
+                          onClick={() => moveExisting(i, 1)}
+                          className="rounded border border-border px-2 text-xs text-muted-foreground"
+                        >
+                          {">"}
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {newFiles.length > 0 && (
+                <div className="mt-3 flex flex-wrap gap-3">
+                  {newFiles.map((file) => (
+                    <div
+                      key={file.name}
+                      className="rounded-md border border-border bg-surface-2 px-2 py-1 text-xs text-muted-foreground"
+                    >
+                      {file.name}
+                    </div>
+                  ))}
+                </div>
               )}
             </div>
 

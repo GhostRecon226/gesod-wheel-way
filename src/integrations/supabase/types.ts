@@ -18,39 +18,87 @@ export type Database = {
         Row: {
           auction_date: string | null
           auction_source: string | null
+          body_style: string | null
           created_at: string
+          damage_description: string | null
+          drivetrain: string | null
+          engine: string | null
+          estimated_value: number | null
+          exterior_color: string | null
+          fuel_type: string | null
+          has_keys: boolean | null
           id: string
           images: string[] | null
+          interior_color: string | null
           lot_number: string | null
           make: string | null
           model: string | null
+          odometer: number | null
+          primary_damage: string | null
+          run_and_drive: boolean | null
+          secondary_damage: string | null
           status: Database["public"]["Enums"]["auction_status"]
+          title_type: string | null
+          transmission: string | null
+          vin: string | null
           yard_location: string | null
           year: number | null
         }
         Insert: {
           auction_date?: string | null
           auction_source?: string | null
+          body_style?: string | null
           created_at?: string
+          damage_description?: string | null
+          drivetrain?: string | null
+          engine?: string | null
+          estimated_value?: number | null
+          exterior_color?: string | null
+          fuel_type?: string | null
+          has_keys?: boolean | null
           id?: string
           images?: string[] | null
+          interior_color?: string | null
           lot_number?: string | null
           make?: string | null
           model?: string | null
+          odometer?: number | null
+          primary_damage?: string | null
+          run_and_drive?: boolean | null
+          secondary_damage?: string | null
           status?: Database["public"]["Enums"]["auction_status"]
+          title_type?: string | null
+          transmission?: string | null
+          vin?: string | null
           yard_location?: string | null
           year?: number | null
         }
         Update: {
           auction_date?: string | null
           auction_source?: string | null
+          body_style?: string | null
           created_at?: string
+          damage_description?: string | null
+          drivetrain?: string | null
+          engine?: string | null
+          estimated_value?: number | null
+          exterior_color?: string | null
+          fuel_type?: string | null
+          has_keys?: boolean | null
           id?: string
           images?: string[] | null
+          interior_color?: string | null
           lot_number?: string | null
           make?: string | null
           model?: string | null
+          odometer?: number | null
+          primary_damage?: string | null
+          run_and_drive?: boolean | null
+          secondary_damage?: string | null
           status?: Database["public"]["Enums"]["auction_status"]
+          title_type?: string | null
+          transmission?: string | null
+          vin?: string | null
           yard_location?: string | null
           year?: number | null
         }

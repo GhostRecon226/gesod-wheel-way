@@ -1,26 +1,16 @@
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
 import PublicLayout from "@/components/PublicLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { AlertTriangle } from "lucide-react";
 import BidRequestModal from "@/components/BidRequestModal";
 import { Loader } from "@/components/Spinner";
-
-interface Listing {
-  id: string;
-  make: string | null;
-  model: string | null;
-  year: number | null;
-  images: string[] | null;
-  lot_number: string | null;
-  auction_source: string | null;
-  auction_date: string | null;
-  yard_location: string | null;
-  status: string;
-}
+import ListingCard from "@/components/listings/ListingCard";
+import { resolveListingImages } from "@/lib/listingImages";
+import { AuctionListing, listingTitle } from "@/lib/listings";
 
 const Listings = () => {
-  const [listings, setListings] = useState<Listing[]>([]);
+  const [listings, setListings] = useState<AuctionListing[]>([]);
+  const [covers, setCovers] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [bidModal, setBidModal] = useState<{ open: boolean; id: string; title: string }>({
     open: false,
@@ -30,7 +20,6 @@ const Listings = () => {
 
   useEffect(() => {
     const fetchListings = async () => {
-      // Auto-expire past-date listings first
       const today = new Date().toISOString().split("T")[0];
 
       const { data } = await supabase
@@ -40,18 +29,32 @@ const Listings = () => {
         .order("created_at", { ascending: false });
 
       // Filter client-side to exclude past auctions (in case auto-expire hasn't run)
-      const active = ((data as Listing[]) ?? []).filter(
+      const active = ((data as AuctionListing[]) ?? []).filter(
         (l) => !l.auction_date || l.auction_date >= today
       );
       setListings(active);
+
+      // Resolve one cover photo per listing in a single signed-URL request
+      const coverRefs = active
+        .map((l) => l.images?.[0])
+        .filter((ref): ref is string => Boolean(ref));
+      const urls = await resolveListingImages(coverRefs);
+      const map: Record<string, string> = {};
+      let cursor = 0;
+      active.forEach((l) => {
+        if (l.images?.[0]) {
+          const url = urls[cursor++];
+          if (url) map[l.id] = url;
+        }
+      });
+      setCovers(map);
       setLoading(false);
     };
     fetchListings();
   }, []);
 
-  const openBid = (listing: Listing) => {
-    const title = `${listing.year ?? ""} ${listing.make ?? ""} ${listing.model ?? ""}`.trim();
-    setBidModal({ open: true, id: listing.id, title });
+  const openBid = (listing: AuctionListing) => {
+    setBidModal({ open: true, id: listing.id, title: listingTitle(listing) });
   };
 
   return (
@@ -59,7 +62,8 @@ const Listings = () => {
       <div className="mx-auto max-w-6xl px-4 py-16">
         <h1 className="text-3xl text-silver">Auction Listings</h1>
         <p className="mt-2 text-muted-foreground">
-          Browse available vehicles from US auctions.
+          Browse available vehicles from US auctions. Open a listing to see photos, damage details
+          and full specifications before you request a bid.
         </p>
 
         {/* Disclaimer */}
@@ -81,43 +85,12 @@ const Listings = () => {
         ) : (
           <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {listings.map((v) => (
-              <div key={v.id} className="overflow-hidden rounded-xl border border-border bg-card">
-                <div className="h-48 bg-surface-2">
-                  {v.images && v.images[0] ? (
-                    <img
-                      src={v.images[0]}
-                      alt={`${v.make} ${v.model}`}
-                      className="h-full w-full object-cover"
-                      loading="lazy"
-                    />
-                  ) : (
-                    <div className="flex h-full items-center justify-center text-muted-foreground">
-                      No Image
-                    </div>
-                  )}
-                </div>
-                <div className="p-4">
-                  <h3 className="text-lg text-silver">
-                    {v.year} {v.make} {v.model}
-                  </h3>
-                  {v.auction_source && (
-                    <span className="badge-copper mt-2">{v.auction_source}</span>
-                  )}
-                  <div className="mt-3 space-y-1 text-sm text-muted-foreground">
-                    {v.lot_number && <p>Lot: {v.lot_number}</p>}
-                    {v.yard_location && <p>Yard: {v.yard_location}</p>}
-                    {v.auction_date && <p>Auction: {v.auction_date}</p>}
-                  </div>
-                  <Button
-                    variant="copper"
-                    size="sm"
-                    className="mt-4 w-full"
-                    onClick={() => openBid(v)}
-                  >
-                    Request Bid
-                  </Button>
-                </div>
-              </div>
+              <ListingCard
+                key={v.id}
+                listing={v}
+                imageUrl={covers[v.id]}
+                onRequestBid={openBid}
+              />
             ))}
           </div>
         )}
