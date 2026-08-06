@@ -59,6 +59,8 @@ const AdminListings = () => {
   const [existingImages, setExistingImages] = useState<string[]>([]);
   const [existingPreviews, setExistingPreviews] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
+  const [importMissing, setImportMissing] = useState<string[]>([]);
+
 
   const loadThumbs = useCallback(async (rows: ListingRow[]) => {
     const refs = rows.map((r) => r.images?.[0]).filter((r): r is string => Boolean(r));
