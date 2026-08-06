@@ -113,7 +113,7 @@ const AdminDocuments = () => {
       </div>
 
       {filtered.length === 0 ? (
-        <p className="text-muted-foreground">No documents in this view.</p>
+        <p className="text-muted-foreground">No documents uploaded yet.</p>
       ) : (
         <div className="overflow-x-auto rounded-xl border border-border">
           <table className="w-full text-sm">

@@ -73,7 +73,7 @@ const AdminDisputesSection = () => {
     <div>
       <h2 className="mb-4 text-lg font-bold text-silver">Disputes</h2>
       <div className="space-y-4">
-        {disputes.length === 0 && <p className="text-muted-foreground">No disputes.</p>}
+        {disputes.length === 0 && <p className="text-muted-foreground">No disputes filed.</p>}
         {disputes.map((d) => {
           const cust = customers.find((c) => c.id === d.customer_id);
           const isEditing = editId === d.id;

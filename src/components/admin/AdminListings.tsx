@@ -189,7 +189,7 @@ const AdminListings = () => {
       {loading ? (
         <Loader />
       ) : listings.length === 0 ? (
-        <p className="text-muted-foreground">No listings yet.</p>
+        <p className="text-muted-foreground">No active listings at the moment. Check back soon.</p>
       ) : (
         <div className="overflow-x-auto rounded-xl border border-border">
           <table className="w-full text-left text-sm">

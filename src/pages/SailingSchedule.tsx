@@ -49,7 +49,7 @@ const SailingSchedule = () => {
         {loading ? (
           <Loader />
         ) : schedules.length === 0 ? (
-          <p className="mt-12 text-center text-muted-foreground">No schedules available yet.</p>
+          <p className="mt-12 text-center text-muted-foreground">No sailing schedules available at the moment. Check back soon.</p>
         ) : (
           <div className="mt-8 overflow-x-auto rounded-xl border border-border">
             <table className="w-full text-left text-sm">

@@ -37,7 +37,7 @@ const CustomerQuotes = () => {
   }, [user]);
 
   if (loading) return <Loader />;
-  if (quotes.length === 0) return <p className="text-muted-foreground">No quote requests yet.</p>;
+  if (quotes.length === 0) return <p className="text-muted-foreground">No quote requests submitted yet.</p>;
 
   return (
     <div className="overflow-x-auto rounded-xl border border-border">

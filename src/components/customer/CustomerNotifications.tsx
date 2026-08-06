@@ -51,7 +51,7 @@ const CustomerNotifications = () => {
       </div>
 
       {notifs.length === 0 ? (
-        <p className="text-muted-foreground">No notifications.</p>
+        <p className="text-muted-foreground">You have no notifications at this time.</p>
       ) : (
         <div className="space-y-2">
           {notifs.map((n) => (

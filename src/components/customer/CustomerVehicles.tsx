@@ -158,7 +158,7 @@ const CustomerVehicles = () => {
   }
 
   if (vehicles.length === 0)
-    return <p className="text-muted-foreground">No vehicles linked to your account yet.</p>;
+    return <p className="text-muted-foreground">No vehicles linked to your account yet. Contact GESOD RIDES to get started.</p>;
 
   return (
     <div className="space-y-3">

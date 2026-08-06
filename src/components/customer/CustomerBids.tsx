@@ -36,7 +36,7 @@ const CustomerBids = () => {
   }, [user]);
 
   if (loading) return <Loader />;
-  if (bids.length === 0) return <p className="text-muted-foreground">No bid requests yet.</p>;
+  if (bids.length === 0) return <p className="text-muted-foreground">No bid requests submitted yet.</p>;
 
   return (
     <div className="overflow-x-auto rounded-xl border border-border">
