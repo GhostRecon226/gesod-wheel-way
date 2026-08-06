@@ -693,6 +693,7 @@ export type Database = {
           read_ct: number
         }[]
       }
+      track_vehicle_by_vin: { Args: { _vin: string }; Returns: Json }
     }
     Enums: {
       app_role: "customer" | "admin"

@@ -23,6 +23,10 @@ interface Vehicle {
 
 interface CustomerOption { id: string; name: string; }
 
+// VINs are masked everywhere they are displayed; the full value stays editable in the form.
+const maskVin = (vin: string | null) =>
+  !vin ? "-" : vin.length <= 8 ? vin : `${vin.slice(0, 4)}••••••${vin.slice(-4)}`;
+
 const emptyForm = {
   vin: "", make: "", model: "", year: "", title_type: "", damage_description: "",
   odometer: "", run_and_drive: false, status: "", customer_id: "",
@@ -243,7 +247,7 @@ const AdminVehicles = () => {
               return (
                 <tr key={v.id} className={i % 2 === 0 ? "bg-card" : "bg-surface-2"}>
                   <td className="px-4 py-3 text-silver">{v.year} {v.make} {v.model}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{v.vin ?? "-"}</td>
+                  <td className="px-4 py-3 font-mono text-xs text-muted-foreground">{maskVin(v.vin)}</td>
                   <td className="px-4 py-3 text-muted-foreground">{cust?.name ?? "Unassigned"}</td>
                   <td className="px-4 py-3"><span className="badge-copper">{v.status ?? "-"}</span></td>
                   <td className="px-4 py-3">

@@ -32,12 +32,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const fetchUserProfile = async (userId: string) => {
     setRoleLoading(true);
-    // Fetch role from user_roles table
-    const { data: roleData } = await supabase
+    // Fetch ALL roles: a user may legitimately hold more than one row.
+    // Admin always wins so an extra "customer" row can never demote an admin.
+    const { data: roleRows } = await supabase
       .from("user_roles")
       .select("role")
-      .eq("user_id", userId)
-      .maybeSingle();
+      .eq("user_id", userId);
 
     // Fetch name from users table
     const { data: profileData } = await supabase
@@ -46,10 +46,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       .eq("id", userId)
       .maybeSingle();
 
-    setUserRole((roleData?.role as AppRole) ?? "customer");
+    const roles = (roleRows ?? []).map((r) => r.role as AppRole);
+    setUserRole(roles.includes("admin") ? "admin" : "customer");
     setUserName(profileData?.name ?? null);
     setRoleLoading(false);
   };
+
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
