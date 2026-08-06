@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/dialog";
 import { AuctionListing } from "@/lib/listings";
 import { resolveListingImages, uploadListingImage } from "@/lib/listingImages";
+import ImportListingLink, { ImportDraft } from "@/components/admin/ImportListingLink";
+
 
 interface ListingRow extends AuctionListing {
   status: "active" | "expired";
@@ -57,6 +59,8 @@ const AdminListings = () => {
   const [existingImages, setExistingImages] = useState<string[]>([]);
   const [existingPreviews, setExistingPreviews] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
+  const [importMissing, setImportMissing] = useState<string[]>([]);
+
 
   const loadThumbs = useCallback(async (rows: ListingRow[]) => {
     const refs = rows.map((r) => r.images?.[0]).filter((r): r is string => Boolean(r));
@@ -114,8 +118,52 @@ const AdminListings = () => {
     setExistingImages([]);
     setExistingPreviews([]);
     setNewFiles([]);
+    setImportMissing([]);
     setDialogOpen(true);
   };
+
+  const handleDraft = async (draft: ImportDraft) => {
+    const f = draft.fields ?? {};
+    const str = (key: string) => {
+      const v = f[key];
+      return v === null || v === undefined ? "" : String(v);
+    };
+    setEditingId(null);
+    setForm({
+      ...emptyForm,
+      make: str("make"),
+      model: str("model"),
+      year: str("year"),
+      lot_number: str("lot_number"),
+      auction_source: str("auction_source"),
+      auction_date: str("auction_date"),
+      yard_location: str("yard_location"),
+      status: "active",
+      vin: str("vin").toUpperCase(),
+      title_type: str("title_type"),
+      odometer: str("odometer"),
+      primary_damage: str("primary_damage"),
+      secondary_damage: str("secondary_damage"),
+      damage_description: str("damage_description"),
+      run_and_drive: f.run_and_drive === true,
+      has_keys: f.has_keys === true,
+      estimated_value: str("estimated_value"),
+      body_style: str("body_style"),
+      engine: str("engine"),
+      transmission: str("transmission"),
+      drivetrain: str("drivetrain"),
+      fuel_type: str("fuel_type"),
+      exterior_color: str("exterior_color"),
+      interior_color: str("interior_color"),
+    });
+    const images = draft.images ?? [];
+    setExistingImages(images);
+    setExistingPreviews(await resolveListingImages(images));
+    setNewFiles([]);
+    setImportMissing(draft.missing ?? []);
+    setDialogOpen(true);
+  };
+
 
   const openEdit = async (row: ListingRow) => {
     setEditingId(row.id);
@@ -149,7 +197,9 @@ const AdminListings = () => {
     setExistingImages(refs);
     setExistingPreviews(await resolveListingImages(refs));
     setNewFiles([]);
+    setImportMissing([]);
     setDialogOpen(true);
+
   };
 
   const handleDelete = async (id: string) => {
@@ -275,6 +325,9 @@ const AdminListings = () => {
         </Button>
       </div>
 
+      <ImportListingLink onDraft={handleDraft} />
+
+
       {loading ? (
         <Loader />
       ) : listings.length === 0 ? (
@@ -360,6 +413,16 @@ const AdminListings = () => {
               {editingId ? "Edit Listing" : "Create Listing"}
             </DialogTitle>
           </DialogHeader>
+          {importMissing.length > 0 && (
+            <div className="rounded-md border border-copper/40 bg-surface-2 p-3 text-xs text-muted-foreground">
+              <span className="font-semibold text-silver">
+                Imported. {importMissing.length} field(s) could not be read:
+              </span>{" "}
+              {importMissing.map((k) => k.replace(/_/g, " ")).join(", ")}. Fill in what you need,
+              then save.
+            </div>
+          )}
+
           <form onSubmit={handleSave} className="mt-4 space-y-6">
             <div>
               <h3 className="mb-3 text-sm font-semibold text-silver">Vehicle</h3>
