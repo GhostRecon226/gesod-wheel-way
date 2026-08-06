@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { Upload } from "lucide-react";
+import { uploadVehicleDocument, openDocument } from "@/lib/documentStorage";
 
 interface DocRow {
   id: string;
@@ -56,16 +57,14 @@ const CustomerDocuments = () => {
     e.preventDefault();
     if (!user || !file || !vehicleId) return;
     setUploading(true);
-    const path = `docs/${vehicleId}/${Date.now()}_${file.name}`;
-    const { error: upErr } = await supabase.storage.from("vehicle-documents").upload(path, file);
+    const { path, error: upErr } = await uploadVehicleDocument(user.id, vehicleId, file);
     if (upErr) {
       toast({ title: "Upload failed", description: upErr.message, variant: "destructive" });
       setUploading(false);
       return;
     }
-    const fileUrl = supabase.storage.from("vehicle-documents").getPublicUrl(path).data.publicUrl;
     const { error } = await (supabase as any).from("documents").insert({
-      vehicle_id: vehicleId, type: docType, file_url: fileUrl,
+      vehicle_id: vehicleId, type: docType, file_url: path,
       uploaded_by: user.id, review_status: "pending",
     });
     setUploading(false);
@@ -75,6 +74,13 @@ const CustomerDocuments = () => {
       setFile(null); setVehicleId("");
       fetchData();
     }
+  };
+
+
+  const viewDoc = async (fileUrl: string) => {
+    const url = await openDocument(fileUrl);
+    if (!url) { toast({ title: "Unable to open document", description: "The file link could not be verified.", variant: "destructive" }); return; }
+    window.open(url, "_blank", "noopener,noreferrer");
   };
 
   const vehicleLabel = (id: string) => {
@@ -152,9 +158,9 @@ const CustomerDocuments = () => {
                   <td className="max-w-[200px] px-4 py-3 text-muted-foreground">{d.review_notes ?? "-"}</td>
                   <td className="px-4 py-3">
                     {d.file_url ? (
-                      <a href={d.file_url} target="_blank" rel="noopener noreferrer" className="rounded-md border border-primary px-3 py-1 text-xs font-medium text-primary hover:bg-primary/10">
+                      <button type="button" onClick={() => viewDoc(d.file_url!)} className="rounded-md border border-primary px-3 py-1 text-xs font-medium text-primary hover:bg-primary/10">
                         View / Download
-                      </a>
+                      </button>
                     ) : "-"}
                   </td>
                 </tr>

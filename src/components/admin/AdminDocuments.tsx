@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { openDocument } from "@/lib/documentStorage";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
@@ -64,6 +65,12 @@ const AdminDocuments = () => {
       setReviewId(null); setReviewNotes("");
       fetchData();
     }
+  };
+
+  const viewDoc = async (fileUrl: string) => {
+    const url = await openDocument(fileUrl);
+    if (!url) { toast({ title: "Unable to open document", description: "The file link could not be verified.", variant: "destructive" }); return; }
+    window.open(url, "_blank", "noopener,noreferrer");
   };
 
   const vehicleLabel = (id: string) => {
@@ -138,7 +145,7 @@ const AdminDocuments = () => {
                     <td className="px-4 py-3">
                       <div className="flex flex-wrap gap-2">
                         {d.file_url && (
-                          <a href={d.file_url} target="_blank" rel="noopener noreferrer" className="rounded-md border border-primary px-3 py-1 text-xs font-medium text-primary hover:bg-primary/10">View</a>
+                          <button type="button" onClick={() => viewDoc(d.file_url!)} className="rounded-md border border-primary px-3 py-1 text-xs font-medium text-primary hover:bg-primary/10">View</button>
                         )}
                         {isReviewing ? (
                           <>

@@ -8,13 +8,13 @@
   :root {
     --font-sans: 'Inter', sans-serif;
 
-    /* GESOD RIDES brand tokens */
-    --color-bg: 213 33% 9%;
-    --color-surface: 214 30% 15%;
-    --color-surface-2: 215 27% 20%;
-    --color-copper: 30 63% 47%;
-    --color-gold: 36 80% 52%;
-    --color-silver: 214 32% 91%;
+    /* GESOD RIDES brand tokens (exact brand hex values) */
+    --color-bg: 205 42% 9%;          /* #0D1820 */
+    --color-surface: 216 34% 15%;    /* #1A2535 */
+    --color-surface-2: 215 35% 22%;  /* #24344A */
+    --color-copper: 31 64% 47%;      /* #C47B2B */
+    --color-gold: 38 81% 52%;        /* #E8A020 */
+    --color-silver: 215 32% 90%;     /* #DCE3ED */
     --color-text: 214 32% 95%;
     --color-muted: 215 18% 62%;
     --color-border: 213 30% 24%;
@@ -42,7 +42,7 @@
     --muted-foreground: var(--color-muted);
 
     --accent: var(--color-gold);
-    --accent-foreground: 213 33% 9%;
+    --accent-foreground: 205 42% 9%;
 
     --destructive: var(--color-danger);
     --destructive-foreground: 0 0% 100%;

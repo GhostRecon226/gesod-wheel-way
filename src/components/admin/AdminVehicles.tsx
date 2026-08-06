@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { uploadVehicleDocument } from "@/lib/documentStorage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -22,6 +23,10 @@ interface Vehicle {
 }
 
 interface CustomerOption { id: string; name: string; }
+
+// VINs are masked everywhere they are displayed; the full value stays editable in the form.
+const maskVin = (vin: string | null) =>
+  !vin ? "-" : vin.length <= 8 ? vin : `${vin.slice(0, 4)}••••••${vin.slice(-4)}`;
 
 const emptyForm = {
   vin: "", make: "", model: "", year: "", title_type: "", damage_description: "",
@@ -130,11 +135,9 @@ const AdminVehicles = () => {
     e.preventDefault();
     if (!docVehicle || !docFile || !user) return;
     setSubmitting(true);
-    const path = `docs/${docVehicle.id}/${Date.now()}_${docFile.name}`;
-    const { error: uploadErr } = await supabase.storage.from("vehicle-documents").upload(path, docFile);
+    const { path, error: uploadErr } = await uploadVehicleDocument(user.id, docVehicle.id, docFile);
     if (uploadErr) { toast({ title: "Upload error", description: uploadErr.message, variant: "destructive" }); setSubmitting(false); return; }
-    const fileUrl = supabase.storage.from("vehicle-documents").getPublicUrl(path).data.publicUrl;
-    const { error } = await supabase.from("documents").insert({ vehicle_id: docVehicle.id, type: docType || null, file_url: fileUrl, uploaded_by: user.id });
+    const { error } = await supabase.from("documents").insert({ vehicle_id: docVehicle.id, type: docType || null, file_url: path, uploaded_by: user.id });
     if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
     else { toast({ title: "Document uploaded" }); setDocVehicle(null); setDocType(""); setDocFile(null); }
     setSubmitting(false);
@@ -243,7 +246,7 @@ const AdminVehicles = () => {
               return (
                 <tr key={v.id} className={i % 2 === 0 ? "bg-card" : "bg-surface-2"}>
                   <td className="px-4 py-3 text-silver">{v.year} {v.make} {v.model}</td>
-                  <td className="px-4 py-3 text-muted-foreground">{v.vin ?? "-"}</td>
+                  <td className="px-4 py-3 font-mono text-xs text-muted-foreground">{maskVin(v.vin)}</td>
                   <td className="px-4 py-3 text-muted-foreground">{cust?.name ?? "Unassigned"}</td>
                   <td className="px-4 py-3"><span className="badge-copper">{v.status ?? "-"}</span></td>
                   <td className="px-4 py-3">

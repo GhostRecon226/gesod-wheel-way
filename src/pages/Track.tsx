@@ -36,13 +36,14 @@ interface VehicleData {
   make: string | null;
   model: string | null;
   year: number | null;
-  vin: string | null;
+  vin_masked: string | null;
+  status: string | null;
 }
 
-function maskVin(vin: string) {
-  if (vin.length <= 8) return vin;
-  return vin.slice(0, 4) + "*".repeat(vin.length - 8) + vin.slice(-4);
+interface TrackResult extends VehicleData {
+  milestones: Milestone[];
 }
+
 
 const RATE_LIMIT_KEY = "gesod_vin_searches";
 const RATE_LIMIT_MAX = 5;
@@ -79,28 +80,30 @@ const Track = () => {
     setLoading(true);
     setSearched(true);
 
-    const { data: v } = await supabase
-      .from("vehicles")
-      .select("id, make, model, year, vin, status")
-      .eq("vin", vin.trim().toUpperCase())
-      .maybeSingle();
+    // Public, masked-VIN lookup. Vehicle rows themselves stay private under RLS,
+    // so tracking goes through a dedicated function that only returns the
+    // masked VIN plus milestone history for an exact 17-character VIN.
+    const { data, error } = await supabase.rpc("track_vehicle_by_vin", {
+      _vin: vin.trim().toUpperCase(),
+    });
 
-    if (!v) {
+    const result = (data as unknown as TrackResult | null) ?? null;
+
+    if (error || !result) {
       setVehicle(null);
       setMilestones([]);
       setLoading(false);
       return;
     }
 
-    setVehicle({ make: v.make, model: v.model, year: v.year, vin: v.vin });
-
-    const { data: ms } = await supabase
-      .from("vehicle_milestones")
-      .select("id, stage, notes, created_at, evidence_url")
-      .eq("vehicle_id", v.id)
-      .order("created_at", { ascending: true });
-
-    setMilestones((ms as Milestone[]) ?? []);
+    setVehicle({
+      make: result.make,
+      model: result.model,
+      year: result.year,
+      vin_masked: result.vin_masked,
+      status: result.status,
+    });
+    setMilestones(result.milestones ?? []);
     setLoading(false);
   };
 
@@ -182,7 +185,8 @@ const Track = () => {
                     {vehicle.year} {vehicle.make} {vehicle.model}
                   </h3>
                   <p className="text-sm text-muted-foreground">
-                    VIN: {vehicle.vin ? maskVin(vehicle.vin) : "N/A"}
+                    VIN: <span className="font-mono">{vehicle.vin_masked ?? "N/A"}</span>
+                    {vehicle.status ? ` · ${vehicle.status}` : ""}
                   </p>
                 </div>
 

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { openDocument } from "@/lib/documentStorage";
 import { supabase } from "@/integrations/supabase/client";
 import { ChevronRight } from "lucide-react";
 
@@ -56,6 +57,11 @@ const CustomerVehicles = () => {
   const [milestones, setMilestones] = useState<Milestone[]>([]);
   const [docs, setDocs] = useState<Doc[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const viewDoc = async (fileUrl: string) => {
+    const url = await openDocument(fileUrl);
+    if (url) window.open(url, "_blank", "noopener,noreferrer");
+  };
 
   useEffect(() => {
     if (!user) return;
@@ -136,9 +142,9 @@ const CustomerVehicles = () => {
                       <p className="text-xs text-muted-foreground">{new Date(d.created_at).toLocaleDateString()}</p>
                     </div>
                     {d.file_url && (
-                      <a href={d.file_url} target="_blank" rel="noopener noreferrer" className="text-xs font-medium text-primary border border-primary rounded-md px-3 py-1 hover:bg-primary/10">
+                      <button type="button" onClick={() => viewDoc(d.file_url!)} className="text-xs font-medium text-primary border border-primary rounded-md px-3 py-1 hover:bg-primary/10">
                         View
-                      </a>
+                      </button>
                     )}
                   </div>
                 ))}
