@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -14,6 +14,8 @@ import CustomerDocuments from "@/components/customer/CustomerDocuments";
 import CustomerPayments from "@/components/customer/CustomerPayments";
 import CustomerDisputes from "@/components/customer/CustomerDisputes";
 import CustomerNotifications from "@/components/customer/CustomerNotifications";
+import { can, type Module } from "@/lib/permissions";
+import { useRealtimeAlerts } from "@/hooks/useRealtimeAlerts";
 
 const SECTIONS = [
   { key: "vehicles", label: "My Vehicles", icon: Car },
@@ -28,11 +30,17 @@ const SECTIONS = [
 type Section = (typeof SECTIONS)[number]["key"];
 
 const CustomerDashboard = () => {
-  const { userName, user, signOut } = useAuth();
+  const { userName, user, userRole, signOut } = useAuth();
   const navigate = useNavigate();
   const [active, setActive] = useState<Section>("vehicles");
   const [mobileOpen, setMobileOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const handleAlert = useCallback(() => setRefreshKey((k) => k + 1), []);
+  useRealtimeAlerts(user?.id, userRole, handleAlert);
+
+  const visibleSections = SECTIONS.filter((s) => can(userRole, s.key as Module));
 
   useEffect(() => {
     if (!user) return;
@@ -42,24 +50,29 @@ const CustomerDashboard = () => {
       .eq("user_id", user.id)
       .eq("read", false)
       .then(({ count }) => setUnreadCount(count ?? 0));
-  }, [user, active]);
+  }, [user, active, refreshKey]);
 
   const handleLogout = async () => {
     await signOut();
     navigate("/login", { replace: true });
   };
 
+
   const renderContent = () => {
+    if (!can(userRole, active as Module)) {
+      return <p className="text-muted-foreground">You do not have permission to view this module.</p>;
+    }
     switch (active) {
       case "vehicles": return <CustomerVehicles />;
-      case "bids": return <CustomerBids />;
+      case "bids": return <CustomerBids key={refreshKey} />;
       case "quotes": return <CustomerQuotes />;
       case "documents": return <CustomerDocuments />;
       case "payments": return <CustomerPayments />;
       case "disputes": return <CustomerDisputes />;
-      case "notifications": return <CustomerNotifications />;
+      case "notifications": return <CustomerNotifications key={refreshKey} />;
     }
   };
+
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -85,7 +98,7 @@ const CustomerDashboard = () => {
         </div>
 
         <nav className="flex-1 overflow-y-auto py-3">
-          {SECTIONS.map(({ key, label, icon: Icon }) => {
+          {visibleSections.map(({ key, label, icon: Icon }) => {
             const isActive = active === key;
             return (
               <button
