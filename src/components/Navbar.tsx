@@ -7,6 +7,7 @@ type NavChild = { label: string; to: string };
 type NavItem = { label: string; to?: string; groupLabel?: string; children?: NavChild[] };
 
 const navItems: NavItem[] = [
+  { label: "Home", to: "/" },
   {
     label: "Services",
     groupLabel: "What we do",
@@ -162,11 +163,6 @@ const Navbar = () => {
           )}
 
           <div className="ml-3 flex items-center gap-2">
-            <Link to="/quote">
-              <Button variant="outline" size="sm" className="h-8 px-3 text-[13px]">
-                Get a Quote
-              </Button>
-            </Link>
             <Link to="/login">
               <Button variant="copper" size="sm" className="h-8 px-3 text-[13px]">
                 Login
@@ -247,11 +243,6 @@ const Navbar = () => {
               )
             )}
             <div className="mt-3 space-y-2">
-              <Link to="/quote" onClick={() => setMobileOpen(false)}>
-                <Button variant="outline" size="sm" className="h-9 w-full text-[13px]">
-                  Get a Quote
-                </Button>
-              </Link>
               <Link to="/login" onClick={() => setMobileOpen(false)}>
                 <Button variant="copper" size="sm" className="h-9 w-full text-[13px]">
                   Login
