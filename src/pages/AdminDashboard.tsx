@@ -59,8 +59,12 @@ const AdminDashboard = () => {
 
 
   const renderContent = () => {
+    if (!can(userRole, active as Module)) {
+      return <p className="text-muted-foreground">You do not have permission to view this module.</p>;
+    }
     switch (active) {
       case "overview": return <AdminOverview />;
+      case "import": return <AdminImportPipeline />;
       case "customers": return <AdminCustomers />;
       case "vehicles": return <AdminVehicles />;
       case "listings": return <AdminListings />;
@@ -71,8 +75,10 @@ const AdminDashboard = () => {
       case "disputes": return <AdminDisputesSection />;
       case "schedules": return <AdminSchedules />;
       case "notifications": return <AdminNotifications />;
+      case "reports": return <AdminReports />;
     }
   };
+
 
   return (
     <div className="flex min-h-screen bg-background">
@@ -92,7 +98,7 @@ const AdminDashboard = () => {
         </div>
 
         <nav className="flex-1 overflow-y-auto py-3">
-          {SECTIONS.map(({ key, label, icon: Icon }) => {
+          {visibleSections.map(({ key, label, icon: Icon }) => {
             const isActive = active === key;
             return (
               <button
