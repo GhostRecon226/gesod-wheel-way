@@ -66,6 +66,10 @@ const ListingCard = ({ listing, imageUrl, onRequestBid, archived = false }: List
           ))}
         </div>
 
+        <div className="mt-3">
+          <AuctionCountdown auctionDate={listing.auction_date} />
+        </div>
+
         <div className="mt-3 space-y-1 text-sm text-muted-foreground">
           {listing.lot_number && <p>Lot: {listing.lot_number}</p>}
           {listing.yard_location && <p>Yard: {listing.yard_location}</p>}
@@ -79,15 +83,18 @@ const ListingCard = ({ listing, imageUrl, onRequestBid, archived = false }: List
           <Button variant="copper" size="sm" className="flex-1" asChild>
             <Link to={`/listings/${listing.id}`}>View Details</Link>
           </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            className="flex-1"
-            onClick={() => onRequestBid(listing)}
-          >
-            Request Bid
-          </Button>
+          {!archived && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="flex-1"
+              onClick={() => onRequestBid(listing)}
+            >
+              Request Bid
+            </Button>
+          )}
         </div>
+
       </div>
     </div>
   );
