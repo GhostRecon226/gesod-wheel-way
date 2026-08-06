@@ -6,12 +6,14 @@ import { AlertTriangle, ArrowLeft } from "lucide-react";
 import { Loader } from "@/components/Spinner";
 import ListingCard from "@/components/listings/ListingCard";
 import { resolveListingImages } from "@/lib/listingImages";
-import { AuctionListing } from "@/lib/listings";
+import { AuctionListing, listingTitle } from "@/lib/listings";
+import { useWatchlist } from "@/hooks/useWatchlist";
 
 const ListingsArchive = () => {
   const [listings, setListings] = useState<AuctionListing[]>([]);
   const [covers, setCovers] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
+  const { isWatching, toggle, busyId } = useWatchlist();
 
   useEffect(() => {
     const fetchArchive = async () => {
@@ -87,6 +89,9 @@ const ListingsArchive = () => {
                 imageUrl={covers[v.id]}
                 onRequestBid={() => undefined}
                 archived
+                watching={isWatching(v.id)}
+                watchBusy={busyId === v.id}
+                onToggleWatch={(l) => toggle(l.id, listingTitle(l))}
               />
             ))}
           </div>

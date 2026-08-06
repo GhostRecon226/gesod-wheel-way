@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Image as ImageIcon, Camera } from "lucide-react";
 import { AuctionListing, formatMiles, formatUsd, listingTitle } from "@/lib/listings";
 import AuctionCountdown from "@/components/listings/AuctionCountdown";
+import WatchButton from "@/components/listings/WatchButton";
 
 interface ListingCardProps {
   listing: AuctionListing;
@@ -10,11 +11,23 @@ interface ListingCardProps {
   onRequestBid: (listing: AuctionListing) => void;
   /** Archived listings show no bid action. */
   archived?: boolean;
+  watching?: boolean;
+  watchBusy?: boolean;
+  onToggleWatch?: (listing: AuctionListing) => void;
 }
 
-const ListingCard = ({ listing, imageUrl, onRequestBid, archived = false }: ListingCardProps) => {
+const ListingCard = ({
+  listing,
+  imageUrl,
+  onRequestBid,
+  archived = false,
+  watching,
+  watchBusy,
+  onToggleWatch,
+}: ListingCardProps) => {
   const title = listingTitle(listing);
   const photoCount = listing.images?.length ?? 0;
+
 
 
   const chips = [
@@ -94,6 +107,17 @@ const ListingCard = ({ listing, imageUrl, onRequestBid, archived = false }: List
             </Button>
           )}
         </div>
+
+        {onToggleWatch && (
+          <WatchButton
+            watching={Boolean(watching)}
+            busy={watchBusy}
+            fullWidth
+            className="mt-2"
+            onToggle={() => onToggleWatch(listing)}
+          />
+        )}
+
 
       </div>
     </div>
