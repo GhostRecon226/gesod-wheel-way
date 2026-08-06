@@ -157,6 +157,10 @@ export type Database = {
           created_at: string
           file_url: string | null
           id: string
+          review_notes: string | null
+          review_status: string
+          reviewed_at: string | null
+          reviewed_by: string | null
           type: string | null
           uploaded_by: string | null
           vehicle_id: string
@@ -165,6 +169,10 @@ export type Database = {
           created_at?: string
           file_url?: string | null
           id?: string
+          review_notes?: string | null
+          review_status?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           type?: string | null
           uploaded_by?: string | null
           vehicle_id: string
@@ -173,11 +181,22 @@ export type Database = {
           created_at?: string
           file_url?: string | null
           id?: string
+          review_notes?: string | null
+          review_status?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           type?: string | null
           uploaded_by?: string | null
           vehicle_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "documents_reviewed_by_fkey"
+            columns: ["reviewed_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "documents_uploaded_by_fkey"
             columns: ["uploaded_by"]
