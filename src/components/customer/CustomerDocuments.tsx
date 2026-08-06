@@ -133,7 +133,7 @@ const CustomerDocuments = () => {
       </form>
 
       {docs.length === 0 ? (
-        <p className="text-muted-foreground">No documents yet.</p>
+        <p className="text-muted-foreground">No documents uploaded yet.</p>
       ) : (
         <div className="overflow-x-auto rounded-xl border border-border">
           <table className="w-full text-sm">
