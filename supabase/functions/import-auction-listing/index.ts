@@ -235,7 +235,9 @@ async function storeImages(admin: ReturnType<typeof createClient>, urls: string[
         continue;
       }
       const buf = new Uint8Array(await res.arrayBuffer());
-      if (buf.byteLength === 0 || buf.byteLength > MAX_IMAGE_BYTES) {
+      // Skip logos, spacers and icons, which are almost always tiny files.
+      if (buf.byteLength < 15000 || buf.byteLength > MAX_IMAGE_BYTES) {
+
         failed.push(url);
         continue;
       }
