@@ -1,33 +1,72 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const navLinks = [
-  { label: "Home", to: "/" },
-  { label: "About", to: "/about" },
-  { label: "Listings", to: "/listings" },
+type NavChild = { label: string; to: string };
+type NavItem = { label: string; to?: string; children?: NavChild[] };
+
+const navItems: NavItem[] = [
   {
     label: "Services",
     children: [
       { label: "Vehicle Sourcing", to: "/services/bidding" },
-      { label: "Ocean Freight (RORO/Container)", to: "/services/roro" },
+      { label: "Ocean Freight", to: "/services/roro" },
       { label: "Inland Transportation", to: "/services/towing" },
     ],
   },
+  {
+    label: "Auctions",
+    children: [
+      { label: "Browse Listings", to: "/listings" },
+      { label: "Sailing Schedule", to: "/schedule" },
+    ],
+  },
   { label: "Track", to: "/track" },
-  { label: "Schedule", to: "/schedule" },
-  { label: "Get a Quote", to: "/quote" },
-  { label: "FAQ", to: "/faq" },
-  { label: "Contact", to: "/contact" },
+  {
+    label: "Company",
+    children: [
+      { label: "About Us", to: "/about" },
+      { label: "How It Works", to: "/how-it-works" },
+      { label: "FAQ", to: "/faq" },
+      { label: "Contact", to: "/contact" },
+    ],
+  },
 ];
 
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [servicesOpen, setServicesOpen] = useState(false);
+  const [openDesktop, setOpenDesktop] = useState<string | null>(null);
+  const [openMobile, setOpenMobile] = useState<string | null>(null);
+  const desktopRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
 
   const isActive = (to: string) => location.pathname === to;
+  const groupActive = (item: NavItem) =>
+    !!item.children?.some((c) => isActive(c.to));
+
+  useEffect(() => {
+    setOpenDesktop(null);
+    setOpenMobile(null);
+    setMobileOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      if (desktopRef.current && !desktopRef.current.contains(e.target as Node)) {
+        setOpenDesktop(null);
+      }
+    };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpenDesktop(null);
+    };
+    document.addEventListener("mousedown", onClick);
+    document.addEventListener("keydown", onKey);
+    return () => {
+      document.removeEventListener("mousedown", onClick);
+      document.removeEventListener("keydown", onKey);
+    };
+  }, []);
 
   return (
     <nav className="sticky top-0 z-50 border-b border-border bg-card">
@@ -39,61 +78,84 @@ const Navbar = () => {
         </Link>
 
         {/* Desktop nav */}
-        <div className="hidden items-center gap-6 md:flex">
-          {navLinks.map((link) =>
-            link.children ? (
-              <div key={link.label} className="relative">
+        <div ref={desktopRef} className="hidden items-center gap-7 md:flex">
+          {navItems.map((item) =>
+            item.children ? (
+              <div
+                key={item.label}
+                className="relative"
+                onMouseEnter={() => setOpenDesktop(item.label)}
+                onMouseLeave={() => setOpenDesktop(null)}
+              >
                 <button
                   className={`flex items-center gap-1 text-sm font-medium transition-colors hover:text-gold ${
-                    link.children.some((c) => isActive(c.to))
+                    groupActive(item) || openDesktop === item.label
                       ? "text-gold"
                       : "text-foreground"
                   }`}
-                  onClick={() => setServicesOpen(!servicesOpen)}
-                  onBlur={() => setTimeout(() => setServicesOpen(false), 200)}
+                  aria-expanded={openDesktop === item.label}
+                  onClick={() =>
+                    setOpenDesktop(openDesktop === item.label ? null : item.label)
+                  }
                 >
-                  {link.label}
-                  <ChevronDown size={14} />
+                  {item.label}
+                  <ChevronDown
+                    size={14}
+                    className={`transition-transform ${
+                      openDesktop === item.label ? "rotate-180" : ""
+                    }`}
+                  />
                 </button>
-                {servicesOpen && (
-                  <div className="absolute left-0 top-full mt-2 w-48 rounded-lg border border-border bg-card py-2 shadow-xl">
-                    {link.children.map((child) => (
-                      <Link
-                        key={child.to}
-                        to={child.to}
-                        className={`block px-4 py-2 text-sm no-underline transition-colors hover:bg-secondary ${
-                          isActive(child.to) ? "text-gold" : "text-foreground"
-                        }`}
-                        onClick={() => setServicesOpen(false)}
-                      >
-                        {child.label}
-                      </Link>
-                    ))}
+                {openDesktop === item.label && (
+                  <div className="absolute left-0 top-full z-50 w-56 pt-2">
+                    <div className="rounded-lg border border-border bg-card py-2 shadow-xl">
+                      {item.children.map((child) => (
+                        <Link
+                          key={child.to}
+                          to={child.to}
+                          className={`block px-4 py-2 text-sm no-underline transition-colors hover:bg-secondary ${
+                            isActive(child.to) ? "text-gold" : "text-foreground"
+                          }`}
+                          onClick={() => setOpenDesktop(null)}
+                        >
+                          {child.label}
+                        </Link>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
             ) : (
               <Link
-                key={link.to}
-                to={link.to!}
+                key={item.to}
+                to={item.to!}
                 className={`text-sm font-medium no-underline transition-colors hover:text-gold ${
-                  isActive(link.to!) ? "text-gold" : "text-foreground"
+                  isActive(item.to!) ? "text-gold" : "text-foreground"
                 }`}
               >
-                {link.label}
+                {item.label}
               </Link>
             )
           )}
-          <Link to="/login">
-            <Button variant="copper" size="sm">
-              Login
-            </Button>
-          </Link>
+
+          <div className="ml-2 flex items-center gap-2">
+            <Link to="/quote">
+              <Button variant="outline" size="sm">
+                Get a Quote
+              </Button>
+            </Link>
+            <Link to="/login">
+              <Button variant="copper" size="sm">
+                Login
+              </Button>
+            </Link>
+          </div>
         </div>
 
         {/* Mobile hamburger */}
         <button
           className="text-foreground md:hidden"
+          aria-label="Toggle navigation"
           onClick={() => setMobileOpen(!mobileOpen)}
         >
           {mobileOpen ? <X size={24} /> : <Menu size={24} />}
@@ -103,18 +165,28 @@ const Navbar = () => {
       {/* Mobile drawer */}
       {mobileOpen && (
         <div className="border-t border-border bg-card px-4 pb-4 md:hidden">
-          {navLinks.map((link) =>
-            link.children ? (
-              <div key={link.label}>
+          {navItems.map((item) =>
+            item.children ? (
+              <div key={item.label} className="border-b border-border/50">
                 <button
-                  className="flex w-full items-center justify-between py-3 text-sm font-medium text-foreground"
-                  onClick={() => setServicesOpen(!servicesOpen)}
+                  className={`flex w-full items-center justify-between py-3 text-sm font-medium ${
+                    groupActive(item) ? "text-gold" : "text-foreground"
+                  }`}
+                  aria-expanded={openMobile === item.label}
+                  onClick={() =>
+                    setOpenMobile(openMobile === item.label ? null : item.label)
+                  }
                 >
-                  {link.label}
-                  <ChevronDown size={14} className={servicesOpen ? "rotate-180" : ""} />
+                  {item.label}
+                  <ChevronDown
+                    size={14}
+                    className={`transition-transform ${
+                      openMobile === item.label ? "rotate-180" : ""
+                    }`}
+                  />
                 </button>
-                {servicesOpen &&
-                  link.children.map((child) => (
+                {openMobile === item.label &&
+                  item.children.map((child) => (
                     <Link
                       key={child.to}
                       to={child.to}
@@ -129,22 +201,29 @@ const Navbar = () => {
               </div>
             ) : (
               <Link
-                key={link.to}
-                to={link.to!}
-                className={`block py-3 text-sm font-medium no-underline ${
-                  isActive(link.to!) ? "text-gold" : "text-foreground"
+                key={item.to}
+                to={item.to!}
+                className={`block border-b border-border/50 py-3 text-sm font-medium no-underline ${
+                  isActive(item.to!) ? "text-gold" : "text-foreground"
                 }`}
                 onClick={() => setMobileOpen(false)}
               >
-                {link.label}
+                {item.label}
               </Link>
             )
           )}
-          <Link to="/login" onClick={() => setMobileOpen(false)}>
-            <Button variant="copper" size="sm" className="mt-2 w-full">
-              Login
-            </Button>
-          </Link>
+          <div className="mt-3 space-y-2">
+            <Link to="/quote" onClick={() => setMobileOpen(false)}>
+              <Button variant="outline" size="sm" className="w-full">
+                Get a Quote
+              </Button>
+            </Link>
+            <Link to="/login" onClick={() => setMobileOpen(false)}>
+              <Button variant="copper" size="sm" className="w-full">
+                Login
+              </Button>
+            </Link>
+          </div>
         </div>
       )}
     </nav>
