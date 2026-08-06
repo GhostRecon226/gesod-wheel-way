@@ -197,7 +197,9 @@ const AdminListings = () => {
     setExistingImages(refs);
     setExistingPreviews(await resolveListingImages(refs));
     setNewFiles([]);
+    setImportMissing([]);
     setDialogOpen(true);
+
   };
 
   const handleDelete = async (id: string) => {
