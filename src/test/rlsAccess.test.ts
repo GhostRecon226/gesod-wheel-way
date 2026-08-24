@@ -154,6 +154,22 @@ describe.each(CUSTOMERS)("customer data isolation: $label", (customer) => {
     expect(error, "a customer was able to grant themselves the admin role").toBeTruthy();
   });
 
+  it("cannot set users.role to admin on their own row, but can still update their profile", async () => {
+    const { client, userId } = customerClients.get(customer.email)!;
+
+    const { error: roleError } = await client.from("users").update({ role: "admin" }).eq("id", userId);
+    expect(roleError, "a customer was able to set users.role to admin").toBeTruthy();
+
+    const { data, error: profileError } = await client
+      .from("users")
+      .update({ name: customer.label })
+      .eq("id", userId)
+      .select("role")
+      .single();
+    expect(profileError, `a customer could not update their own profile: ${profileError?.message}`).toBeNull();
+    expect(data?.role).toBe("customer");
+  });
+
   it("cannot write vehicles", async () => {
     const { client } = customerClients.get(customer.email)!;
     const { error } = await client
