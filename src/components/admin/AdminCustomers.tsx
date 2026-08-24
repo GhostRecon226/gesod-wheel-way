@@ -6,6 +6,15 @@ import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { ChevronRight } from "lucide-react";
 import { Loader } from "@/components/Spinner";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+
+type CreateMode = "password" | "invite";
 
 interface Customer {
   id: string;
@@ -32,8 +41,13 @@ const AdminCustomers = () => {
   const [editing, setEditing] = useState<Customer | null>(null);
   const [viewVehicles, setViewVehicles] = useState<{ customer: Customer; vehicles: Vehicle[] } | null>(null);
   const [form, setForm] = useState({ name: "", email: "", phone: "" });
+  const [createMode, setCreateMode] = useState<CreateMode>("password");
   const [submitting, setSubmitting] = useState(false);
-  const [newCredentials, setNewCredentials] = useState<{ email: string; temporaryPassword: string } | null>(null);
+  const [newCredentials, setNewCredentials] = useState<{
+    email: string;
+    mode: CreateMode;
+    temporaryPassword: string | null;
+  } | null>(null);
 
   const fetchCustomers = async () => {
     const { data } = await supabase.from("users").select("*").eq("role", "customer").order("created_at", { ascending: false });
@@ -60,7 +74,7 @@ const AdminCustomers = () => {
   const openCreate = () => {
     setEditing(null);
     setForm({ name: "", email: "", phone: "" });
-    setNewCredentials(null);
+    setCreateMode("password");
     setShowForm(true);
   };
 
@@ -78,7 +92,7 @@ const AdminCustomers = () => {
       else { toast({ title: "Customer updated" }); setShowForm(false); fetchCustomers(); }
     } else {
       const { data, error } = await supabase.functions.invoke("admin-create-customer", {
-        body: { name: form.name, email: form.email, phone: form.phone || undefined },
+        body: { name: form.name, email: form.email, phone: form.phone || undefined, mode: createMode },
       });
       if (error) {
         let message = error.message;
@@ -88,8 +102,11 @@ const AdminCustomers = () => {
         }
         toast({ title: "Error", description: message, variant: "destructive" });
       } else {
-        toast({ title: "Customer created", description: "A login account was created for them." });
-        setNewCredentials({ email: data.email, temporaryPassword: data.temporaryPassword });
+        toast({
+          title: "Customer created",
+          description: createMode === "invite" ? "An invite email was sent to them." : "A login account was created for them.",
+        });
+        setNewCredentials({ email: data.email, mode: data.mode, temporaryPassword: data.temporaryPassword });
         setShowForm(false);
         fetchCustomers();
       }
@@ -130,34 +147,62 @@ const AdminCustomers = () => {
         <Button variant="copper" onClick={openCreate}>Add Customer</Button>
       </div>
 
-      {newCredentials && (
-        <div className="mb-6 rounded-xl border border-gold/40 bg-gold/10 p-4">
-          <p className="text-sm font-semibold text-silver">Customer account created</p>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Share this temporary password with <span className="text-silver">{newCredentials.email}</span> so they can log in.
-            It will not be shown again.
-          </p>
-          <p className="mt-2 rounded-md bg-surface-2 px-3 py-2 font-mono text-sm text-gold">
-            {newCredentials.temporaryPassword}
-          </p>
-          <Button variant="copper-outline" size="sm" className="mt-3" onClick={() => setNewCredentials(null)}>
-            Dismiss
-          </Button>
-        </div>
-      )}
-
       {showForm && (
         <form onSubmit={handleSubmit} className="mb-6 rounded-xl border border-border bg-card p-6 space-y-4">
           <h3 className="font-bold text-silver">{editing ? "Edit Customer" : "New Customer"}</h3>
           <Input placeholder="Full name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="auth-input" required />
           <Input placeholder="Email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} className="auth-input" required />
           <Input placeholder="Phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} className="auth-input" />
+
+          {!editing && (
+            <div>
+              <p className="mb-2 text-sm text-muted-foreground">How should they get access?</p>
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant={createMode === "password" ? "copper" : "copper-outline"}
+                  size="sm"
+                  onClick={() => setCreateMode("password")}
+                >
+                  Set temporary password
+                </Button>
+                <Button
+                  type="button"
+                  variant={createMode === "invite" ? "copper" : "copper-outline"}
+                  size="sm"
+                  onClick={() => setCreateMode("invite")}
+                >
+                  Send invite email
+                </Button>
+              </div>
+            </div>
+          )}
+
           <div className="flex gap-3">
             <Button variant="copper" type="submit" disabled={submitting}>{editing ? "Update" : "Create"}</Button>
             <Button variant="copper-outline" type="button" onClick={() => setShowForm(false)}>Cancel</Button>
           </div>
         </form>
       )}
+
+      <Dialog open={!!newCredentials} onOpenChange={(open) => !open && setNewCredentials(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Customer account created</DialogTitle>
+            <DialogDescription>
+              {newCredentials?.mode === "invite"
+                ? <>An invite email was sent to <span className="text-silver">{newCredentials.email}</span>. They can set their own password from the link inside it.</>
+                : <>Share this temporary password with <span className="text-silver">{newCredentials?.email}</span> so they can log in. It will not be shown again.</>}
+            </DialogDescription>
+          </DialogHeader>
+          {newCredentials?.mode !== "invite" && newCredentials?.temporaryPassword && (
+            <p className="rounded-md bg-surface-2 px-3 py-2 font-mono text-sm text-gold">
+              {newCredentials.temporaryPassword}
+            </p>
+          )}
+          <Button variant="copper" onClick={() => setNewCredentials(null)}>Done</Button>
+        </DialogContent>
+      </Dialog>
 
       <div className="overflow-x-auto rounded-xl border border-border">
         <table className="w-full text-sm">

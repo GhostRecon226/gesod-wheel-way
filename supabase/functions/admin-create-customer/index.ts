@@ -9,6 +9,7 @@ const BodySchema = z.object({
   name: z.string().trim().min(1).max(200),
   email: z.string().trim().email().max(255),
   phone: z.string().trim().max(50).optional(),
+  mode: z.enum(["password", "invite"]).default("password"),
 });
 
 function json(body: unknown, status = 200) {
@@ -51,39 +52,55 @@ Deno.serve(async (req) => {
     if (!parsed.success) {
       return json({ error: parsed.error.errors[0]?.message ?? "Invalid request" }, 400);
     }
-    const { name, email, phone } = parsed.data;
+    const { name, email, phone, mode } = parsed.data;
+    const metadata = { name, phone: phone ?? null, role: "customer" };
 
-    const temporaryPassword = generateTemporaryPassword();
+    // Creating (or inviting) the auth user fires the on_auth_user_created
+    // trigger, which inserts the matching public.users row (name from
+    // user_metadata) and grants the default 'customer' role via user_roles —
+    // see handle_new_user(). The trigger only reads `name` today; phone is
+    // set below via a follow-up update since public.users has no metadata sync.
+    let userId: string;
+    let temporaryPassword: string | null = null;
 
-    // Creating the auth user fires the on_auth_user_created trigger, which
-    // inserts the matching public.users row (name from user_metadata) and
-    // grants the default 'customer' role — see handle_new_user().
-    const { data: created, error: createErr } = await admin.auth.admin.createUser({
-      email,
-      password: temporaryPassword,
-      email_confirm: true,
-      user_metadata: { name },
-    });
-
-    if (createErr || !created?.user) {
-      return json({ error: createErr?.message ?? "Could not create the customer account." }, 400);
+    if (mode === "invite") {
+      const { data: invited, error: inviteErr } = await admin.auth.admin.inviteUserByEmail(email, {
+        data: metadata,
+      });
+      if (inviteErr || !invited?.user) {
+        return json({ error: inviteErr?.message ?? "Could not send the invite." }, 400);
+      }
+      userId = invited.user.id;
+    } else {
+      temporaryPassword = generateTemporaryPassword();
+      const { data: created, error: createErr } = await admin.auth.admin.createUser({
+        email,
+        password: temporaryPassword,
+        email_confirm: true,
+        user_metadata: metadata,
+      });
+      if (createErr || !created?.user) {
+        return json({ error: createErr?.message ?? "Could not create the customer account." }, 400);
+      }
+      userId = created.user.id;
     }
 
     if (phone) {
       const { error: phoneErr } = await admin
         .from("users")
         .update({ phone })
-        .eq("id", created.user.id);
+        .eq("id", userId);
       if (phoneErr) {
         console.error("Failed to set phone on new customer", phoneErr.message);
       }
     }
 
     return json({
-      id: created.user.id,
+      id: userId,
       name,
       email,
       phone: phone ?? null,
+      mode,
       temporaryPassword,
     });
   } catch (err) {
