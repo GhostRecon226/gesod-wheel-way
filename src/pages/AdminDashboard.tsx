@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard, Users, Car, Gavel, ClipboardList, FileText,
   CreditCard, AlertTriangle, Ship, Bell, LogOut, Menu, X, Package,
-  Download, Workflow,
+  Download, Workflow, Mail,
 } from "lucide-react";
 import AdminOverview from "@/components/admin/AdminOverview";
 import AdminCustomers from "@/components/admin/AdminCustomers";
@@ -22,6 +22,7 @@ import AdminNotifications from "@/components/admin/AdminNotifications";
 import AdminListings from "@/components/admin/AdminListings";
 import AdminReports from "@/components/admin/AdminReports";
 import AdminImportPipeline from "@/components/admin/AdminImportPipeline";
+import AdminMessages from "@/components/admin/AdminMessages";
 import { can, type Module } from "@/lib/permissions";
 import { useRealtimeAlerts } from "@/hooks/useRealtimeAlerts";
 
@@ -38,6 +39,7 @@ const SECTIONS = [
   { key: "disputes", label: "Disputes", icon: AlertTriangle },
   { key: "schedules", label: "Sailing Schedules", icon: Ship },
   { key: "notifications", label: "Notifications", icon: Bell },
+  { key: "messages", label: "Messages", icon: Mail },
   { key: "reports", label: "Reports & Exports", icon: Download },
 ] as const;
 
@@ -76,6 +78,7 @@ const AdminDashboard = () => {
       case "disputes": return <AdminDisputesSection />;
       case "schedules": return <AdminSchedules />;
       case "notifications": return <AdminNotifications />;
+      case "messages": return <AdminMessages />;
       case "reports": return <AdminReports />;
     }
   };

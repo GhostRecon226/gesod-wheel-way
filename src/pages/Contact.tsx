@@ -5,13 +5,14 @@ import { Input } from "@/components/ui/input";
 import PublicLayout from "@/components/PublicLayout";
 import { toast } from "sonner";
 import FieldError from "@/components/FieldError";
+import { supabase } from "@/integrations/supabase/client";
 
 const Contact = () => {
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ name?: string; email?: string; message?: string }>({});
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const nextErrors: { name?: string; email?: string; message?: string } = {};
@@ -22,12 +23,23 @@ const Contact = () => {
     if (Object.keys(nextErrors).length > 0) return;
 
     setLoading(true);
-    // Placeholder: no backend action yet
-    setTimeout(() => {
-      toast.success("Message sent! We'll get back to you shortly.");
-      setForm({ name: "", email: "", phone: "", message: "" });
+
+    const { error } = await supabase.from("contact_messages").insert({
+      name: form.name.trim(),
+      email: form.email.trim(),
+      phone: form.phone.trim() || null,
+      message: form.message.trim(),
+    });
+
+    if (error) {
+      toast.error("Couldn't send your message. Please try again.");
       setLoading(false);
-    }, 800);
+      return;
+    }
+
+    toast.success("Message sent! We'll get back to you shortly.");
+    setForm({ name: "", email: "", phone: "", message: "" });
+    setLoading(false);
   };
 
   return (

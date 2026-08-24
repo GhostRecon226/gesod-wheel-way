@@ -1,4 +1,3 @@
-import { sendLovableEmail } from 'npm:@lovable.dev/email-js'
 import { createClient } from 'npm:@supabase/supabase-js@2'
 
 const MAX_RETRIES = 5
@@ -8,8 +7,8 @@ const DEFAULT_AUTH_TTL_MINUTES = 15
 const DEFAULT_TRANSACTIONAL_TTL_MINUTES = 60
 
 // Check if an error is a rate-limit (429) response.
-// Uses EmailAPIError.status when available (email-js >=0.x with structured errors),
-// falls back to parsing the error message for older versions.
+// Uses the structured `status`/`retryAfterSeconds` set on the error thrown
+// by sendResendEmail, falls back to parsing the error message otherwise.
 function isRateLimited(error: unknown): boolean {
   if (error && typeof error === 'object' && 'status' in error) {
     return (error as { status: number }).status === 429
@@ -26,12 +25,62 @@ function isForbidden(error: unknown): boolean {
   return error instanceof Error && error.message.includes('403')
 }
 
-// Extract Retry-After seconds from a structured EmailAPIError, or default to 60s.
+// Extract Retry-After seconds from a structured send error, or default to 60s.
 function getRetryAfterSeconds(error: unknown): number {
   if (error && typeof error === 'object' && 'retryAfterSeconds' in error) {
     return (error as { retryAfterSeconds: number | null }).retryAfterSeconds ?? 60
   }
   return 60
+}
+
+// Send a single email via the Resend API. Throws an Error with a `status`
+// property (and `retryAfterSeconds` for 429s) so isRateLimited/isForbidden/
+// getRetryAfterSeconds above keep working unchanged.
+async function sendResendEmail(
+  payload: {
+    to: string
+    from: string
+    subject: string
+    html?: string
+    text?: string
+    idempotency_key?: string
+  },
+  apiKey: string
+): Promise<void> {
+  const headers: Record<string, string> = {
+    Authorization: `Bearer ${apiKey}`,
+    'Content-Type': 'application/json',
+  }
+  if (payload.idempotency_key) {
+    headers['Idempotency-Key'] = payload.idempotency_key
+  }
+
+  const res = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({
+      from: payload.from,
+      to: payload.to,
+      subject: payload.subject,
+      html: payload.html,
+      text: payload.text,
+    }),
+  })
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => null)
+    const message = body?.message || `Resend API error (status ${res.status})`
+    const error = new Error(message) as Error & {
+      status: number
+      retryAfterSeconds?: number | null
+    }
+    error.status = res.status
+    if (res.status === 429) {
+      const retryAfterHeader = res.headers.get('Retry-After')
+      error.retryAfterSeconds = retryAfterHeader ? Number(retryAfterHeader) : null
+    }
+    throw error
+  }
 }
 
 function parseJwtClaims(token: string): Record<string, unknown> | null {
@@ -79,7 +128,7 @@ async function moveToDlq(
 }
 
 Deno.serve(async (req) => {
-  const apiKey = Deno.env.get('LOVABLE_API_KEY')
+  const apiKey = Deno.env.get('RESEND_API_KEY')
   const supabaseUrl = Deno.env.get('SUPABASE_URL')
   const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')
 
@@ -246,25 +295,16 @@ Deno.serve(async (req) => {
       }
 
       try {
-        await sendLovableEmail(
+        await sendResendEmail(
           {
-            run_id: payload.run_id,
             to: payload.to,
             from: payload.from,
-            sender_domain: payload.sender_domain,
             subject: payload.subject,
             html: payload.html,
             text: payload.text,
-            purpose: payload.purpose,
-            label: payload.label,
             idempotency_key: payload.idempotency_key,
-            unsubscribe_token: payload.unsubscribe_token,
-            message_id: payload.message_id,
           },
-          // sendUrl is optional: when LOVABLE_SEND_URL is not set, the library
-          // falls back to the default Lovable API endpoint (https://api.lovable.dev).
-          // Set LOVABLE_SEND_URL as a Supabase secret to override (e.g. for local dev).
-          { apiKey, sendUrl: Deno.env.get('LOVABLE_SEND_URL') }
+          apiKey
         )
 
         // Log success

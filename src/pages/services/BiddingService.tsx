@@ -55,7 +55,7 @@ const BiddingService = () => (
       </div>
 
       <div className="mt-10 text-center">
-        <Link to="/contact">
+        <Link to="/quote">
           <Button variant="copper" size="lg">Request a Bid</Button>
         </Link>
       </div>

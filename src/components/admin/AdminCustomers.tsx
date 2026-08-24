@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { FunctionsHttpError } from "@supabase/supabase-js";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
@@ -32,6 +33,7 @@ const AdminCustomers = () => {
   const [viewVehicles, setViewVehicles] = useState<{ customer: Customer; vehicles: Vehicle[] } | null>(null);
   const [form, setForm] = useState({ name: "", email: "", phone: "" });
   const [submitting, setSubmitting] = useState(false);
+  const [newCredentials, setNewCredentials] = useState<{ email: string; temporaryPassword: string } | null>(null);
 
   const fetchCustomers = async () => {
     const { data } = await supabase.from("users").select("*").eq("role", "customer").order("created_at", { ascending: false });
@@ -58,6 +60,7 @@ const AdminCustomers = () => {
   const openCreate = () => {
     setEditing(null);
     setForm({ name: "", email: "", phone: "" });
+    setNewCredentials(null);
     setShowForm(true);
   };
 
@@ -74,9 +77,22 @@ const AdminCustomers = () => {
       if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
       else { toast({ title: "Customer updated" }); setShowForm(false); fetchCustomers(); }
     } else {
-      const { error } = await supabase.from("users").insert({ name: form.name, email: form.email, phone: form.phone || null, role: "customer" as const });
-      if (error) toast({ title: "Error", description: error.message, variant: "destructive" });
-      else { toast({ title: "Customer created" }); setShowForm(false); fetchCustomers(); }
+      const { data, error } = await supabase.functions.invoke("admin-create-customer", {
+        body: { name: form.name, email: form.email, phone: form.phone || undefined },
+      });
+      if (error) {
+        let message = error.message;
+        if (error instanceof FunctionsHttpError) {
+          const payload = await error.context.json().catch(() => null);
+          if (payload?.error) message = payload.error;
+        }
+        toast({ title: "Error", description: message, variant: "destructive" });
+      } else {
+        toast({ title: "Customer created", description: "A login account was created for them." });
+        setNewCredentials({ email: data.email, temporaryPassword: data.temporaryPassword });
+        setShowForm(false);
+        fetchCustomers();
+      }
     }
     setSubmitting(false);
   };
@@ -113,6 +129,22 @@ const AdminCustomers = () => {
         <h2 className="text-lg font-bold text-silver">Customers</h2>
         <Button variant="copper" onClick={openCreate}>Add Customer</Button>
       </div>
+
+      {newCredentials && (
+        <div className="mb-6 rounded-xl border border-gold/40 bg-gold/10 p-4">
+          <p className="text-sm font-semibold text-silver">Customer account created</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Share this temporary password with <span className="text-silver">{newCredentials.email}</span> so they can log in.
+            It will not be shown again.
+          </p>
+          <p className="mt-2 rounded-md bg-surface-2 px-3 py-2 font-mono text-sm text-gold">
+            {newCredentials.temporaryPassword}
+          </p>
+          <Button variant="copper-outline" size="sm" className="mt-3" onClick={() => setNewCredentials(null)}>
+            Dismiss
+          </Button>
+        </div>
+      )}
 
       {showForm && (
         <form onSubmit={handleSubmit} className="mb-6 rounded-xl border border-border bg-card p-6 space-y-4">

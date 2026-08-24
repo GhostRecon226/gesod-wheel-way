@@ -5,7 +5,7 @@ import { z } from "npm:zod@3";
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const FIRECRAWL_API_KEY = Deno.env.get("FIRECRAWL_API_KEY");
-const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY");
 
 const BUCKET = "auction-images";
 const MAX_IMAGES = 12;
@@ -138,7 +138,7 @@ function collectImageUrls(sources: {
 }
 
 async function extractFields(pageText: string, sourceHint: string | null) {
-  if (!LOVABLE_API_KEY) throw new Error("AI extraction is not configured.");
+  if (!ANTHROPIC_API_KEY) throw new Error("AI extraction is not configured.");
 
   const schema = {
     type: "object",
@@ -171,25 +171,26 @@ async function extractFields(pageText: string, sourceHint: string | null) {
     required: [...FIELD_KEYS],
   };
 
-  const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+  const systemPrompt =
+    "You extract salvage-auction vehicle listing data from Copart or IAAI page text. " +
+    "Return json only. Use null for anything not clearly stated - never guess. " +
+    "auction_date must be YYYY-MM-DD. odometer in miles as an integer. " +
+    "estimated_value is the estimated retail value in USD as a plain number. " +
+    "title_type should be one of Clean, Salvage, Rebuilt, Certificate of Destruction when it maps cleanly. " +
+    `Respond with a single JSON object only, matching this schema, with no other text: ${JSON.stringify(schema)}`;
+
+  const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: {
-      "Lovable-API-Key": LOVABLE_API_KEY,
+      "x-api-key": ANTHROPIC_API_KEY,
+      "anthropic-version": "2023-06-01",
       "Content-Type": "application/json",
-      "X-Lovable-AIG-SDK": "fetch",
     },
     body: JSON.stringify({
-      model: "google/gemini-3.5-flash",
+      model: "claude-3-5-sonnet-20241022",
+      max_tokens: 2048,
+      system: systemPrompt,
       messages: [
-        {
-          role: "system",
-          content:
-            "You extract salvage-auction vehicle listing data from Copart or IAAI page text. " +
-            "Return json only. Use null for anything not clearly stated - never guess. " +
-            "auction_date must be YYYY-MM-DD. odometer in miles as an integer. " +
-            "estimated_value is the estimated retail value in USD as a plain number. " +
-            "title_type should be one of Clean, Salvage, Rebuilt, Certificate of Destruction when it maps cleanly.",
-        },
         {
           role: "user",
           content:
@@ -197,10 +198,6 @@ async function extractFields(pageText: string, sourceHint: string | null) {
             `Page content:\n${pageText.slice(0, 60000)}`,
         },
       ],
-      response_format: {
-        type: "json_schema",
-        json_schema: { name: "auction_listing", strict: true, schema },
-      },
     }),
   });
 
@@ -210,7 +207,7 @@ async function extractFields(pageText: string, sourceHint: string | null) {
     throw new Error(`Could not extract vehicle details: ${detail}`);
   }
 
-  const content = payload?.choices?.[0]?.message?.content ?? "{}";
+  const content = payload?.content?.[0]?.text ?? "{}";
   try {
     return JSON.parse(content) as Record<string, unknown>;
   } catch {

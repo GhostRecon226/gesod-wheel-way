@@ -1,0 +1,51 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e2]:
+  - region "Notifications (F8)":
+    - list
+  - region "Notifications alt+T"
+  - generic [ref=e3]:
+    - complementary [ref=e4]:
+      - link "GESOD RIDES home" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e7]: GESOD RIDES
+      - navigation [ref=e8]:
+        - button "My Vehicles" [ref=e9] [cursor=pointer]:
+          - img [ref=e10]
+          - text: My Vehicles
+        - button "Bid Requests" [ref=e14] [cursor=pointer]:
+          - img [ref=e15]
+          - text: Bid Requests
+        - button "Watchlist" [ref=e21] [cursor=pointer]:
+          - img [ref=e22]
+          - text: Watchlist
+        - button "Quote Requests" [ref=e25] [cursor=pointer]:
+          - img [ref=e26]
+          - text: Quote Requests
+        - button "Documents" [ref=e29] [cursor=pointer]:
+          - img [ref=e30]
+          - text: Documents
+        - button "Payments" [ref=e33] [cursor=pointer]:
+          - img [ref=e34]
+          - text: Payments
+        - button "Disputes" [active] [ref=e36] [cursor=pointer]:
+          - img [ref=e37]
+          - text: Disputes
+        - button "Notifications 2 unread notifications" [ref=e39] [cursor=pointer]:
+          - img [ref=e40]
+          - text: Notifications
+          - generic "2 unread notifications" [ref=e43]: "2"
+      - generic [ref=e44]:
+        - paragraph [ref=e45]: Chukwuemeka Obi
+        - button "Logout" [ref=e46] [cursor=pointer]:
+          - img
+          - text: Logout
+    - main [ref=e47]:
+      - heading "Disputes" [level=1] [ref=e49]
+      - generic [ref=e51]:
+        - generic [ref=e52]:
+          - heading "Disputes" [level=2] [ref=e53]
+          - button "File a Dispute" [ref=e54] [cursor=pointer]
+        - paragraph [ref=e55]: No disputes filed.
+```
