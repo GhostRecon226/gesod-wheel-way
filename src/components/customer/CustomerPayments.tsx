@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader } from "@/components/Spinner";
+import { Button } from "@/components/ui/button";
+import { toast } from "@/hooks/use-toast";
 
 interface Payment {
   id: string;
@@ -16,18 +18,42 @@ const CustomerPayments = () => {
   const { user } = useAuth();
   const [payments, setPayments] = useState<Payment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-  useEffect(() => {
+  const fetchPayments = () => {
     if (!user) return;
+    setLoading(true);
+    setError(false);
     supabase
       .from("payments")
       .select("*")
       .eq("customer_id", user.id)
       .order("payment_date", { ascending: false })
-      .then(({ data }) => { setPayments(data ?? []); setLoading(false); });
-  }, [user]);
+      .then(({ data, error: fetchError }) => {
+        if (fetchError) {
+          toast({ title: "Error", description: "Failed to load data. Please try again.", variant: "destructive" });
+          setError(true);
+          setLoading(false);
+          return;
+        }
+        setPayments(data ?? []);
+        setLoading(false);
+      });
+  };
+
+  useEffect(fetchPayments, [user]);
 
   if (loading) return <Loader />;
+  if (error) {
+    return (
+      <div className="text-center">
+        <p className="text-muted-foreground">Failed to load data. Please try again.</p>
+        <Button variant="copper-outline" size="sm" className="mt-4" onClick={fetchPayments}>
+          Retry
+        </Button>
+      </div>
+    );
+  }
   if (payments.length === 0) return <p className="text-muted-foreground">No payments recorded yet.</p>;
 
   return (

@@ -8,43 +8,56 @@ import ListingCard from "@/components/listings/ListingCard";
 import { resolveListingImages } from "@/lib/listingImages";
 import { AuctionListing, listingTitle } from "@/lib/listings";
 import { useWatchlist } from "@/hooks/useWatchlist";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 const ListingsArchive = () => {
   const [listings, setListings] = useState<AuctionListing[]>([]);
   const [covers, setCovers] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const { isWatching, toggle, busyId } = useWatchlist();
 
-  useEffect(() => {
-    const fetchArchive = async () => {
-      const today = new Date().toISOString().split("T")[0];
+  const fetchArchive = async () => {
+    setLoading(true);
+    setError(false);
+    const today = new Date().toISOString().split("T")[0];
 
-      const { data } = await supabase
-        .from("auction_listings")
-        .select("*")
-        .order("auction_date", { ascending: false, nullsFirst: false });
+    const { data, error: fetchError } = await supabase
+      .from("auction_listings")
+      .select("*")
+      .order("auction_date", { ascending: false, nullsFirst: false });
 
-      // Archive = auctions whose date has passed, or listings marked expired
-      const archived = ((data as AuctionListing[]) ?? []).filter(
-        (l) => l.status !== "active" || (l.auction_date != null && l.auction_date < today),
-      );
-      setListings(archived);
-
-      const coverRefs = archived
-        .map((l) => l.images?.[0])
-        .filter((ref): ref is string => Boolean(ref));
-      const urls = await resolveListingImages(coverRefs);
-      const map: Record<string, string> = {};
-      let cursor = 0;
-      archived.forEach((l) => {
-        if (l.images?.[0]) {
-          const url = urls[cursor++];
-          if (url) map[l.id] = url;
-        }
-      });
-      setCovers(map);
+    if (fetchError) {
+      toast.error("Failed to load data. Please try again.");
+      setError(true);
       setLoading(false);
-    };
+      return;
+    }
+
+    // Archive = auctions whose date has passed, or listings marked expired
+    const archived = ((data as AuctionListing[]) ?? []).filter(
+      (l) => l.status !== "active" || (l.auction_date != null && l.auction_date < today),
+    );
+    setListings(archived);
+
+    const coverRefs = archived
+      .map((l) => l.images?.[0])
+      .filter((ref): ref is string => Boolean(ref));
+    const urls = await resolveListingImages(coverRefs);
+    const map: Record<string, string> = {};
+    let cursor = 0;
+    archived.forEach((l) => {
+      if (l.images?.[0]) {
+        const url = urls[cursor++];
+        if (url) map[l.id] = url;
+      }
+    });
+    setCovers(map);
+    setLoading(false);
+  };
+
+  useEffect(() => {
     fetchArchive();
   }, []);
 
@@ -76,6 +89,13 @@ const ListingsArchive = () => {
 
         {loading ? (
           <Loader />
+        ) : error ? (
+          <div className="mt-12 text-center">
+            <p className="text-muted-foreground">Failed to load data. Please try again.</p>
+            <Button variant="copper-outline" size="sm" className="mt-4" onClick={fetchArchive}>
+              Retry
+            </Button>
+          </div>
         ) : listings.length === 0 ? (
           <p className="mt-12 text-center text-muted-foreground">
             No archived auctions yet. Closed listings will appear here.

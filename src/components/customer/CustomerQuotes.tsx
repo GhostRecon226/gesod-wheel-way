@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader } from "@/components/Spinner";
+import { Button } from "@/components/ui/button";
+import { toast } from "@/hooks/use-toast";
 
 interface Quote {
   id: string;
@@ -25,18 +27,42 @@ const CustomerQuotes = () => {
   const { user } = useAuth();
   const [quotes, setQuotes] = useState<Quote[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-  useEffect(() => {
+  const fetchQuotes = () => {
     if (!user) return;
+    setLoading(true);
+    setError(false);
     supabase
       .from("quote_requests")
       .select("*")
       .eq("customer_id", user.id)
       .order("created_at", { ascending: false })
-      .then(({ data }) => { setQuotes(data ?? []); setLoading(false); });
-  }, [user]);
+      .then(({ data, error: fetchError }) => {
+        if (fetchError) {
+          toast({ title: "Error", description: "Failed to load data. Please try again.", variant: "destructive" });
+          setError(true);
+          setLoading(false);
+          return;
+        }
+        setQuotes(data ?? []);
+        setLoading(false);
+      });
+  };
+
+  useEffect(fetchQuotes, [user]);
 
   if (loading) return <Loader />;
+  if (error) {
+    return (
+      <div className="text-center">
+        <p className="text-muted-foreground">Failed to load data. Please try again.</p>
+        <Button variant="copper-outline" size="sm" className="mt-4" onClick={fetchQuotes}>
+          Retry
+        </Button>
+      </div>
+    );
+  }
   if (quotes.length === 0) return <p className="text-muted-foreground">No quote requests submitted yet.</p>;
 
   return (

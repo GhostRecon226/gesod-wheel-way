@@ -15,6 +15,7 @@ import { maskVin } from "@/lib/vin";
 import NotFound from "@/pages/NotFound";
 import WatchButton from "@/components/listings/WatchButton";
 import { useWatchlist } from "@/hooks/useWatchlist";
+import { toast } from "sonner";
 
 
 const Row = ({ label, value }: { label: string; value: string | null | undefined }) => (
@@ -46,6 +47,8 @@ const ListingDetail = () => {
   const [listing, setListing] = useState<AuctionListing | null>(null);
   const [images, setImages] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [retryKey, setRetryKey] = useState(0);
   const [bidOpen, setBidOpen] = useState(false);
   const { isWatching, toggle, busyId } = useWatchlist();
 
@@ -53,12 +56,21 @@ const ListingDetail = () => {
     let active = true;
     const load = async () => {
       setLoading(true);
-      const { data } = await supabase
+      setError(false);
+      const { data, error: fetchError } = await supabase
         .from("auction_listings")
         .select("*")
         .eq("id", id ?? "")
         .maybeSingle();
       if (!active) return;
+
+      if (fetchError) {
+        toast.error("Failed to load data. Please try again.");
+        setError(true);
+        setLoading(false);
+        return;
+      }
+
       const row = (data as AuctionListing) ?? null;
       setListing(row);
       setImages(await resolveListingImages(row?.images ?? null));
@@ -68,13 +80,31 @@ const ListingDetail = () => {
     return () => {
       active = false;
     };
-  }, [id]);
+  }, [id, retryKey]);
 
   if (loading) {
     return (
       <PublicLayout>
         <div className="mx-auto max-w-6xl px-4 py-16">
           <Loader />
+        </div>
+      </PublicLayout>
+    );
+  }
+
+  if (error) {
+    return (
+      <PublicLayout>
+        <div className="mx-auto max-w-6xl px-4 py-16 text-center">
+          <p className="text-muted-foreground">Failed to load data. Please try again.</p>
+          <Button
+            variant="copper-outline"
+            size="sm"
+            className="mt-4"
+            onClick={() => setRetryKey((k) => k + 1)}
+          >
+            Retry
+          </Button>
         </div>
       </PublicLayout>
     );

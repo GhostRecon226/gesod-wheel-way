@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import PublicLayout from "@/components/PublicLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader } from "@/components/Spinner";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 interface Schedule {
   id: string;
@@ -25,17 +27,29 @@ const statusBadge = (status: string) => {
 const SailingSchedule = () => {
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  const fetchSchedules = async () => {
+    setLoading(true);
+    setError(false);
+    const { data, error: fetchError } = await supabase
+      .from("sailing_schedules")
+      .select("*")
+      .order("etd", { ascending: true });
+
+    if (fetchError) {
+      toast.error("Failed to load data. Please try again.");
+      setError(true);
+      setLoading(false);
+      return;
+    }
+
+    setSchedules((data as Schedule[]) ?? []);
+    setLoading(false);
+  };
 
   useEffect(() => {
-    const fetch = async () => {
-      const { data } = await supabase
-        .from("sailing_schedules")
-        .select("*")
-        .order("etd", { ascending: true });
-      setSchedules((data as Schedule[]) ?? []);
-      setLoading(false);
-    };
-    fetch();
+    fetchSchedules();
   }, []);
 
   return (
@@ -48,6 +62,13 @@ const SailingSchedule = () => {
 
         {loading ? (
           <Loader />
+        ) : error ? (
+          <div className="mt-12 text-center">
+            <p className="text-muted-foreground">Failed to load data. Please try again.</p>
+            <Button variant="copper-outline" size="sm" className="mt-4" onClick={fetchSchedules}>
+              Retry
+            </Button>
+          </div>
         ) : schedules.length === 0 ? (
           <p className="mt-12 text-center text-muted-foreground">No sailing schedules available at the moment. Check back soon.</p>
         ) : (

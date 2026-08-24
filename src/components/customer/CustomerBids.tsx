@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader } from "@/components/Spinner";
+import { Button } from "@/components/ui/button";
+import { toast } from "@/hooks/use-toast";
 
 interface Bid {
   id: string;
@@ -24,18 +26,42 @@ const CustomerBids = () => {
   const { user } = useAuth();
   const [bids, setBids] = useState<Bid[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-  useEffect(() => {
+  const fetchBids = () => {
     if (!user) return;
+    setLoading(true);
+    setError(false);
     supabase
       .from("bid_requests")
       .select("*")
       .eq("customer_id", user.id)
       .order("created_at", { ascending: false })
-      .then(({ data }) => { setBids(data ?? []); setLoading(false); });
-  }, [user]);
+      .then(({ data, error: fetchError }) => {
+        if (fetchError) {
+          toast({ title: "Error", description: "Failed to load data. Please try again.", variant: "destructive" });
+          setError(true);
+          setLoading(false);
+          return;
+        }
+        setBids(data ?? []);
+        setLoading(false);
+      });
+  };
+
+  useEffect(fetchBids, [user]);
 
   if (loading) return <Loader />;
+  if (error) {
+    return (
+      <div className="text-center">
+        <p className="text-muted-foreground">Failed to load data. Please try again.</p>
+        <Button variant="copper-outline" size="sm" className="mt-4" onClick={fetchBids}>
+          Retry
+        </Button>
+      </div>
+    );
+  }
   if (bids.length === 0) return <p className="text-muted-foreground">No bid requests submitted yet.</p>;
 
   return (

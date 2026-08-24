@@ -10,11 +10,14 @@ import ListingCard from "@/components/listings/ListingCard";
 import { resolveListingImages } from "@/lib/listingImages";
 import { AuctionListing, listingTitle } from "@/lib/listings";
 import { useWatchlist } from "@/hooks/useWatchlist";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 const Listings = () => {
   const [listings, setListings] = useState<AuctionListing[]>([]);
   const [covers, setCovers] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const { isWatching, toggle, busyId } = useWatchlist();
   const [bidModal, setBidModal] = useState<{ open: boolean; id: string; title: string }>({
     open: false,
@@ -22,39 +25,49 @@ const Listings = () => {
     title: "",
   });
 
-  useEffect(() => {
-    const fetchListings = async () => {
-      const today = new Date().toISOString().split("T")[0];
+  const fetchListings = async () => {
+    setLoading(true);
+    setError(false);
+    const today = new Date().toISOString().split("T")[0];
 
-      const { data } = await supabase
-        .from("auction_listings")
-        .select("*")
-        .eq("status", "active")
-        .order("created_at", { ascending: false });
+    const { data, error: fetchError } = await supabase
+      .from("auction_listings")
+      .select("*")
+      .eq("status", "active")
+      .order("created_at", { ascending: false });
 
-      // Exclude auctions whose date has passed, soonest auction first
-      const active = ((data as AuctionListing[]) ?? [])
-        .filter((l) => !l.auction_date || l.auction_date >= today)
-        .sort((a, b) => (a.auction_date ?? "9999").localeCompare(b.auction_date ?? "9999"));
-      setListings(active);
-
-
-      // Resolve one cover photo per listing in a single signed-URL request
-      const coverRefs = active
-        .map((l) => l.images?.[0])
-        .filter((ref): ref is string => Boolean(ref));
-      const urls = await resolveListingImages(coverRefs);
-      const map: Record<string, string> = {};
-      let cursor = 0;
-      active.forEach((l) => {
-        if (l.images?.[0]) {
-          const url = urls[cursor++];
-          if (url) map[l.id] = url;
-        }
-      });
-      setCovers(map);
+    if (fetchError) {
+      toast.error("Failed to load data. Please try again.");
+      setError(true);
       setLoading(false);
-    };
+      return;
+    }
+
+    // Exclude auctions whose date has passed, soonest auction first
+    const active = ((data as AuctionListing[]) ?? [])
+      .filter((l) => !l.auction_date || l.auction_date >= today)
+      .sort((a, b) => (a.auction_date ?? "9999").localeCompare(b.auction_date ?? "9999"));
+    setListings(active);
+
+
+    // Resolve one cover photo per listing in a single signed-URL request
+    const coverRefs = active
+      .map((l) => l.images?.[0])
+      .filter((ref): ref is string => Boolean(ref));
+    const urls = await resolveListingImages(coverRefs);
+    const map: Record<string, string> = {};
+    let cursor = 0;
+    active.forEach((l) => {
+      if (l.images?.[0]) {
+        const url = urls[cursor++];
+        if (url) map[l.id] = url;
+      }
+    });
+    setCovers(map);
+    setLoading(false);
+  };
+
+  useEffect(() => {
     fetchListings();
   }, []);
 
@@ -92,6 +105,13 @@ const Listings = () => {
 
         {loading ? (
           <Loader />
+        ) : error ? (
+          <div className="mt-12 text-center">
+            <p className="text-muted-foreground">Failed to load data. Please try again.</p>
+            <Button variant="copper-outline" size="sm" className="mt-4" onClick={fetchListings}>
+              Retry
+            </Button>
+          </div>
         ) : listings.length === 0 ? (
           <p className="mt-12 text-center text-muted-foreground">
             No active listings at the moment. Check back soon.

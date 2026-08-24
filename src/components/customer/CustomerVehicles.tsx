@@ -4,6 +4,8 @@ import { openDocument } from "@/lib/documentStorage";
 import { supabase } from "@/integrations/supabase/client";
 import { ChevronRight } from "lucide-react";
 import { Loader } from "@/components/Spinner";
+import { Button } from "@/components/ui/button";
+import { toast } from "@/hooks/use-toast";
 
 interface Vehicle {
   id: string;
@@ -58,33 +60,65 @@ const CustomerVehicles = () => {
   const [milestones, setMilestones] = useState<Milestone[]>([]);
   const [docs, setDocs] = useState<Doc[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [detailError, setDetailError] = useState(false);
 
   const viewDoc = async (fileUrl: string) => {
     const url = await openDocument(fileUrl);
     if (url) window.open(url, "_blank", "noopener,noreferrer");
   };
 
-  useEffect(() => {
+  const fetchVehicles = () => {
     if (!user) return;
+    setLoading(true);
+    setError(false);
     supabase
       .from("vehicles")
       .select("id, make, model, year, vin, status")
       .eq("customer_id", user.id)
       .order("created_at", { ascending: false })
-      .then(({ data }) => { setVehicles(data ?? []); setLoading(false); });
-  }, [user]);
+      .then(({ data, error: fetchError }) => {
+        if (fetchError) {
+          toast({ title: "Error", description: "Failed to load data. Please try again.", variant: "destructive" });
+          setError(true);
+          setLoading(false);
+          return;
+        }
+        setVehicles(data ?? []);
+        setLoading(false);
+      });
+  };
+
+  useEffect(fetchVehicles, [user]);
 
   const openDetail = async (v: Vehicle) => {
     setSelected(v);
-    const [{ data: ms }, { data: d }] = await Promise.all([
+    setDetailError(false);
+    const [{ data: ms, error: msError }, { data: d, error: docError }] = await Promise.all([
       supabase.from("vehicle_milestones").select("id, stage, notes, created_at, evidence_url").eq("vehicle_id", v.id).order("created_at", { ascending: true }),
       supabase.from("documents").select("id, type, file_url, created_at").eq("vehicle_id", v.id).order("created_at", { ascending: false }),
     ]);
+    if (msError || docError) {
+      toast({ title: "Error", description: "Failed to load data. Please try again.", variant: "destructive" });
+      setDetailError(true);
+      return;
+    }
     setMilestones((ms as Milestone[]) ?? []);
     setDocs((d as Doc[]) ?? []);
   };
 
   if (loading) return <Loader />;
+
+  if (error) {
+    return (
+      <div className="text-center">
+        <p className="text-muted-foreground">Failed to load data. Please try again.</p>
+        <Button variant="copper-outline" size="sm" className="mt-4" onClick={fetchVehicles}>
+          Retry
+        </Button>
+      </div>
+    );
+  }
 
   if (selected) {
     const completedStages = new Set(milestones.map((m) => m.stage));
@@ -101,55 +135,66 @@ const CustomerVehicles = () => {
           <p className="text-sm text-muted-foreground">VIN: {selected.vin ? maskVin(selected.vin) : "N/A"}</p>
           <div className="mt-2">{statusBadge(selected.status)}</div>
 
-          <h3 className="mt-8 mb-4 text-lg font-bold text-silver">Milestone Timeline</h3>
-          <div className="space-y-0">
-            {MILESTONE_ORDER.map((stage, i) => {
-              const data = milestoneMap.get(stage);
-              const isCompleted = completedStages.has(stage);
-              const isActive = i === activeIdx && activeIdx < MILESTONE_ORDER.length;
-              const isPending = !isCompleted && !isActive;
-              const isLast = i === MILESTONE_ORDER.length - 1;
-              return (
-                <div key={stage} className="flex gap-4">
-                  <div className="flex flex-col items-center">
-                    <div className={`relative mt-1 h-4 w-4 shrink-0 rounded-full border-2 ${isCompleted ? "border-primary bg-primary" : isActive ? "border-accent bg-accent" : "border-border bg-transparent"}`}>
-                      {isActive && <span className="absolute inset-0 animate-ping rounded-full bg-accent opacity-50" />}
-                    </div>
-                    {!isLast && <div className="w-px flex-1 min-h-[24px] bg-border" />}
-                  </div>
-                  <div className={`pb-5 ${isPending ? "opacity-50" : ""}`}>
-                    <p className="text-sm font-semibold text-silver">{stage}</p>
-                    {data && (
-                      <>
-                        {data.notes && <p className="mt-0.5 text-xs text-muted-foreground">{data.notes}</p>}
-                        <p className="mt-0.5 text-xs text-muted-foreground">{new Date(data.created_at).toLocaleDateString()}</p>
-                        {data.evidence_url && <img src={data.evidence_url} alt={stage} className="mt-2 h-20 w-28 rounded-lg object-cover border border-border" loading="lazy" />}
-                      </>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {docs.length > 0 && (
+          {detailError ? (
+            <div className="mt-8 text-center">
+              <p className="text-muted-foreground">Failed to load data. Please try again.</p>
+              <Button variant="copper-outline" size="sm" className="mt-4" onClick={() => openDetail(selected)}>
+                Retry
+              </Button>
+            </div>
+          ) : (
             <>
-              <h3 className="mt-8 mb-4 text-lg font-bold text-silver">Documents</h3>
-              <div className="space-y-2">
-                {docs.map((d) => (
-                  <div key={d.id} className="flex items-center justify-between rounded-lg border border-border bg-surface-2 px-4 py-2">
-                    <div>
-                      <p className="text-sm text-silver">{d.type ?? "Document"}</p>
-                      <p className="text-xs text-muted-foreground">{new Date(d.created_at).toLocaleDateString()}</p>
+              <h3 className="mt-8 mb-4 text-lg font-bold text-silver">Milestone Timeline</h3>
+              <div className="space-y-0">
+                {MILESTONE_ORDER.map((stage, i) => {
+                  const data = milestoneMap.get(stage);
+                  const isCompleted = completedStages.has(stage);
+                  const isActive = i === activeIdx && activeIdx < MILESTONE_ORDER.length;
+                  const isPending = !isCompleted && !isActive;
+                  const isLast = i === MILESTONE_ORDER.length - 1;
+                  return (
+                    <div key={stage} className="flex gap-4">
+                      <div className="flex flex-col items-center">
+                        <div className={`relative mt-1 h-4 w-4 shrink-0 rounded-full border-2 ${isCompleted ? "border-primary bg-primary" : isActive ? "border-accent bg-accent" : "border-border bg-transparent"}`}>
+                          {isActive && <span className="absolute inset-0 animate-ping rounded-full bg-accent opacity-50" />}
+                        </div>
+                        {!isLast && <div className="w-px flex-1 min-h-[24px] bg-border" />}
+                      </div>
+                      <div className={`pb-5 ${isPending ? "opacity-50" : ""}`}>
+                        <p className="text-sm font-semibold text-silver">{stage}</p>
+                        {data && (
+                          <>
+                            {data.notes && <p className="mt-0.5 text-xs text-muted-foreground">{data.notes}</p>}
+                            <p className="mt-0.5 text-xs text-muted-foreground">{new Date(data.created_at).toLocaleDateString()}</p>
+                            {data.evidence_url && <img src={data.evidence_url} alt={stage} className="mt-2 h-20 w-28 rounded-lg object-cover border border-border" loading="lazy" />}
+                          </>
+                        )}
+                      </div>
                     </div>
-                    {d.file_url && (
-                      <button type="button" onClick={() => viewDoc(d.file_url!)} className="text-xs font-medium text-primary border border-primary rounded-md px-3 py-1 hover:bg-primary/10">
-                        View
-                      </button>
-                    )}
-                  </div>
-                ))}
+                  );
+                })}
               </div>
+
+              {docs.length > 0 && (
+                <>
+                  <h3 className="mt-8 mb-4 text-lg font-bold text-silver">Documents</h3>
+                  <div className="space-y-2">
+                    {docs.map((d) => (
+                      <div key={d.id} className="flex items-center justify-between rounded-lg border border-border bg-surface-2 px-4 py-2">
+                        <div>
+                          <p className="text-sm text-silver">{d.type ?? "Document"}</p>
+                          <p className="text-xs text-muted-foreground">{new Date(d.created_at).toLocaleDateString()}</p>
+                        </div>
+                        {d.file_url && (
+                          <button type="button" onClick={() => viewDoc(d.file_url!)} className="text-xs font-medium text-primary border border-primary rounded-md px-3 py-1 hover:bg-primary/10">
+                            View
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
             </>
           )}
         </div>

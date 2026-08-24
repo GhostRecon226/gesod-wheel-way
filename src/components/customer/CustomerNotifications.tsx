@@ -3,6 +3,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Loader } from "@/components/Spinner";
+import { toast } from "@/hooks/use-toast";
 
 interface Notification {
   id: string;
@@ -15,14 +16,23 @@ const CustomerNotifications = () => {
   const { user } = useAuth();
   const [notifs, setNotifs] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
   const fetch = async () => {
     if (!user) return;
-    const { data } = await supabase
+    setLoading(true);
+    setError(false);
+    const { data, error: fetchError } = await supabase
       .from("notifications")
       .select("*")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false });
+    if (fetchError) {
+      toast({ title: "Error", description: "Failed to load data. Please try again.", variant: "destructive" });
+      setError(true);
+      setLoading(false);
+      return;
+    }
     setNotifs(data ?? []);
     setLoading(false);
   };
@@ -38,6 +48,16 @@ const CustomerNotifications = () => {
   };
 
   if (loading) return <Loader />;
+  if (error) {
+    return (
+      <div className="text-center">
+        <p className="text-muted-foreground">Failed to load data. Please try again.</p>
+        <Button variant="copper-outline" size="sm" className="mt-4" onClick={fetch}>
+          Retry
+        </Button>
+      </div>
+    );
+  }
 
   const hasUnread = notifs.some((n) => !n.read);
 

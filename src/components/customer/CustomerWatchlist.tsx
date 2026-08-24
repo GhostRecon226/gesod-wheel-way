@@ -22,15 +22,25 @@ const CustomerWatchlist = () => {
   const [items, setItems] = useState<WatchedItem[]>([]);
   const [covers, setCovers] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
 
   const load = async () => {
     if (!user) return;
-    const { data } = await supabase
+    setLoading(true);
+    setError(false);
+    const { data, error: fetchError } = await supabase
       .from("auction_watchlist")
       .select("id, created_at, auction_listings(*)")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false });
+
+    if (fetchError) {
+      toast({ title: "Error", description: "Failed to load data. Please try again.", variant: "destructive" });
+      setError(true);
+      setLoading(false);
+      return;
+    }
 
     const rows = ((data ?? []) as any[])
       .filter((r) => r.auction_listings)
@@ -75,6 +85,16 @@ const CustomerWatchlist = () => {
   };
 
   if (loading) return <Loader />;
+  if (error) {
+    return (
+      <div className="text-center">
+        <p className="text-muted-foreground">Failed to load data. Please try again.</p>
+        <Button variant="outline" size="sm" className="mt-4" onClick={load}>
+          Retry
+        </Button>
+      </div>
+    );
+  }
 
   return (
     <div>
