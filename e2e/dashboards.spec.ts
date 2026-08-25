@@ -15,6 +15,8 @@ const ADMIN_SECTIONS = [
   "Import Pipeline",
   "Customers",
   "Vehicles",
+  "Loads",
+  "Drivers",
   "Auction Listings",
   "Bid Requests",
   "Quote Requests",
@@ -48,6 +50,26 @@ test.describe("admin dashboard", () => {
     await expect(page.getByText("emeka@test.com")).toBeVisible();
     await expect(page.getByText("fatima@test.com")).toBeVisible();
     await expect(page.getByText("tunde@test.com")).toBeVisible();
+  });
+
+  // Loads and Drivers are real routes (/dashboard/admin/loads[/:id],
+  // /dashboard/admin/drivers[/:id]) — every other section above is in-page
+  // tab state with no URL of its own, so this is the one thing the generic
+  // "every section loads" loop above doesn't exercise: that the URL actually
+  // changes, and that navigating to it directly (not via the sidebar) works.
+  test("Loads and Drivers have real, bookmarkable URLs", async ({ page }) => {
+    await login(page, ADMIN);
+
+    await page.getByRole("button", { name: "Loads", exact: true }).click();
+    await expect(page).toHaveURL(/\/dashboard\/admin\/loads$/);
+
+    await page.getByRole("button", { name: "Drivers", exact: true }).click();
+    await expect(page).toHaveURL(/\/dashboard\/admin\/drivers$/);
+
+    // A direct load (not via the sidebar) must render the same page, and the
+    // sidebar must still highlight the right section for it.
+    await page.goto("/dashboard/admin/loads");
+    await expect(page.getByRole("heading", { name: "Loads" }).first()).toBeVisible();
   });
 
   test("cannot be reached without signing in", async ({ page }) => {

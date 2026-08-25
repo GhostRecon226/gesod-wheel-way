@@ -214,3 +214,197 @@ describe("anonymous visitors", () => {
     expect(data).toBeNull();
   });
 });
+
+/**
+ * Loads/Drivers ERP tables (added for the Load Intake and Driver Management
+ * admin modules). Unlike the tables above, nothing seeds these — they start
+ * empty — so this suite creates its own fixture row per table as admin, runs
+ * the RLS assertions against it, then tears everything down in afterAll so
+ * the database is left exactly as it found it.
+ */
+describe("loads, drivers, and invoices (ERP)", () => {
+  const ERP_TABLES = [
+    "loads",
+    "drivers",
+    "driver_payments",
+    "load_status_history",
+    "invoices",
+    "invoice_loads",
+    "invoice_line_items",
+  ] as const;
+
+  const owner = CUSTOMERS[0];
+  const stranger = CUSTOMERS[1];
+
+  let driverId: string;
+  let loadId: string;
+  let historyId: string;
+  let invoiceId: string;
+  let lineItemId: string;
+  let paymentId: string;
+
+  beforeAll(async () => {
+    const ownerAccess = customerClients.get(owner.email)!;
+
+    const { data: driver, error: driverError } = await adminClient
+      .from("drivers")
+      .insert({ name: "QA Fixture Driver", phone: "555-0100", active: true })
+      .select("id")
+      .single();
+    expect(driverError, `failed to seed driver: ${driverError?.message}`).toBeNull();
+    driverId = driver!.id;
+
+    const { data: load, error: loadError } = await adminClient
+      .from("loads")
+      .insert({
+        vin: "QAFIXTUREVIN00001",
+        customer_id: ownerAccess.userId,
+        driver_id: driverId,
+        status: "delivered",
+      })
+      .select("id")
+      .single();
+    expect(loadError, `failed to seed load: ${loadError?.message}`).toBeNull();
+    loadId = load!.id;
+
+    const { data: history, error: historyError } = await adminClient
+      .from("load_status_history")
+      .insert({ load_id: loadId, status: "delivered", notes: "QA fixture" })
+      .select("id")
+      .single();
+    expect(historyError, `failed to seed load_status_history: ${historyError?.message}`).toBeNull();
+    historyId = history!.id;
+
+    const { data: invoice, error: invoiceError } = await adminClient
+      .from("invoices")
+      .insert({ customer_id: ownerAccess.userId, status: "draft", total_amount: 500 })
+      .select("id")
+      .single();
+    expect(invoiceError, `failed to seed invoice: ${invoiceError?.message}`).toBeNull();
+    invoiceId = invoice!.id;
+
+    const { error: invoiceLoadError } = await adminClient
+      .from("invoice_loads")
+      .insert({ invoice_id: invoiceId, load_id: loadId });
+    expect(invoiceLoadError, `failed to seed invoice_loads: ${invoiceLoadError?.message}`).toBeNull();
+
+    const { data: lineItem, error: lineItemError } = await adminClient
+      .from("invoice_line_items")
+      .insert({ invoice_id: invoiceId, load_id: loadId, type: "base_price", amount: 450 })
+      .select("id")
+      .single();
+    expect(lineItemError, `failed to seed invoice_line_items: ${lineItemError?.message}`).toBeNull();
+    lineItemId = lineItem!.id;
+
+    const { data: payment, error: paymentError } = await adminClient
+      .from("driver_payments")
+      .insert({ driver_id: driverId, load_id: loadId, amount: 200, status: "pending" })
+      .select("id")
+      .single();
+    expect(paymentError, `failed to seed driver_payments: ${paymentError?.message}`).toBeNull();
+    paymentId = payment!.id;
+  }, 30_000);
+
+  afterAll(async () => {
+    // FK-safe order. Each call is independent so one failure doesn't block
+    // cleanup of the rest of the fixture.
+    await adminClient.from("driver_payments").delete().eq("id", paymentId);
+    await adminClient.from("invoice_line_items").delete().eq("id", lineItemId);
+    await adminClient.from("invoice_loads").delete().eq("invoice_id", invoiceId);
+    await adminClient.from("load_status_history").delete().eq("id", historyId);
+    await adminClient.from("invoices").delete().eq("id", invoiceId);
+    await adminClient.from("loads").delete().eq("id", loadId);
+    await adminClient.from("drivers").delete().eq("id", driverId);
+  });
+
+  it.each(ERP_TABLES)("admin reads %s", async (table) => {
+    const { error } = await adminClient.from(table).select("id").limit(1);
+    expect(error, `admin read of ${table} failed: ${error?.message}`).toBeNull();
+  });
+
+  it(`${owner.label} can view their own load and invoice`, async () => {
+    const { client } = customerClients.get(owner.email)!;
+    const { data: load, error: loadError } = await client.from("loads").select("id").eq("id", loadId);
+    expect(loadError).toBeNull();
+    expect(load).toEqual([{ id: loadId }]);
+
+    const { data: invoice, error: invoiceError } = await client.from("invoices").select("id").eq("id", invoiceId);
+    expect(invoiceError).toBeNull();
+    expect(invoice).toEqual([{ id: invoiceId }]);
+  });
+
+  it(`${owner.label} can view load status history and invoice line items through the owning load/invoice`, async () => {
+    const { client } = customerClients.get(owner.email)!;
+    const { data: history, error: historyError } = await client
+      .from("load_status_history")
+      .select("id")
+      .eq("id", historyId);
+    expect(historyError).toBeNull();
+    expect(history).toEqual([{ id: historyId }]);
+
+    const { data: lineItems, error: lineItemError } = await client
+      .from("invoice_line_items")
+      .select("id")
+      .eq("id", lineItemId);
+    expect(lineItemError).toBeNull();
+    expect(lineItems).toEqual([{ id: lineItemId }]);
+  });
+
+  it(`${owner.label} cannot access drivers, driver_payments, or invoice_loads at all`, async () => {
+    const { client } = customerClients.get(owner.email)!;
+    const { data: drivers } = await client.from("drivers").select("id").eq("id", driverId);
+    expect(drivers ?? [], "a customer read a row from drivers").toEqual([]);
+
+    const { data: payments } = await client.from("driver_payments").select("id").eq("id", paymentId);
+    expect(payments ?? [], "a customer read a row from driver_payments").toEqual([]);
+
+    const { data: invoiceLoads } = await client.from("invoice_loads").select("id").eq("invoice_id", invoiceId);
+    expect(invoiceLoads ?? [], "a customer read a row from invoice_loads").toEqual([]);
+  });
+
+  it(`${owner.label} cannot write to loads or invoices — read-only access`, async () => {
+    const { client } = customerClients.get(owner.email)!;
+    // An UPDATE with zero RLS-visible rows doesn't error on its own — it
+    // just matches nothing, same as any other empty WHERE clause. Chaining
+    // .select().single() forces PostgREST to error when no row comes back,
+    // same trick the users.role self-escalation test above already uses.
+    const { error: loadUpdateError } = await client
+      .from("loads")
+      .update({ status: "paid" })
+      .eq("id", loadId)
+      .select("id")
+      .single();
+    expect(loadUpdateError, "a customer was able to update a load").toBeTruthy();
+
+    const { error: invoiceUpdateError } = await client
+      .from("invoices")
+      .update({ status: "paid" })
+      .eq("id", invoiceId)
+      .select("id")
+      .single();
+    expect(invoiceUpdateError, "a customer was able to update an invoice").toBeTruthy();
+
+    const { error: insertError } = await client.from("loads").insert({ vin: "QAHACKVIN000000001" });
+    expect(insertError, "a customer was able to create a load").toBeTruthy();
+  });
+
+  it(`${stranger.label} cannot see another customer's load, invoice, history, or line items`, async () => {
+    const { client } = customerClients.get(stranger.email)!;
+    const { data: load } = await client.from("loads").select("id").eq("id", loadId);
+    expect(load ?? [], `${stranger.label} saw another customer's load`).toEqual([]);
+
+    const { data: invoice } = await client.from("invoices").select("id").eq("id", invoiceId);
+    expect(invoice ?? [], `${stranger.label} saw another customer's invoice`).toEqual([]);
+
+    const { data: history } = await client.from("load_status_history").select("id").eq("id", historyId);
+    expect(history ?? [], `${stranger.label} saw another customer's load_status_history`).toEqual([]);
+
+    const { data: lineItems } = await client.from("invoice_line_items").select("id").eq("id", lineItemId);
+    expect(lineItems ?? [], `${stranger.label} saw another customer's invoice_line_items`).toEqual([]);
+  });
+
+  it.each(ERP_TABLES)("anonymous visitors read no rows from %s", async (table) => {
+    const { data } = await anonClient.from(table).select("id").limit(1);
+    expect(data ?? [], `anonymous read rows from ${table}`).toEqual([]);
+  });
+});
