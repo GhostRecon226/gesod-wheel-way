@@ -30,3 +30,4 @@ supabase/.temp
 # Playwright test artifacts
 test-results
 playwright-report
+.env
