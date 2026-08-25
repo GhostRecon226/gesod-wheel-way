@@ -338,7 +338,7 @@ export type Database = {
           method: string | null
           notes: string | null
           paid_date: string | null
-          status: string
+          status: string | null
         }
         Insert: {
           amount?: number | null
@@ -348,7 +348,7 @@ export type Database = {
           method?: string | null
           notes?: string | null
           paid_date?: string | null
-          status?: string
+          status?: string | null
         }
         Update: {
           amount?: number | null
@@ -358,7 +358,7 @@ export type Database = {
           method?: string | null
           notes?: string | null
           paid_date?: string | null
-          status?: string
+          status?: string | null
         }
         Relationships: [
           {
@@ -588,7 +588,7 @@ export type Database = {
           notes: string | null
           paid_at: string | null
           sent_at: string | null
-          status: string
+          status: string | null
           total_amount: number | null
         }
         Insert: {
@@ -600,7 +600,7 @@ export type Database = {
           notes?: string | null
           paid_at?: string | null
           sent_at?: string | null
-          status?: string
+          status?: string | null
           total_amount?: number | null
         }
         Update: {
@@ -612,7 +612,7 @@ export type Database = {
           notes?: string | null
           paid_at?: string | null
           sent_at?: string | null
-          status?: string
+          status?: string | null
           total_amount?: number | null
         }
         Relationships: [
