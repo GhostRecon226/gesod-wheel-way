@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard, Users, Car, Gavel, ClipboardList, FileText,
   CreditCard, AlertTriangle, Ship, Bell, LogOut, Menu, X, Package,
-  Download, Workflow, Mail, Truck, UserCog,
+  Download, Workflow, Mail, Truck, UserCog, Receipt,
 } from "lucide-react";
 import AdminOverview from "@/components/admin/AdminOverview";
 import AdminCustomers from "@/components/admin/AdminCustomers";
@@ -28,6 +28,8 @@ import AdminLoadDetail from "@/components/admin/AdminLoadDetail";
 import AdminDrivers from "@/components/admin/AdminDrivers";
 import AdminDriverDetail from "@/components/admin/AdminDriverDetail";
 import AdminDriverPayments from "@/components/admin/AdminDriverPayments";
+import AdminInvoices from "@/components/admin/AdminInvoices";
+import AdminInvoiceDetail from "@/components/admin/AdminInvoiceDetail";
 import { can, type Module } from "@/lib/permissions";
 import { useRealtimeAlerts } from "@/hooks/useRealtimeAlerts";
 
@@ -38,6 +40,7 @@ const SECTIONS = [
   { key: "vehicles", label: "Vehicles", icon: Car },
   { key: "loads", label: "Loads", icon: Truck },
   { key: "drivers", label: "Drivers", icon: UserCog },
+  { key: "invoices", label: "Invoices", icon: Receipt },
   { key: "listings", label: "Auction Listings", icon: Package },
   { key: "bids", label: "Bid Requests", icon: Gavel },
   { key: "quotes", label: "Quote Requests", icon: ClipboardList },
@@ -61,14 +64,17 @@ const AdminDashboard = () => {
 
   useRealtimeAlerts(user?.id, userRole);
 
-  // Loads and Drivers have real URLs (/dashboard/admin/loads[/:id],
-  // /dashboard/admin/drivers[/:id], /dashboard/admin/driver-payments) unlike
-  // every other section here, which is pure in-page tab state with no URL.
-  const routedSection: "loads" | "drivers" | null = location.pathname.startsWith("/dashboard/admin/loads")
+  // Loads, Drivers, and Invoices have real URLs (/dashboard/admin/loads[/:id],
+  // /dashboard/admin/drivers[/:id], /dashboard/admin/driver-payments,
+  // /dashboard/admin/invoices[/:id]) unlike every other section here, which
+  // is pure in-page tab state with no URL.
+  const routedSection: "loads" | "drivers" | "invoices" | null = location.pathname.startsWith("/dashboard/admin/loads")
     ? "loads"
     : location.pathname.startsWith("/dashboard/admin/drivers") || location.pathname.startsWith("/dashboard/admin/driver-payments")
       ? "drivers"
-      : null;
+      : location.pathname.startsWith("/dashboard/admin/invoices")
+        ? "invoices"
+        : null;
 
   const visibleSections = SECTIONS.filter((s) => can(userRole, s.key as Module));
 
@@ -97,9 +103,10 @@ const AdminDashboard = () => {
       case "notifications": return <AdminNotifications />;
       case "messages": return <AdminMessages />;
       case "reports": return <AdminReports />;
-      // "loads"/"drivers" are routed, not tab-state — see routedSection above; unreachable here.
+      // "loads"/"drivers"/"invoices" are routed, not tab-state — see routedSection above; unreachable here.
       case "loads": return null;
       case "drivers": return null;
+      case "invoices": return null;
     }
   };
 
@@ -121,14 +128,14 @@ const AdminDashboard = () => {
         <nav className="flex-1 overflow-y-auto py-3">
           {visibleSections.map(({ key, label, icon: Icon }) => {
             const isActive =
-              key === "loads" || key === "drivers"
+              key === "loads" || key === "drivers" || key === "invoices"
                 ? routedSection === key
                 : !routedSection && active === key;
             return (
               <button
                 key={key}
                 onClick={() => {
-                  if (key === "loads" || key === "drivers") {
+                  if (key === "loads" || key === "drivers" || key === "invoices") {
                     navigate(`/dashboard/admin/${key}`);
                   } else {
                     setActive(key);
@@ -167,7 +174,9 @@ const AdminDashboard = () => {
               ? "Loads"
               : routedSection === "drivers"
                 ? (location.pathname.startsWith("/dashboard/admin/driver-payments") ? "Driver Payments" : "Drivers")
-                : SECTIONS.find((s) => s.key === active)?.label}
+                : routedSection === "invoices"
+                  ? "Invoices"
+                  : SECTIONS.find((s) => s.key === active)?.label}
           </h1>
         </header>
         <div className="p-4 md:p-8">
@@ -179,6 +188,8 @@ const AdminDashboard = () => {
                 <Route path="drivers" element={<AdminDrivers />} />
                 <Route path="drivers/:id" element={<AdminDriverDetail />} />
                 <Route path="driver-payments" element={<AdminDriverPayments />} />
+                <Route path="invoices" element={<AdminInvoices />} />
+                <Route path="invoices/:id" element={<AdminInvoiceDetail />} />
               </Routes>
             ) : (
               <p className="text-muted-foreground">You do not have permission to view this module.</p>

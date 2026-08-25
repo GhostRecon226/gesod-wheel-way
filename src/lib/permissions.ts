@@ -17,7 +17,8 @@ export type Module =
   | "import"
   | "messages"
   | "loads"
-  | "drivers";
+  | "drivers"
+  | "invoices";
 
 export type Action = "view" | "create" | "edit" | "delete" | "export" | "review";
 
@@ -46,6 +47,7 @@ export const PERMISSIONS: Matrix = {
     messages: ["view", "edit"],
     loads: ["view", "create", "edit", "delete"],
     drivers: ["view", "create", "edit", "delete"],
+    invoices: ["view", "create", "edit"],
   },
   customer: {
     vehicles: ["view"],
@@ -58,6 +60,7 @@ export const PERMISSIONS: Matrix = {
     schedules: ["view"],
     notifications: ["view", "edit"],
     watchlist: ["view", "create", "delete"],
+    invoices: ["view"],
   },
 };
 

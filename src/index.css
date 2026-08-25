@@ -107,3 +107,21 @@
     @apply inline-block rounded-full px-3 py-1 text-xs font-semibold bg-success text-primary-foreground;
   }
 }
+
+/* Print-only elements opt in by wrapping content in .invoice-print-area;
+   everything else on the page (sidebar, header, other panels) is hidden
+   without needing to touch those components' own markup. */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .invoice-print-area,
+  .invoice-print-area * {
+    visibility: visible;
+  }
+  .invoice-print-area {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+  }
+}

@@ -3,7 +3,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Car, Gavel, FileText, CreditCard, AlertTriangle, Bell, ClipboardList, Eye,
-  LogOut, Menu, X, ChevronRight,
+  LogOut, Menu, X, ChevronRight, Receipt,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Logo from "@/components/Logo";
@@ -16,6 +16,7 @@ import CustomerPayments from "@/components/customer/CustomerPayments";
 import CustomerDisputes from "@/components/customer/CustomerDisputes";
 import CustomerNotifications from "@/components/customer/CustomerNotifications";
 import CustomerWatchlist from "@/components/customer/CustomerWatchlist";
+import CustomerInvoices from "@/components/customer/CustomerInvoices";
 import { can, type Module } from "@/lib/permissions";
 import { useRealtimeAlerts } from "@/hooks/useRealtimeAlerts";
 
@@ -26,6 +27,7 @@ const SECTIONS = [
   { key: "quotes", label: "Quote Requests", icon: ClipboardList },
   { key: "documents", label: "Documents", icon: FileText },
   { key: "payments", label: "Payments", icon: CreditCard },
+  { key: "invoices", label: "Invoices", icon: Receipt },
   { key: "disputes", label: "Disputes", icon: AlertTriangle },
   { key: "notifications", label: "Notifications", icon: Bell },
 ] as const;
@@ -72,6 +74,7 @@ const CustomerDashboard = () => {
       case "quotes": return <CustomerQuotes />;
       case "documents": return <CustomerDocuments />;
       case "payments": return <CustomerPayments />;
+      case "invoices": return <CustomerInvoices />;
       case "disputes": return <CustomerDisputes />;
       case "notifications": return <CustomerNotifications key={refreshKey} />;
     }
