@@ -17,6 +17,7 @@ const ADMIN_SECTIONS = [
   "Vehicles",
   "Loads",
   "Drivers",
+  "Invoices",
   "Auction Listings",
   "Bid Requests",
   "Quote Requests",
@@ -25,6 +26,7 @@ const ADMIN_SECTIONS = [
   "Disputes",
   "Sailing Schedules",
   "Notifications",
+  "Messages",
   "Reports & Exports",
 ];
 
