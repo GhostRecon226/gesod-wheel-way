@@ -7,6 +7,7 @@ import { toast } from "@/hooks/use-toast";
 import { Loader } from "@/components/Spinner";
 import LoadStatusBadge from "@/components/admin/LoadStatusBadge";
 import LoadFormModal from "@/components/admin/LoadFormModal";
+import ImportLoadsModal from "@/components/admin/ImportLoadsModal";
 import { LOAD_STATUSES, loadTitle, type Load } from "@/lib/loads";
 
 interface Option { id: string; name: string; }
@@ -29,6 +30,7 @@ const AdminLoads = () => {
 
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Load | null>(null);
+  const [showImport, setShowImport] = useState(false);
 
   const fetchData = async () => {
     setLoading(true);
@@ -97,7 +99,10 @@ const AdminLoads = () => {
     <div>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <h2 className="text-lg font-bold text-silver">Loads</h2>
-        <Button variant="copper" onClick={openCreate}>New Load</Button>
+        <div className="flex gap-2">
+          <Button variant="copper-outline" onClick={() => setShowImport(true)}>Import Loads</Button>
+          <Button variant="copper" onClick={openCreate}>New Load</Button>
+        </div>
       </div>
 
       <div className="mb-4 flex flex-wrap gap-3">
@@ -192,6 +197,14 @@ const AdminLoads = () => {
         onClose={() => setShowForm(false)}
         onSaved={fetchData}
         editing={editing}
+        customers={customers}
+        drivers={drivers}
+      />
+
+      <ImportLoadsModal
+        open={showImport}
+        onClose={() => setShowImport(false)}
+        onImported={fetchData}
         customers={customers}
         drivers={drivers}
       />
