@@ -329,6 +329,90 @@ export type Database = {
           },
         ]
       }
+      driver_payments: {
+        Row: {
+          amount: number | null
+          driver_id: string | null
+          id: string
+          load_id: string | null
+          method: string | null
+          notes: string | null
+          paid_date: string | null
+          status: string
+        }
+        Insert: {
+          amount?: number | null
+          driver_id?: string | null
+          id?: string
+          load_id?: string | null
+          method?: string | null
+          notes?: string | null
+          paid_date?: string | null
+          status?: string
+        }
+        Update: {
+          amount?: number | null
+          driver_id?: string | null
+          id?: string
+          load_id?: string | null
+          method?: string | null
+          notes?: string | null
+          paid_date?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "driver_payments_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "drivers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "driver_payments_load_id_fkey"
+            columns: ["load_id"]
+            isOneToOne: false
+            referencedRelation: "loads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      drivers: {
+        Row: {
+          active: boolean | null
+          created_at: string | null
+          email: string | null
+          id: string
+          name: string
+          notes: string | null
+          payment_details: string | null
+          payment_method: string | null
+          phone: string | null
+        }
+        Insert: {
+          active?: boolean | null
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          payment_details?: string | null
+          payment_method?: string | null
+          phone?: string | null
+        }
+        Update: {
+          active?: boolean | null
+          created_at?: string | null
+          email?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          payment_details?: string | null
+          payment_method?: string | null
+          phone?: string | null
+        }
+        Relationships: []
+      }
       email_send_log: {
         Row: {
           created_at: string
@@ -415,6 +499,255 @@ export type Database = {
           used_at?: string | null
         }
         Relationships: []
+      }
+      invoice_line_items: {
+        Row: {
+          amount: number | null
+          created_at: string | null
+          description: string | null
+          id: string
+          invoice_id: string | null
+          load_id: string | null
+          type: string | null
+        }
+        Insert: {
+          amount?: number | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          invoice_id?: string | null
+          load_id?: string | null
+          type?: string | null
+        }
+        Update: {
+          amount?: number | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          invoice_id?: string | null
+          load_id?: string | null
+          type?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoice_line_items_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoice_line_items_load_id_fkey"
+            columns: ["load_id"]
+            isOneToOne: false
+            referencedRelation: "loads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invoice_loads: {
+        Row: {
+          id: string
+          invoice_id: string | null
+          load_id: string | null
+        }
+        Insert: {
+          id?: string
+          invoice_id?: string | null
+          load_id?: string | null
+        }
+        Update: {
+          id?: string
+          invoice_id?: string | null
+          load_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoice_loads_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoice_loads_load_id_fkey"
+            columns: ["load_id"]
+            isOneToOne: false
+            referencedRelation: "loads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invoices: {
+        Row: {
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string | null
+          customer_id: string | null
+          id: string
+          notes: string | null
+          paid_at: string | null
+          sent_at: string | null
+          status: string
+          total_amount: number | null
+        }
+        Insert: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string | null
+          customer_id?: string | null
+          id?: string
+          notes?: string | null
+          paid_at?: string | null
+          sent_at?: string | null
+          status?: string
+          total_amount?: number | null
+        }
+        Update: {
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string | null
+          customer_id?: string | null
+          id?: string
+          notes?: string | null
+          paid_at?: string | null
+          sent_at?: string | null
+          status?: string
+          total_amount?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoices_approved_by_fkey"
+            columns: ["approved_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "invoices_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      load_status_history: {
+        Row: {
+          created_at: string | null
+          id: string
+          load_id: string | null
+          notes: string | null
+          status: string | null
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          load_id?: string | null
+          notes?: string | null
+          status?: string | null
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          load_id?: string | null
+          notes?: string | null
+          status?: string | null
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "load_status_history_load_id_fkey"
+            columns: ["load_id"]
+            isOneToOne: false
+            referencedRelation: "loads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "load_status_history_updated_by_fkey"
+            columns: ["updated_by"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      loads: {
+        Row: {
+          agreed_pickup_price: number | null
+          buyer_number: string | null
+          created_at: string | null
+          customer_id: string | null
+          destination_address: string | null
+          destination_type: string | null
+          driver_id: string | null
+          id: string
+          lot_number: string | null
+          make: string | null
+          model: string | null
+          notes: string | null
+          pickup_location: string | null
+          service_fee: number | null
+          status: string | null
+          vin: string
+          year: number | null
+        }
+        Insert: {
+          agreed_pickup_price?: number | null
+          buyer_number?: string | null
+          created_at?: string | null
+          customer_id?: string | null
+          destination_address?: string | null
+          destination_type?: string | null
+          driver_id?: string | null
+          id?: string
+          lot_number?: string | null
+          make?: string | null
+          model?: string | null
+          notes?: string | null
+          pickup_location?: string | null
+          service_fee?: number | null
+          status?: string | null
+          vin: string
+          year?: number | null
+        }
+        Update: {
+          agreed_pickup_price?: number | null
+          buyer_number?: string | null
+          created_at?: string | null
+          customer_id?: string | null
+          destination_address?: string | null
+          destination_type?: string | null
+          driver_id?: string | null
+          id?: string
+          lot_number?: string | null
+          make?: string | null
+          model?: string | null
+          notes?: string | null
+          pickup_location?: string | null
+          service_fee?: number | null
+          status?: string | null
+          vin?: string
+          year?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "loads_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "loads_driver_id_fkey"
+            columns: ["driver_id"]
+            isOneToOne: false
+            referencedRelation: "drivers"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       notifications: {
         Row: {
