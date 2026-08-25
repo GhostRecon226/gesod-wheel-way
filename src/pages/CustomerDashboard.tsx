@@ -114,7 +114,7 @@ const CustomerDashboard = () => {
                 <Icon size={18} />
                 {label}
                 {key === "notifications" && unreadCount > 0 && (
-                  <span aria-label={`${unreadCount} unread notifications`} className="ml-auto min-w-[20px] rounded-full bg-primary px-1.5 py-0.5 text-center text-[10px] font-bold text-primary-foreground">
+                  <span aria-hidden="true" className="ml-auto min-w-[20px] rounded-full bg-primary px-1.5 py-0.5 text-center text-[10px] font-bold text-primary-foreground">
                     {unreadCount > 9 ? "9+" : unreadCount}
                   </span>
                 )}
