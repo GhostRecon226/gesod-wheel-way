@@ -277,7 +277,7 @@ describe("loads, drivers, and invoices (ERP)", () => {
 
     const { data: invoice, error: invoiceError } = await adminClient
       .from("invoices")
-      .insert({ customer_id: ownerAccess.userId, status: "draft", total_amount: 500 })
+      .insert({ customer_id: ownerAccess.userId, status: "approved", total_amount: 500 })
       .select("id")
       .single();
     expect(invoiceError, `failed to seed invoice: ${invoiceError?.message}`).toBeNull();
@@ -331,6 +331,22 @@ describe("loads, drivers, and invoices (ERP)", () => {
     const { data: invoice, error: invoiceError } = await client.from("invoices").select("id").eq("id", invoiceId);
     expect(invoiceError).toBeNull();
     expect(invoice).toEqual([{ id: invoiceId }]);
+  });
+
+  it(`${owner.label} cannot view a draft invoice, even their own`, async () => {
+    const { client, userId } = customerClients.get(owner.email)!;
+
+    const { data: draftInvoice, error: createError } = await adminClient
+      .from("invoices")
+      .insert({ customer_id: userId, status: "draft", total_amount: 100 })
+      .select("id")
+      .single();
+    expect(createError, `failed to seed draft invoice: ${createError?.message}`).toBeNull();
+
+    const { data: seen } = await client.from("invoices").select("id").eq("id", draftInvoice!.id);
+    expect(seen ?? [], "a customer was able to read a draft invoice").toEqual([]);
+
+    await adminClient.from("invoices").delete().eq("id", draftInvoice!.id);
   });
 
   it(`${owner.label} can view load status history and invoice line items through the owning load/invoice`, async () => {

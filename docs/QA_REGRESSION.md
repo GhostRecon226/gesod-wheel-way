@@ -3,8 +3,8 @@
 Run this after every change. Both layers must be green before shipping.
 
 ```bash
-npm run test        # data-access / RLS checks (Vitest, 70 assertions)
-npm run test:e2e    # browser smoke tests (Playwright, 28 tests)
+npm run test        # data-access / RLS checks (Vitest, 61 assertions)
+npm run test:e2e    # browser smoke tests (Playwright, 24 tests)
 npm run test:all    # both, in order
 ```
 
@@ -25,6 +25,9 @@ Signs in with real accounts and queries the backend directly.
   Unlike every other table above, nothing seeds these — the suite creates one
   fixture row per table in `beforeAll` and deletes all of them in `afterAll`,
   so a run leaves the database exactly as it found it.
+- **Draft invoices are never visible to customers**, even their own — a
+  dedicated test seeds a throwaway draft invoice and confirms the owning
+  customer cannot read it, then deletes it.
 
 ### 2. Browser smoke tests (`e2e/`)
 - `public.spec.ts`: every public page renders with no console errors, branded 404 works, VIN tracker validation, quote flow reaches the ocean freight form.
@@ -33,6 +36,8 @@ Signs in with real accounts and queries the backend directly.
 ## Accounts
 
 Test accounts and their expected landing routes live in `src/test/qaAccounts.ts`, shared by both suites. These are seeded QA accounts only, never production users.
+
+The accounts themselves (1 admin + 2 customers) must exist in Supabase Auth before either suite can run. Create them via the Dashboard (Authentication → Users → Add User, with "Auto Confirm User" checked) or by running `scripts/seed-qa-accounts.mjs` with your own `SUPABASE_SERVICE_ROLE_KEY` — see that file's header comment for usage. Demo data (auction listings, vehicles, milestones, a sailing schedule, a driver, a load, and one row each of bid_requests/quote_requests/payments/disputes) is seeded by `supabase/migrations/20260826084442_qa_demo_data.sql`, keyed to the QA customers by email — safe to re-run after creating the accounts.
 
 ## Notes
 

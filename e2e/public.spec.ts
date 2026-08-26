@@ -9,7 +9,7 @@ const PUBLIC_PAGES: { path: string; heading: RegExp }[] = [
   { path: "/listings", heading: /Listings|Auction/i },
   { path: "/schedule", heading: /Sailing/i },
   { path: "/contact", heading: /Contact/i },
-  { path: "/login", heading: /GESOD RIDES/i },
+  { path: "/login", heading: /Welcome back/i },
 ];
 
 for (const { path, heading } of PUBLIC_PAGES) {

@@ -49,9 +49,9 @@ test.describe("admin dashboard", () => {
   test("sees records belonging to multiple customers", async ({ page }) => {
     await login(page, ADMIN);
     await page.getByRole("button", { name: "Customers", exact: true }).click();
-    await expect(page.getByText("emeka@test.com")).toBeVisible();
-    await expect(page.getByText("fatima@test.com")).toBeVisible();
-    await expect(page.getByText("tunde@test.com")).toBeVisible();
+    for (const customer of CUSTOMERS) {
+      await expect(page.getByText(customer.email)).toBeVisible();
+    }
   });
 
   // Loads and Drivers are real routes (/dashboard/admin/loads[/:id],

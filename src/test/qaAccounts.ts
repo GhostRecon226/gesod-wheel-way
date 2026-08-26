@@ -19,8 +19,8 @@ export interface QaAccount {
 }
 
 export const ADMIN: QaAccount = {
-  label: "Test Admin",
-  email: "test.admin@gesodrides.test",
+  label: "QA Admin",
+  email: "qa-admin@gesodrides.com",
   password: QA_PASSWORD,
   role: "admin",
   dashboard: "/dashboard/admin",
@@ -29,24 +29,16 @@ export const ADMIN: QaAccount = {
 
 export const CUSTOMERS: QaAccount[] = [
   {
-    label: "Chukwuemeka Obi",
-    email: "emeka@test.com",
+    label: "QA Customer 1",
+    email: "qa-customer1@gesodrides.com",
     password: QA_PASSWORD,
     role: "customer",
     dashboard: "/dashboard/customer",
     hasData: true,
   },
   {
-    label: "Fatima Bello",
-    email: "fatima@test.com",
-    password: QA_PASSWORD,
-    role: "customer",
-    dashboard: "/dashboard/customer",
-    hasData: true,
-  },
-  {
-    label: "Tunde Adeyemi",
-    email: "tunde@test.com",
+    label: "QA Customer 2",
+    email: "qa-customer2@gesodrides.com",
     password: QA_PASSWORD,
     role: "customer",
     dashboard: "/dashboard/customer",

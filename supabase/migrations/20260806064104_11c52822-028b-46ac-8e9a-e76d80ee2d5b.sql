@@ -5,18 +5,19 @@ ALTER FUNCTION public.delete_email(text, bigint) SET search_path = pg_catalog, p
 ALTER FUNCTION public.move_to_dlq(text, text, bigint, jsonb) SET search_path = pg_catalog, public, pgmq, pg_temp;
 
 -- 2. Restrict EXECUTE on SECURITY DEFINER functions that clients must not call
+-- (email_queue_dispatch/email_queue_wake are intentionally not referenced
+-- here: they're created later by 20260825201648_email_queue_dispatch_and_cron.sql,
+-- which grants their own permissions. Revoking them at this point in the
+-- migration sequence would fail since they don't exist yet.)
 REVOKE ALL ON FUNCTION public.enqueue_email(text, jsonb) FROM anon, authenticated, PUBLIC;
 REVOKE ALL ON FUNCTION public.read_email_batch(text, integer, integer) FROM anon, authenticated, PUBLIC;
 REVOKE ALL ON FUNCTION public.delete_email(text, bigint) FROM anon, authenticated, PUBLIC;
 REVOKE ALL ON FUNCTION public.move_to_dlq(text, text, bigint, jsonb) FROM anon, authenticated, PUBLIC;
-REVOKE ALL ON FUNCTION public.email_queue_dispatch() FROM anon, authenticated, PUBLIC;
-REVOKE ALL ON FUNCTION public.email_queue_wake() FROM anon, authenticated, PUBLIC;
 REVOKE ALL ON FUNCTION public.handle_new_user() FROM anon, authenticated, PUBLIC;
 GRANT EXECUTE ON FUNCTION public.enqueue_email(text, jsonb) TO service_role;
 GRANT EXECUTE ON FUNCTION public.read_email_batch(text, integer, integer) TO service_role;
 GRANT EXECUTE ON FUNCTION public.delete_email(text, bigint) TO service_role;
 GRANT EXECUTE ON FUNCTION public.move_to_dlq(text, text, bigint, jsonb) TO service_role;
-GRANT EXECUTE ON FUNCTION public.email_queue_dispatch() TO service_role;
 
 -- 3. has_role must only be callable by signed-in users; scope all policies using it to authenticated
 REVOKE ALL ON FUNCTION public.has_role(uuid, public.app_role) FROM anon, PUBLIC;
