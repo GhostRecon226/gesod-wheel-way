@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { FunctionsHttpError } from "@supabase/supabase-js";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
@@ -15,12 +16,14 @@ import {
 } from "@/components/ui/dialog";
 
 type CreateMode = "password" | "invite";
+type AppRole = "customer" | "admin";
 
 interface Customer {
   id: string;
   name: string;
   email: string;
   phone: string | null;
+  role: AppRole;
   created_at: string;
   vehicle_count?: number;
 }
@@ -34,7 +37,18 @@ interface Vehicle {
   status: string | null;
 }
 
+// Same exact-hex badge pattern used by InvoiceStatusBadge/LoadStatusBadge.
+const RoleBadge = ({ role }: { role: AppRole }) => (
+  <span
+    className="inline-block whitespace-nowrap rounded-full px-3 py-1 text-xs font-semibold text-white"
+    style={{ backgroundColor: role === "admin" ? "#C47B2B" : "#94A3B8" }}
+  >
+    {role === "admin" ? "Admin" : "Customer"}
+  </span>
+);
+
 const AdminCustomers = () => {
+  const { user, userRole } = useAuth();
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -49,8 +63,14 @@ const AdminCustomers = () => {
     temporaryPassword: string | null;
   } | null>(null);
 
+  const [roleTarget, setRoleTarget] = useState<Customer | null>(null);
+  const [newRole, setNewRole] = useState<AppRole>("customer");
+  const [changingRole, setChangingRole] = useState(false);
+
   const fetchCustomers = async () => {
-    const { data } = await supabase.from("users").select("*").eq("role", "customer").order("created_at", { ascending: false });
+    // Both customer and admin accounts are listed here (not just role="customer")
+    // so a role change is reflected in place instead of the row vanishing.
+    const { data } = await supabase.from("users").select("*").order("created_at", { ascending: false });
     if (data) {
       const withCounts = await Promise.all(
         data.map(async (c) => {
@@ -81,6 +101,59 @@ const AdminCustomers = () => {
   const openVehicles = async (c: Customer) => {
     const { data } = await supabase.from("vehicles").select("id, make, model, year, vin, status").eq("customer_id", c.id);
     setViewVehicles({ customer: c, vehicles: data ?? [] });
+  };
+
+  const openRoleChange = (c: Customer) => {
+    if (user && c.id === user.id) {
+      toast({ title: "Error", description: "You cannot change your own role", variant: "destructive" });
+      return;
+    }
+    setNewRole(c.role);
+    setRoleTarget(c);
+  };
+
+  const closeRoleChange = () => {
+    setRoleTarget(null);
+    setChangingRole(false);
+  };
+
+  const handleRoleChange = async () => {
+    if (!roleTarget || !user) return;
+    if (roleTarget.id === user.id) {
+      toast({ title: "Error", description: "You cannot change your own role", variant: "destructive" });
+      return;
+    }
+    setChangingRole(true);
+
+    const { error: deleteError } = await supabase.from("user_roles").delete().eq("user_id", roleTarget.id);
+    if (deleteError) {
+      toast({ title: "Error", description: deleteError.message, variant: "destructive" });
+      setChangingRole(false);
+      return;
+    }
+
+    const { error: insertError } = await supabase.from("user_roles").insert({ user_id: roleTarget.id, role: newRole });
+    if (insertError) {
+      toast({ title: "Error", description: insertError.message, variant: "destructive" });
+      setChangingRole(false);
+      return;
+    }
+
+    const { error: userError } = await supabase.from("users").update({ role: newRole }).eq("id", roleTarget.id);
+    if (userError) {
+      toast({ title: "Error", description: userError.message, variant: "destructive" });
+      setChangingRole(false);
+      return;
+    }
+
+    toast({ title: "Role updated successfully" });
+    setChangingRole(false);
+    setRoleTarget(null);
+
+    if (viewVehicles && viewVehicles.customer.id === roleTarget.id) {
+      setViewVehicles((prev) => (prev ? { ...prev, customer: { ...prev.customer, role: newRole } } : prev));
+    }
+    fetchCustomers();
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -120,7 +193,17 @@ const AdminCustomers = () => {
     return (
       <div>
         <button onClick={() => setViewVehicles(null)} className="mb-4 text-sm text-gold hover:underline">← Back to customers</button>
-        <h2 className="mb-4 text-lg font-bold text-silver">{viewVehicles.customer.name}'s Vehicles</h2>
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <h2 className="text-lg font-bold text-silver">{viewVehicles.customer.name}'s Vehicles</h2>
+            <RoleBadge role={viewVehicles.customer.role} />
+          </div>
+          {userRole === "admin" && (
+            <Button variant="copper-outline" size="sm" onClick={() => openRoleChange(viewVehicles.customer)}>
+              Change Role
+            </Button>
+          )}
+        </div>
         {viewVehicles.vehicles.length === 0 ? (
           <p className="text-muted-foreground">No vehicles linked.</p>
         ) : (
@@ -204,6 +287,47 @@ const AdminCustomers = () => {
         </DialogContent>
       </Dialog>
 
+      <Dialog open={!!roleTarget} onOpenChange={(open) => !open && closeRoleChange()}>
+        <DialogContent className="border-border bg-card sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-silver">Change User Role</DialogTitle>
+          </DialogHeader>
+          {roleTarget && (
+            <div className="space-y-4">
+              <p className="text-sm text-muted-foreground">
+                Current role: <RoleBadge role={roleTarget.role} />
+              </p>
+              <div>
+                <label className="mb-1 block text-xs text-muted-foreground">New role</label>
+                <select
+                  value={newRole}
+                  onChange={(e) => setNewRole(e.target.value as AppRole)}
+                  className="w-full rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm text-foreground"
+                >
+                  <option value="customer">Customer</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
+              <p className="rounded-lg border border-gold/30 bg-gold/10 p-3 text-xs text-foreground">
+                Admins have full access to all platform data and settings.
+              </p>
+              <div className="flex gap-3">
+                <Button
+                  variant="copper"
+                  disabled={changingRole || newRole === roleTarget.role}
+                  onClick={handleRoleChange}
+                >
+                  {changingRole ? "Saving…" : "Confirm"}
+                </Button>
+                <Button variant="secondary" type="button" disabled={changingRole} onClick={closeRoleChange}>
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
       <div className="overflow-x-auto rounded-xl border border-border">
         <table className="w-full text-sm">
           <thead>
@@ -211,6 +335,7 @@ const AdminCustomers = () => {
               <th className="px-4 py-3">Name</th>
               <th className="px-4 py-3">Email</th>
               <th className="px-4 py-3">Phone</th>
+              <th className="px-4 py-3">Role</th>
               <th className="px-4 py-3">Vehicles</th>
               <th className="px-4 py-3">Actions</th>
             </tr>
@@ -221,6 +346,7 @@ const AdminCustomers = () => {
                 <td className="px-4 py-3 text-silver">{c.name}</td>
                 <td className="px-4 py-3 text-muted-foreground">{c.email}</td>
                 <td className="px-4 py-3 text-muted-foreground">{c.phone ?? "-"}</td>
+                <td className="px-4 py-3"><RoleBadge role={c.role} /></td>
                 <td className="px-4 py-3">
                   <button onClick={() => openVehicles(c)} className="text-gold hover:underline">{c.vehicle_count}</button>
                 </td>
