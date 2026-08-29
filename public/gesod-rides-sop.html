@@ -1,0 +1,1212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GESOD RIDES — Standard Operating Procedure</title>
+<meta name="description" content="Standard Operating Procedure for the GESOD RIDES vehicle import and logistics platform." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #0D1820;
+    --surface: #12222D;
+    --surface-2: #1A2E3B;
+    --border: #24404F;
+    --border-soft: #1D3543;
+    --copper: #C47B2B;
+    --copper-bright: #D68F3F;
+    --gold: #E8A020;
+    --silver: #E9EFF4;
+    --text: #C6D4DF;
+    --muted: #829AAA;
+    --success: #3FB878;
+    --danger: #D9694F;
+    --font-display: "Barlow Semi Condensed", "Arial Narrow", sans-serif;
+    --font-body: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+    --maxw: 1180px;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 15.5px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: var(--gold); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display);
+    color: var(--silver);
+    font-weight: 700;
+    margin: 0;
+    text-wrap: balance;
+  }
+
+  p { margin: 0 0 0.9em; }
+  p:last-child { margin-bottom: 0; }
+
+  ::selection { background: var(--copper); color: #0D1820; }
+
+  /* ===== Cover / Masthead ===== */
+
+  .masthead {
+    background:
+      radial-gradient(ellipse 900px 500px at 15% -10%, rgba(196,123,43,0.16), transparent 60%),
+      radial-gradient(ellipse 700px 400px at 100% 0%, rgba(232,160,32,0.10), transparent 55%),
+      var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 64px 32px 48px;
+  }
+
+  .masthead-inner {
+    max-width: var(--maxw);
+    margin: 0 auto;
+  }
+
+  .masthead-kicker {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--copper-bright);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+
+  .masthead-kicker::before {
+    content: "";
+    width: 28px;
+    height: 2px;
+    background: var(--gold);
+    display: inline-block;
+  }
+
+  .wordmark {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: clamp(38px, 6vw, 62px);
+    letter-spacing: 0.01em;
+    line-height: 1;
+    color: var(--silver);
+  }
+  .wordmark span { color: var(--copper); }
+
+  .masthead h1 {
+    margin-top: 14px;
+    font-size: clamp(22px, 3vw, 30px);
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .masthead-meta {
+    margin-top: 30px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 28px;
+  }
+
+  .masthead-meta-item {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+  .masthead-meta-item b {
+    display: block;
+    margin-top: 4px;
+    font-family: var(--font-body);
+    font-size: 14.5px;
+    color: var(--silver);
+    text-transform: none;
+    letter-spacing: normal;
+    font-weight: 600;
+  }
+
+  .masthead-intro {
+    margin-top: 30px;
+    max-width: 760px;
+    color: var(--text);
+    font-size: 16px;
+  }
+
+  /* ===== Layout ===== */
+
+  .layout {
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: 44px 32px 100px;
+    display: grid;
+    grid-template-columns: 250px 1fr;
+    gap: 52px;
+    align-items: start;
+  }
+
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; padding: 32px 20px 80px; }
+    .masthead { padding: 48px 20px 36px; }
+  }
+
+  /* ===== TOC ===== */
+
+  .toc {
+    position: sticky;
+    top: 24px;
+  }
+
+  .toc-title {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 14px;
+    padding-left: 2px;
+  }
+
+  .toc ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-left: 1px solid var(--border);
+  }
+
+  .toc li a {
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+    padding: 7px 0 7px 16px;
+    margin-left: -1px;
+    border-left: 2px solid transparent;
+    color: var(--text);
+    font-size: 13.5px;
+    line-height: 1.35;
+  }
+
+  .toc li a:hover {
+    color: var(--gold);
+    border-left-color: var(--copper);
+    text-decoration: none;
+  }
+
+  .toc li a .n {
+    font-family: var(--font-mono);
+    color: var(--copper);
+    font-size: 12px;
+    flex-shrink: 0;
+    width: 18px;
+  }
+
+  /* ===== Sections ===== */
+
+  main { min-width: 0; }
+
+  section.doc-section {
+    padding-bottom: 54px;
+    margin-bottom: 54px;
+    border-bottom: 1px solid var(--border-soft);
+    scroll-margin-top: 20px;
+  }
+  section.doc-section:last-child { border-bottom: none; margin-bottom: 0; }
+
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 18px;
+    margin-bottom: 22px;
+  }
+
+  .section-num {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 40px;
+    color: var(--copper);
+    line-height: 1;
+    opacity: 0.85;
+  }
+
+  .section-head h2 {
+    font-size: clamp(22px, 2.6vw, 28px);
+    letter-spacing: 0.01em;
+  }
+
+  .lede {
+    font-size: 16px;
+    color: var(--text);
+    max-width: 74ch;
+    margin-bottom: 26px;
+  }
+
+  h3 {
+    font-size: 15px;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin: 28px 0 12px;
+  }
+  h3:first-of-type { margin-top: 0; }
+
+  .block { max-width: 78ch; }
+
+  ul.plain, ol.plain {
+    margin: 0 0 1em;
+    padding-left: 22px;
+  }
+  ul.plain li, ol.plain li { margin-bottom: 8px; }
+  ul.plain li:last-child, ol.plain li:last-child { margin-bottom: 0; }
+
+  code, .kbd {
+    font-family: var(--font-mono);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 0.9em;
+    color: var(--silver);
+  }
+
+  /* Numbered step list */
+  ol.steps {
+    counter-reset: step;
+    list-style: none;
+    margin: 0 0 1.2em;
+    padding: 0;
+    max-width: 78ch;
+  }
+  ol.steps > li {
+    counter-increment: step;
+    position: relative;
+    padding: 4px 0 16px 40px;
+    border-left: 1px solid var(--border);
+    margin-left: 14px;
+  }
+  ol.steps > li:last-child { border-left-color: transparent; padding-bottom: 0; }
+  ol.steps > li::before {
+    content: counter(step);
+    position: absolute;
+    left: -14px;
+    top: 2px;
+    width: 27px;
+    height: 27px;
+    border-radius: 50%;
+    background: var(--surface-2);
+    border: 1px solid var(--copper);
+    color: var(--copper-bright);
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  ol.steps > li b { color: var(--silver); }
+
+  /* Cards grid */
+  .cardgrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 12px;
+    margin: 4px 0 24px;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .card .card-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .card .card-title {
+    color: var(--silver);
+    font-weight: 600;
+    margin-top: 4px;
+    font-size: 14.5px;
+  }
+  .card .card-desc {
+    margin-top: 6px;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* Milestone stage list (16 stages) */
+  .stagegrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+    gap: 8px;
+    margin: 4px 0 22px;
+    counter-reset: stage;
+  }
+  .stage {
+    counter-increment: stage;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--copper);
+    border-radius: 6px;
+    padding: 10px 12px 10px 14px;
+    font-size: 13.5px;
+    color: var(--silver);
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .stage::before {
+    content: counter(stage);
+    font-family: var(--font-mono);
+    color: var(--copper-bright);
+    font-size: 12px;
+    flex-shrink: 0;
+    min-width: 14px;
+  }
+
+  /* Status pipeline (chips + arrows) */
+  .pipeline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin: 6px 0 22px;
+  }
+  .pipeline .chip {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    color: var(--silver);
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 6px 13px;
+    white-space: nowrap;
+  }
+  .pipeline .chip.gold { border-color: var(--gold); color: var(--gold); }
+  .pipeline .arrow { color: var(--muted); font-size: 13px; }
+  .pipeline .split { color: var(--muted); font-size: 12px; margin: 0 2px; }
+
+  /* Reference table */
+  .tablewrap { overflow-x: auto; margin: 4px 0 24px; border: 1px solid var(--border); border-radius: 10px; }
+  table.ref {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+    background: var(--surface);
+  }
+  table.ref th {
+    text-align: left;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    background: var(--surface-2);
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  table.ref td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border-soft);
+    color: var(--text);
+    vertical-align: top;
+  }
+  table.ref tr:last-child td { border-bottom: none; }
+  table.ref td.mono { font-family: var(--font-mono); color: var(--silver); font-size: 12.5px; }
+
+  /* Callouts */
+  .callout {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--gold);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 6px 0 24px;
+    font-size: 14px;
+    max-width: 78ch;
+  }
+  .callout .callout-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+    margin-bottom: 5px;
+    display: block;
+  }
+  .callout.rule { border-left-color: var(--copper); }
+  .callout.rule .callout-label { color: var(--copper-bright); }
+
+  /* Section 2: sidebar nav mock list */
+  .navlist {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 4px 0 24px;
+  }
+  .navlist span {
+    font-family: var(--font-mono);
+    font-size: 12.5px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 12px;
+    border-radius: 6px;
+  }
+  .navlist span b { color: var(--silver); font-weight: 600; }
+
+  /* Section 18: rules grid */
+  .rulesgrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 14px;
+    margin-top: 6px;
+  }
+  .rulecard {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--gold);
+    border-radius: 10px;
+    padding: 20px 20px 18px;
+  }
+  .rulecard .rulecard-tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--copper-bright);
+    margin-bottom: 8px;
+  }
+  .rulecard p { font-size: 14px; color: var(--text); }
+  .rulecard p:first-of-type { color: var(--silver); font-weight: 600; font-size: 15px; margin-bottom: 8px; }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 36px 32px 60px;
+  }
+  .footer-inner {
+    max-width: var(--maxw);
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .footer-inner b { color: var(--silver); font-family: var(--font-body); font-weight: 600; }
+
+  /* Print */
+  @media print {
+    :root {
+      --bg: #ffffff;
+      --surface: #F7F5F1;
+      --surface-2: #EFEBE3;
+      --border: #D8D2C6;
+      --border-soft: #E3DFD5;
+      --text: #24343F;
+      --silver: #14212A;
+      --muted: #5B6C78;
+      --copper: #A9631F;
+      --copper-bright: #A9631F;
+      --gold: #9C6B0E;
+    }
+    body { font-size: 12px; }
+    .masthead { background: none; }
+    .toc { display: none; }
+    .layout { grid-template-columns: 1fr; padding: 0 6mm; }
+    section.doc-section { break-inside: avoid-page; page-break-inside: avoid; }
+    a { text-decoration: none; color: var(--copper); }
+    .card, .stage, .rulecard, table.ref, .callout, .chip { break-inside: avoid; }
+    footer { display: none; }
+  }
+
+  @media (max-width: 900px) {
+    .toc { position: static; margin-bottom: 40px; }
+    .toc ol { columns: 2; column-gap: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="masthead-kicker">Internal Reference · Client Handbook</div>
+    <div class="wordmark">GESOD <span>RIDES</span></div>
+    <h1>Standard Operating Procedure</h1>
+    <p class="masthead-intro">
+      This document explains how to operate the GESOD RIDES platform day to day — from logging in and
+      managing customers, to running the full vehicle pipeline through auctions, trucking, ocean freight,
+      customs, invoicing, and delivery. It is written for the team members who use the admin dashboard,
+      and covers what customers can see and do on their side where it affects how you should work.
+    </p>
+    <div class="masthead-meta">
+      <div class="masthead-meta-item">Platform<b>GESOD RIDES</b></div>
+      <div class="masthead-meta-item">Domain<b>www.gesodrides.com</b></div>
+      <div class="masthead-meta-item">Document Type<b>Operating Procedure</b></div>
+      <div class="masthead-meta-item">Audience<b>Admin / Staff Users</b></div>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+
+  <nav class="toc" aria-label="Table of contents">
+    <div class="toc-title">Contents</div>
+    <ol>
+      <li><a href="#s1"><span class="n">01</span> Platform Overview</a></li>
+      <li><a href="#s2"><span class="n">02</span> Getting Started</a></li>
+      <li><a href="#s3"><span class="n">03</span> Customer Management</a></li>
+      <li><a href="#s4"><span class="n">04</span> Auction Listings</a></li>
+      <li><a href="#s5"><span class="n">05</span> Vehicle &amp; VIN Management</a></li>
+      <li><a href="#s6"><span class="n">06</span> Loads (US Operations)</a></li>
+      <li><a href="#s7"><span class="n">07</span> Driver Management</a></li>
+      <li><a href="#s8"><span class="n">08</span> Quote Requests</a></li>
+      <li><a href="#s9"><span class="n">09</span> Bid Requests</a></li>
+      <li><a href="#s10"><span class="n">10</span> Invoicing</a></li>
+      <li><a href="#s11"><span class="n">11</span> Payments</a></li>
+      <li><a href="#s12"><span class="n">12</span> Disputes</a></li>
+      <li><a href="#s13"><span class="n">13</span> Sailing Schedules</a></li>
+      <li><a href="#s14"><span class="n">14</span> Notifications</a></li>
+      <li><a href="#s15"><span class="n">15</span> Documents</a></li>
+      <li><a href="#s16"><span class="n">16</span> Reports &amp; Exports</a></li>
+      <li><a href="#s17"><span class="n">17</span> Contact Messages</a></li>
+      <li><a href="#s18"><span class="n">18</span> Important Rules</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <!-- 01 -->
+    <section class="doc-section" id="s1">
+      <div class="section-head"><span class="section-num">01</span><h2>Platform Overview</h2></div>
+      <p class="lede">
+        GESOD RIDES manages the full journey of a vehicle from a US auction yard to a customer's doorstep
+        in Nigeria — sourcing, bidding, inland trucking, ocean freight, customs clearance, and final
+        delivery, plus every invoice and payment along the way, all from one system.
+      </p>
+
+      <h3>The Two Sides of the Platform</h3>
+      <div class="cardgrid">
+        <div class="card">
+          <div class="card-label">Customer-Facing</div>
+          <div class="card-title">Customer Portal (Nigeria)</div>
+          <div class="card-desc">Browse auction listings, request quotes and bids, track a vehicle by VIN, view invoices and payment history, and raise disputes.</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Staff-Facing</div>
+          <div class="card-title">Admin Portal (US Logistics Operations)</div>
+          <div class="card-desc">Run the full pipeline — vehicle intake, trucking (Loads), drivers, ocean freight schedules, customs milestones, invoicing, documents, and customer communication.</div>
+        </div>
+      </div>
+
+      <h3>User Types</h3>
+      <p class="block">
+        The platform has two account roles: <b style="color:var(--silver)">Admin</b> and
+        <b style="color:var(--silver)">Customer</b>. On login, the platform looks up the account's role
+        and routes it automatically — admins land in the admin dashboard, customers in their own
+        dashboard. There's no manual "switch view"; the role decides everything the account can see and do.
+      </p>
+    </section>
+
+    <!-- 02 -->
+    <section class="doc-section" id="s2">
+      <div class="section-head"><span class="section-num">02</span><h2>Getting Started</h2></div>
+      <p class="lede">
+        Every session starts the same way, whether you're staff or a customer.
+      </p>
+
+      <h3>Logging In</h3>
+      <ol class="steps">
+        <li>Go to <code>www.gesodrides.com</code> and select <b>Sign In</b>, or navigate directly to <code>/login</code>.</li>
+        <li>Enter your email and password. If you've forgotten your password, use <b>Forgot password?</b> to receive a reset link by email.</li>
+        <li>New accounts must confirm their email before their first login — if confirmation is still pending, a <b>Resend Confirmation Email</b> button appears automatically on a failed attempt.</li>
+        <li>On success, the platform reads your account's role and redirects you straight to <code>/dashboard/admin</code> or <code>/dashboard/customer</code>.</li>
+      </ol>
+
+      <h3>Admin Dashboard Overview</h3>
+      <p class="block">
+        The admin dashboard is a fixed left sidebar plus a main content panel. The sidebar carries the
+        GESOD RIDES logo at the top, the full list of modules below it, and your name with a
+        <b style="color:var(--silver)">Logout</b> button at the bottom. On mobile, the sidebar collapses
+        behind a menu icon.
+      </p>
+
+      <h3>Sidebar Navigation</h3>
+      <div class="navlist">
+        <span><b>Overview</b></span>
+        <span><b>Import Pipeline</b></span>
+        <span><b>Customers</b></span>
+        <span><b>Vehicles</b></span>
+        <span><b>Loads</b></span>
+        <span><b>Drivers</b></span>
+        <span><b>Invoices</b></span>
+        <span><b>Auction Listings</b></span>
+        <span><b>Bid Requests</b></span>
+        <span><b>Quote Requests</b></span>
+        <span><b>Documents</b></span>
+        <span><b>Payments</b></span>
+        <span><b>Disputes</b></span>
+        <span><b>Sailing Schedules</b></span>
+        <span><b>Notifications</b></span>
+        <span><b>Messages</b></span>
+        <span><b>Reports &amp; Exports</b></span>
+      </div>
+
+      <p class="block">
+        The <b style="color:var(--silver)">Overview</b> tab is the landing screen and shows five live
+        counters at a glance: Vehicles In Transit, Pending Bids, Pending Quotes, Open Disputes, and
+        Awaiting Customs — a quick daily read on what needs attention.
+      </p>
+      <p class="block">
+        Most modules are simple in-page tabs with no distinct web address. <b style="color:var(--silver)">Loads</b>,
+        <b style="color:var(--silver)">Drivers</b>, and <b style="color:var(--silver)">Invoices</b> are the
+        exception — they have real URLs (e.g. <code>/dashboard/admin/loads/:id</code>), so a specific load,
+        driver, or invoice can be bookmarked or shared as a direct link.
+      </p>
+    </section>
+
+    <!-- 03 -->
+    <section class="doc-section" id="s3">
+      <div class="section-head"><span class="section-num">03</span><h2>Customer Management</h2></div>
+      <p class="lede">
+        The Customers tab lists every customer account — name, email, phone, and a live count of vehicles
+        linked to them, newest account first.
+      </p>
+
+      <h3>Create an Account</h3>
+      <ol class="steps">
+        <li>Click <b>Add Customer</b> and enter their full name, email, and phone number.</li>
+        <li>Choose how they'll get access:
+          <ul class="plain" style="margin-top:8px;">
+            <li><b style="color:var(--silver)">Set temporary password</b> — a one-time password is generated and shown on screen once. Copy it and share it with the customer directly; it will not be shown again.</li>
+            <li><b style="color:var(--silver)">Send invite email</b> — the customer receives an email and sets their own password from the link inside it.</li>
+          </ul>
+        </li>
+        <li>Click <b>Create</b>. The account is created through a dedicated server-side function, so credentials are always handled securely — never typed into the database directly.</li>
+      </ol>
+
+      <h3>Find an Existing Customer</h3>
+      <p class="block">
+        The list is sorted by most recently added. There's no dedicated search box on this tab — use your
+        browser's find-in-page (<span class="kbd">Ctrl/Cmd+F</span>) to jump to a name or email quickly.
+      </p>
+
+      <h3>View Vehicles / History</h3>
+      <p class="block">
+        Click the number in a customer's <b style="color:var(--silver)">Vehicles</b> column to open a page
+        listing every vehicle linked to their account (year/make/model, VIN, status). Click
+        <b style="color:var(--silver)">← Back to customers</b> to return to the list. Use
+        <b style="color:var(--silver)">Edit</b> on any row to update an existing customer's name, email,
+        or phone.
+      </p>
+    </section>
+
+    <!-- 04 -->
+    <section class="doc-section" id="s4">
+      <div class="section-head"><span class="section-num">04</span><h2>Auction Listings</h2></div>
+      <p class="lede">
+        The Auction Listings tab shows every listing GESOD RIDES has published — thumbnail, make/model/year,
+        lot number, source, auction date, status, and Edit/Delete actions.
+      </p>
+
+      <h3>Add a Listing Manually</h3>
+      <p class="block">Click <b>Add Listing</b> and complete the form, grouped into three sections:</p>
+      <div class="cardgrid">
+        <div class="card">
+          <div class="card-label">Group 1</div>
+          <div class="card-title">Vehicle</div>
+          <div class="card-desc">Make, model, year, VIN, body style, engine, transmission, drivetrain, fuel type, exterior/interior colour, odometer.</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Group 2</div>
+          <div class="card-title">Condition &amp; Value</div>
+          <div class="card-desc">Title type (Clean / Salvage / Rebuilt / Certificate of Destruction), estimated retail value, primary/secondary damage, damage description, run-and-drive and keys-available checkboxes.</div>
+        </div>
+        <div class="card">
+          <div class="card-label">Group 3</div>
+          <div class="card-title">Auction</div>
+          <div class="card-desc">Lot number, auction source (e.g. Copart, IAAI), auction date, yard location, status (Active/Expired).</div>
+        </div>
+      </div>
+      <p class="block">
+        Photos are uploaded separately below the form. The first photo becomes the listing's cover image;
+        photos can be reordered or removed before saving.
+      </p>
+
+      <h3>AI Import — Paste a Copart/IAAI URL</h3>
+      <ol class="steps">
+        <li>Above the listings table, paste the vehicle's URL from Copart or IAAI into the <b>Import from auction link</b> box and click <b>Import</b>.</li>
+        <li>The platform fetches the page and uses AI to read out the vehicle's details and photos, then opens the same listing form pre-filled for review. <b style="color:var(--silver)">Nothing is published until you click Save.</b></li>
+        <li>If the auction site blocks the automatic fetch, use <b>Link blocked? Paste page details instead</b> — open the auction page yourself, select all (<span class="kbd">Ctrl/Cmd+A</span>), copy, and paste the raw text in. The same AI extraction runs on the pasted content.</li>
+        <li>Any field the AI couldn't determine is flagged in an amber notice at the top of the form — fill those in by hand before saving.</li>
+      </ol>
+
+      <h3>How Listings Appear Publicly</h3>
+      <p class="block">
+        Any listing with status <b style="color:var(--silver)">Active</b> shows on the public Listings page,
+        where customers can browse it and submit a Bid Request (see <a href="#s9">Section 9</a>).
+      </p>
+
+      <h3>How Expired Listings Are Handled</h3>
+      <div class="callout rule">
+        <span class="callout-label">Not a scheduled job — happens live</span>
+        There is no background process that expires listings on a timer. Every time the Auction Listings
+        tab (or the public Listings/Archive pages) loads, the platform compares each active listing's
+        auction date against today's date. Any active listing whose auction date has already passed is
+        flipped to <b>Expired</b> and moved onto the public Archive page automatically, with no admin
+        action required. The archive carries a notice that GESOD RIDES doesn't own these vehicles and
+        can't accept new bids on closed auctions.
+      </div>
+    </section>
+
+    <!-- 05 -->
+    <section class="doc-section" id="s5">
+      <div class="section-head"><span class="section-num">05</span><h2>Vehicle &amp; VIN Management</h2></div>
+      <p class="lede">
+        The Vehicles tab is separate from Auction Listings: a <b style="color:var(--silver)">Listing</b> is
+        the public-facing item a customer can bid on before purchase; a
+        <b style="color:var(--silver)">Vehicle record</b> is the operational record for a vehicle GESOD
+        RIDES is actively handling for a customer, tracked by VIN from bid through delivery.
+      </p>
+
+      <h3>Create a Vehicle Record</h3>
+      <p class="block">
+        From the Vehicles tab, add the vehicle's VIN, make, model, year, title type, damage description,
+        odometer, run-and-drive status, and auction details (source, lot number, yard location, auction date).
+      </p>
+
+      <h3>Assign to Customer</h3>
+      <p class="block">
+        Use the customer dropdown on the vehicle record to link it to the customer's account, or leave it
+        unassigned until one is confirmed.
+      </p>
+
+      <h3>Update Milestones — All 16 Stages</h3>
+      <p class="block">
+        To log progress: open the vehicle record, choose the current stage from the list below, add
+        optional notes, and save. Each entry is added to the vehicle's history — it's a running log, not a
+        single status flag, so the full timeline stays visible to both admin and customer.
+      </p>
+      <div class="stagegrid">
+        <div class="stage">Bid Requested</div>
+        <div class="stage">Bid Placed</div>
+        <div class="stage">Bid Won</div>
+        <div class="stage">Awaiting Payment</div>
+        <div class="stage">Payment Confirmed</div>
+        <div class="stage">Towing to US Port</div>
+        <div class="stage">At US Port</div>
+        <div class="stage">Vessel Assigned</div>
+        <div class="stage">Vessel Departed</div>
+        <div class="stage">In Transit</div>
+        <div class="stage">Vessel Arrived</div>
+        <div class="stage">Customs Documentation in Progress</div>
+        <div class="stage">Customs Duty Paid</div>
+        <div class="stage">Vehicle Released from Port</div>
+        <div class="stage">Out for Delivery</div>
+        <div class="stage">Delivered to Customer</div>
+      </div>
+
+      <h3>Documents &amp; Evidence Photos</h3>
+      <p class="block">
+        Attach supporting documents to a vehicle from its record — these are reviewed separately (see
+        <a href="#s15">Section 15, Documents</a>). Attach an evidence photo to a specific milestone entry
+        so the customer sees visual proof of that stage on the public tracker.
+      </p>
+
+      <h3>Public VIN Tracker</h3>
+      <p class="block">
+        The full vehicle record is never exposed publicly. The public Track page (no login required) calls
+        a dedicated, restricted lookup that returns only a <b style="color:var(--silver)">masked VIN</b>
+        (first 4 and last 4 characters, middle hidden) and the milestone timeline for an exact, full
+        17-character VIN match — nothing else about the vehicle or its owner is returned. Searches are
+        capped at 5 per hour per browser to prevent abuse.
+      </p>
+      <p class="block">
+        The same masking applies everywhere a VIN is shown inside the admin panel's lists and tables
+        (Vehicles, Documents, Loads, Import Pipeline, etc.) — the full VIN is only visible inside the edit
+        form itself.
+      </p>
+    </section>
+
+    <!-- 06 -->
+    <section class="doc-section" id="s6">
+      <div class="section-head"><span class="section-num">06</span><h2>Loads (US Operations)</h2></div>
+      <p class="lede">
+        A <b style="color:var(--silver)">Load</b> is the US-side trucking record — moving a specific
+        vehicle from an auction/storage yard to its destination. It's tracked by its own VIN and is
+        separate from the Vehicle/milestone record used for the Nigeria-facing shipping pipeline, though
+        both usually exist for the same vehicle.
+      </p>
+
+      <h3>Create a New Load</h3>
+      <p class="block">
+        From the Loads tab, click <b>New Load</b> and enter the VIN — make/model/year auto-fill once a full
+        17-character VIN is entered, though this can always be overridden manually — plus lot number, buyer
+        number, pickup location, destination type (Port / Yard / Container / Residence) and address, agreed
+        pickup price, and service fee (defaults to $50).
+      </p>
+
+      <h3>Assign a Driver</h3>
+      <p class="block">
+        Pick from the Driver dropdown on the load form, or leave unassigned and assign later. The Loads
+        list can also be filtered by driver, customer, or status.
+      </p>
+
+      <h3>Update Status Through Its Stages</h3>
+      <p class="block">Open a load and choose <b>Update Status</b>. A load moves through:</p>
+      <div class="pipeline">
+        <span class="chip">Posted</span><span class="arrow">→</span>
+        <span class="chip">Driver Assigned</span><span class="arrow">→</span>
+        <span class="chip">Picked Up</span><span class="arrow">→</span>
+        <span class="chip">In Transit</span><span class="arrow">→</span>
+        <span class="chip">Delivered</span><span class="arrow">→</span>
+        <span class="chip">Invoiced</span><span class="arrow">→</span>
+        <span class="chip gold">Paid</span>
+      </div>
+      <p class="block">
+        Every status change is timestamped and saved to that load's status history, with optional notes —
+        the full progression stays auditable.
+      </p>
+
+      <h3>Import from Excel/CSV</h3>
+      <ol class="steps">
+        <li>Click <b>Import Loads</b> and drag in a <code>.xlsx</code>, <code>.xls</code>, or <code>.csv</code> tracking spreadsheet.</li>
+        <li>The platform previews the first 5 rows and auto-detects which spreadsheet column maps to which load field. VIN must be mapped to continue.</li>
+        <li>Review and adjust the column mapping, then review every row — rows missing a VIN are flagged and excluded automatically.</li>
+        <li>Uncheck any row you don't want imported, then confirm. Valid rows are created as new loads in one batch, and you're shown how many were created versus skipped.</li>
+      </ol>
+    </section>
+
+    <!-- 07 -->
+    <section class="doc-section" id="s7">
+      <div class="section-head"><span class="section-num">07</span><h2>Driver Management</h2></div>
+
+      <h3>Add a Driver</h3>
+      <p class="block">
+        From the Drivers tab, click <b>Add Driver</b> and enter name and phone (required), plus optional
+        email, payment method, payment details (e.g. a Zelle number or ACH details), and notes. Drivers can
+        be marked Active/Inactive; inactive drivers are hidden from the list by default — toggle
+        <b style="color:var(--silver)">Show inactive drivers</b> to see them.
+      </p>
+
+      <h3>Record a Payment</h3>
+      <p class="block">
+        Open a driver's detail page and click <b>Record Payment</b>. Choose one of that driver's delivered
+        loads, enter the amount, payment method, and date, with optional notes — the payment is recorded as
+        <b style="color:var(--silver)">pending</b> until confirmed.
+      </p>
+
+      <h3>View Outstanding Payments</h3>
+      <p class="block">
+        A driver's detail page shows <b style="color:var(--silver)">Total Paid</b> and
+        <b style="color:var(--silver)">Total Pending</b> at a glance, plus full payment history with a
+        one-click <b>Mark as Paid</b> on any pending row. For a company-wide view, open
+        <b style="color:var(--silver)">Payments Overview</b> from the Drivers tab — it lists every pending
+        driver payment across all drivers (driver, load VIN, customer, amount, method, days pending), with
+        a bulk <b>Mark Selected as Paid</b> action and a running total of what's outstanding.
+      </p>
+    </section>
+
+    <!-- 08 -->
+    <section class="doc-section" id="s8">
+      <div class="section-head"><span class="section-num">08</span><h2>Quote Requests</h2></div>
+
+      <h3>Customer Submission</h3>
+      <p class="block">Customers submit a Quote Request from their dashboard when they want pricing on a vehicle or service before committing.</p>
+
+      <h3>View &amp; Respond</h3>
+      <p class="block">The Quote Requests tab lists every request. Click <b>Edit</b> on a row to respond inline.</p>
+
+      <h3>Issue a Quote — USD and NGN</h3>
+      <p class="block">
+        Set the amount in USD and its equivalent in NGN (₦), a "valid until" date, and admin notes, then
+        update the status:
+      </p>
+      <div class="pipeline">
+        <span class="chip">Pending</span><span class="arrow">→</span>
+        <span class="chip">Issued</span><span class="arrow">→</span>
+        <span class="chip gold">Accepted</span>
+        <span class="split">or</span>
+        <span class="chip">Expired</span>
+      </div>
+    </section>
+
+    <!-- 09 -->
+    <section class="doc-section" id="s9">
+      <div class="section-head"><span class="section-num">09</span><h2>Bid Requests</h2></div>
+
+      <h3>Customer Submission from Listings</h3>
+      <p class="block">Customers submit a Bid Request directly from an active Auction Listing, specifying their maximum bid.</p>
+
+      <h3>Approve / Reject / Update Outcomes</h3>
+      <p class="block">
+        The Bid Requests tab lists every request. Click <b>Edit</b> on a row, then choose a status and add
+        admin notes. There's a single unified status field rather than separate approve/reject buttons, so
+        any status can be set at any time as the bid progresses:
+      </p>
+      <div class="pipeline">
+        <span class="chip">Pending</span><span class="arrow">→</span>
+        <span class="chip">Approved</span>
+        <span class="split">/</span>
+        <span class="chip">Rejected</span><span class="arrow">→</span>
+        <span class="chip gold">Won</span>
+        <span class="split">/</span>
+        <span class="chip">Lost</span>
+      </div>
+    </section>
+
+    <!-- 10 -->
+    <section class="doc-section" id="s10">
+      <div class="section-head"><span class="section-num">10</span><h2>Invoicing</h2></div>
+
+      <h3>Create an Invoice</h3>
+      <ol class="steps">
+        <li><b>Pick a customer</b> — the platform automatically finds their delivered, not-yet-invoiced loads.</li>
+        <li><b>Select loads</b> — choose which of those loads to include on this invoice.</li>
+        <li><b>Review line items</b> — a Base Pickup Price and Service Fee line are generated automatically for each selected load. Add or adjust extra charges as needed.</li>
+        <li><b>Review &amp; save</b> — check the full breakdown and grand total, add optional notes, and save. This creates the invoice as a <b style="color:var(--silver)">Draft</b>, links the selected loads to it, and moves those loads' status to <code>invoiced</code>.</li>
+      </ol>
+
+      <h3>Add Line Items / Extra Charges</h3>
+      <p class="block">Beyond the automatic Base Pickup Price and Service Fee, extra charge types available are:</p>
+      <div class="pipeline">
+        <span class="chip">Tire Change</span>
+        <span class="chip">Battery</span>
+        <span class="chip">Key Fix</span>
+        <span class="chip">Repair</span>
+        <span class="chip">Surcharge</span>
+        <span class="chip">Other</span>
+      </div>
+
+      <h3>Draft → Approved → Sent → Paid Workflow</h3>
+      <div class="pipeline">
+        <span class="chip">Draft</span><span class="arrow">→</span>
+        <span class="chip">Approved</span><span class="arrow">→</span>
+        <span class="chip">Sent</span><span class="arrow">→</span>
+        <span class="chip gold">Paid</span>
+      </div>
+      <p class="block">Every invoice starts as a Draft and moves through each stage as a deliberate admin action from the invoice's detail page.</p>
+
+      <h3>Why Customers Cannot See Draft Invoices</h3>
+      <div class="callout rule">
+        <span class="callout-label">Enforced twice, not once</span>
+        A customer's invoice list excludes any invoice with status <b>Draft</b> — enforced both by the
+        database's own access rules and again in the app itself, so a draft can never appear to a customer
+        under any circumstance, even briefly. Only once an invoice moves out of Draft does it become
+        visible to the customer it belongs to.
+      </div>
+    </section>
+
+    <!-- 11 -->
+    <section class="doc-section" id="s11">
+      <div class="section-head"><span class="section-num">11</span><h2>Payments</h2></div>
+
+      <h3>Record a Payment Against a Vehicle</h3>
+      <p class="block">
+        From the Payments tab, click <b>Add Payment</b>, choose the customer, optionally link it to a
+        specific vehicle, note the payment stage (free text, e.g. "Auction Deposit"), amount, and currency
+        (USD or NGN). It's recorded as <b style="color:var(--silver)">pending</b>.
+      </p>
+
+      <h3>Confirm a Payment</h3>
+      <p class="block">
+        Click <b>Confirm</b> on any pending payment row — this records which admin confirmed it and flips
+        its status to confirmed.
+      </p>
+
+      <h3>Customer Payment History View</h3>
+      <p class="block">
+        Customers see their own payment records from their dashboard, view-only — they cannot record or
+        confirm payments themselves.
+      </p>
+    </section>
+
+    <!-- 12 -->
+    <section class="doc-section" id="s12">
+      <div class="section-head"><span class="section-num">12</span><h2>Disputes</h2></div>
+
+      <h3>Customer Filing</h3>
+      <p class="block">Customers file a dispute from their dashboard against a vehicle or order.</p>
+
+      <h3>Admin Response</h3>
+      <p class="block">
+        The Disputes tab lists every dispute. Click <b>Respond</b> to open a reply form — write the
+        response and optionally attach evidence (an image or PDF).
+      </p>
+
+      <h3>Resolve / Close</h3>
+      <p class="block">Change the status alongside your response:</p>
+      <div class="pipeline">
+        <span class="chip">Open</span><span class="arrow">→</span>
+        <span class="chip">Under Review</span><span class="arrow">→</span>
+        <span class="chip gold">Resolved</span>
+      </div>
+    </section>
+
+    <!-- 13 -->
+    <section class="doc-section" id="s13">
+      <div class="section-head"><span class="section-num">13</span><h2>Sailing Schedules</h2></div>
+
+      <h3>Add a New Schedule</h3>
+      <p class="block">
+        From the Sailing Schedules tab, click <b>Add Schedule</b> and enter vessel name, departure port,
+        ETD (estimated departure date), ETA Nigeria, destination port (Apapa, Tin Can, or Onne), and status
+        (Scheduled / Departed / Arrived).
+      </p>
+
+      <h3>Public Schedule Page Display</h3>
+      <p class="block">
+        The public Sailing Schedule page lists every schedule sorted soonest-departure-first, with the same
+        vessel, port, and date columns, so any visitor can check upcoming and recent vessel departures
+        without logging in.
+      </p>
+    </section>
+
+    <!-- 14 -->
+    <section class="doc-section" id="s14">
+      <div class="section-head"><span class="section-num">14</span><h2>Notifications</h2></div>
+
+      <h3>Send to One Customer</h3>
+      <p class="block">On the Notifications tab, select a specific customer from the dropdown and write the message.</p>
+
+      <h3>Send to All Customers</h3>
+      <p class="block">
+        Check <b>Send to all customers</b> instead of picking one — the message is delivered to every
+        customer account in a single action. Either way, the notification appears in that customer's (or
+        every customer's) dashboard notification list.
+      </p>
+    </section>
+
+    <!-- 15 -->
+    <section class="doc-section" id="s15">
+      <div class="section-head"><span class="section-num">15</span><h2>Documents</h2></div>
+
+      <h3>Upload to Vehicle</h3>
+      <p class="block">
+        Documents (title, bill of sale, customs paperwork, etc.) are uploaded and attached to a specific
+        vehicle record.
+      </p>
+
+      <h3>Review &amp; Customer Access</h3>
+      <p class="block">
+        From the admin's <b style="color:var(--silver)">Documents &amp; Review</b> tab, every uploaded
+        document can be filtered by review status, viewed, and reviewed — approve or reject with optional
+        notes:
+      </p>
+      <div class="pipeline">
+        <span class="chip">Pending</span><span class="arrow">→</span>
+        <span class="chip gold">Approved</span>
+        <span class="split">/</span>
+        <span class="chip">Rejected</span>
+      </div>
+      <p class="block">
+        Customers only ever see documents attached to their own vehicles, and see the current review status
+        reflected on each one.
+      </p>
+    </section>
+
+    <!-- 16 -->
+    <section class="doc-section" id="s16">
+      <div class="section-head"><span class="section-num">16</span><h2>Reports &amp; Exports</h2></div>
+
+      <h3>CSV / JSON Export</h3>
+      <p class="block">
+        The Reports &amp; Exports tab offers one-click export in both formats for each data set — CSV for
+        spreadsheets, JSON for systems integration.
+      </p>
+
+      <h3>Available Tables</h3>
+      <div class="tablewrap">
+        <table class="ref">
+          <thead><tr><th>Report</th><th>Contents</th></tr></thead>
+          <tbody>
+            <tr><td class="mono">Vehicles</td><td>Full vehicle inventory with auction and status details.</td></tr>
+            <tr><td class="mono">Bid Requests</td><td>Customer bid requests, max bids, statuses, admin notes.</td></tr>
+            <tr><td class="mono">Payments</td><td>Payment records by stage, amount, currency, status.</td></tr>
+            <tr><td class="mono">Milestones</td><td>Vehicle milestone history for logistics auditing.</td></tr>
+            <tr><td class="mono">Loads</td><td>US-side load records with customer, driver, route, and pricing.</td></tr>
+            <tr><td class="mono">Drivers</td><td>Driver roster with contact details and assigned load counts.</td></tr>
+            <tr><td class="mono">Driver Payments</td><td>Driver payout records by load, amount, method, status.</td></tr>
+            <tr><td class="mono">Invoices</td><td>Customer invoices with totals, status, line-item counts.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="block">Each export includes readable customer and driver names alongside IDs — not just raw database identifiers.</p>
+    </section>
+
+    <!-- 17 -->
+    <section class="doc-section" id="s17">
+      <div class="section-head"><span class="section-num">17</span><h2>Contact Messages</h2></div>
+
+      <h3>View Contact-Form Messages</h3>
+      <p class="block">
+        The Messages tab lists every submission from the public site's contact form — name, email, phone,
+        and message.
+      </p>
+
+      <h3>Mark as Read</h3>
+      <p class="block">
+        Click <b>Mark read</b> on any message; it can be toggled back to <b>Mark unread</b> if needed.
+      </p>
+    </section>
+
+    <!-- 18 -->
+    <section class="doc-section" id="s18">
+      <div class="section-head"><span class="section-num">18</span><h2>Important Rules</h2></div>
+      <p class="lede">
+        A handful of rules are built into the platform itself and cannot be overridden from the admin panel.
+        They're worth knowing precisely.
+      </p>
+
+      <div class="rulesgrid">
+        <div class="rulecard">
+          <div class="rulecard-tag">Invoicing</div>
+          <p>Draft invoices are never visible to customers.</p>
+          <p>This is enforced twice — once by the database's own access rules, and again in the app itself — so a draft can never appear to a customer, under any circumstance.</p>
+        </div>
+        <div class="rulecard">
+          <div class="rulecard-tag">Data Access</div>
+          <p>Customers only ever see their own data.</p>
+          <p>Their own vehicles, invoices, payments, documents, and disputes — never another customer's, regardless of how the data is requested.</p>
+        </div>
+        <div class="rulecard">
+          <div class="rulecard-tag">VIN Tracking</div>
+          <p>VIN tracking is public, but VINs are always masked.</p>
+          <p>The public tracker shows only the first 4 and last 4 characters of a VIN, and never exposes any other private vehicle or customer detail.</p>
+        </div>
+        <div class="rulecard">
+          <div class="rulecard-tag">Auction Listings</div>
+          <p>Listings expire automatically once their auction date passes.</p>
+          <p>This happens live, whenever listings are loaded — not on a fixed schedule — and requires no admin action.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <span><b>GESOD RIDES</b> — Standard Operating Procedure</span>
+    <span>Internal reference document · not for external distribution</span>
+  </div>
+</footer>
+
+</body>
+</html>
