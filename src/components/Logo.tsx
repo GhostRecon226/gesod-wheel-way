@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import logoLight from "@/assets/gesod-logo-light.png";
+import { cn } from "@/lib/utils";
 
 interface LogoProps {
   /** Render as a link to the home page. */
@@ -19,7 +20,7 @@ const Logo = ({ to, className = "" }: LogoProps) => {
     <img
       src={logoLight}
       alt="GESOD RIDES"
-      className={`h-8 w-auto object-contain ${className}`}
+      className={cn("h-8 w-auto object-contain", className)}
     />
   );
 

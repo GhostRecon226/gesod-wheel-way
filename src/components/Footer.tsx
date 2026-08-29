@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import Logo from "@/components/Logo";
 
 const Footer = () => (
   <footer className="border-t border-border bg-card">
@@ -6,10 +7,7 @@ const Footer = () => (
       <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
         {/* Brand */}
         <div>
-          <Link to="/" className="text-xl font-bold no-underline">
-            <span className="text-silver">GESOD</span>{" "}
-            <span className="text-gold">RIDES</span>
-          </Link>
+          <Logo to="/" className="h-12" />
           <p className="mt-3 text-left text-sm leading-relaxed text-muted-foreground">
             Vehicle sourcing and logistics facilitation. We coordinate auction bidding, inland
             transport, and ocean freight services for clients importing vehicles from the United
