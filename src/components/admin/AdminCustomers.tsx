@@ -153,6 +153,9 @@ const AdminCustomers = () => {
     if (viewVehicles && viewVehicles.customer.id === roleTarget.id) {
       setViewVehicles((prev) => (prev ? { ...prev, customer: { ...prev.customer, role: newRole } } : prev));
     }
+    if (editing && editing.id === roleTarget.id) {
+      setEditing((prev) => (prev ? { ...prev, role: newRole } : prev));
+    }
     fetchCustomers();
   };
 
@@ -266,6 +269,16 @@ const AdminCustomers = () => {
             <Button variant="copper-outline" type="button" onClick={() => setShowForm(false)}>Cancel</Button>
           </div>
         </form>
+      )}
+
+      {showForm && editing && (
+        <div className="-mt-3 mb-6 flex flex-wrap items-center gap-3 rounded-xl border border-border bg-card p-6">
+          <span className="text-sm text-muted-foreground">Role:</span>
+          <RoleBadge role={editing.role} />
+          <Button variant="copper-outline" size="sm" onClick={() => openRoleChange(editing)}>
+            Change Role
+          </Button>
+        </div>
       )}
 
       <Dialog open={!!newCredentials} onOpenChange={(open) => !open && setNewCredentials(null)}>
