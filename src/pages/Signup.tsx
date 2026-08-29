@@ -53,7 +53,7 @@ const Signup = () => {
       <div className="w-full max-w-md rounded-xl border border-border bg-card p-8">
         {/* Logo */}
         <div className="mb-2 text-center">
-          <Logo to="/" className="text-3xl" />
+          <Logo to="/" className="h-12" />
           <p className="mt-1 text-sm text-muted-foreground">
             Your trusted vehicle import partner
           </p>

@@ -106,7 +106,7 @@ const Login = () => {
         />
 
         <div className="relative">
-          <Logo to="/" className="text-2xl" />
+          <Logo to="/" className="h-10" />
         </div>
 
         <div className="relative max-w-lg">
@@ -135,7 +135,7 @@ const Login = () => {
       <main className="flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
           <div className="mb-8 text-center lg:hidden">
-            <Logo to="/" className="text-2xl" />
+            <Logo to="/" className="h-10" />
           </div>
 
           <div className="text-center">

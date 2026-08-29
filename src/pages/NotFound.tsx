@@ -13,7 +13,7 @@ const NotFound = () => {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
-      <Logo to="/" className="text-2xl" />
+      <Logo to="/" className="h-10" />
 
       <div className="mt-8 w-full max-w-md rounded-xl border border-border bg-card p-8 text-center">
         <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full border border-border bg-surface-2">

@@ -71,7 +71,7 @@ const ResetPassword = () => {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-md rounded-xl border border-border bg-card p-8">
         <div className="mb-2 text-center">
-          <Logo className="justify-center text-3xl" />
+          <Logo className="h-12" />
           <p className="mt-1 text-sm text-muted-foreground">Set your new password</p>
         </div>
 
