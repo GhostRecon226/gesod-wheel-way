@@ -187,7 +187,7 @@ async function extractFields(pageText: string, sourceHint: string | null) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: "claude-3-5-sonnet-20241022",
+      model: "claude-sonnet-5",
       max_tokens: 2048,
       system: systemPrompt,
       messages: [
@@ -207,7 +207,10 @@ async function extractFields(pageText: string, sourceHint: string | null) {
     throw new Error(`Could not extract vehicle details: ${detail}`);
   }
 
-  const content = payload?.content?.[0]?.text ?? "{}";
+  // Don't assume index 0 is the answer: models with thinking enabled return a
+  // leading `thinking` block before the actual `text` block.
+  const content =
+    (payload?.content as { type: string; text?: string }[] | undefined)?.find((b) => b.type === "text")?.text ?? "{}";
   try {
     return JSON.parse(content) as Record<string, unknown>;
   } catch {
